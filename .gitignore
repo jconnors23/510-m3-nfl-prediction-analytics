@@ -1,0 +1,38 @@
+# Local working artifacts (never committed)
+local/
+local-docs/
+mkdocs.yml
+.cursor/
+.kiro/
+
+# Built documentation site
+site/
+
+# Python caches and build outputs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+*.egg-info/
+
+# Front-end tooling
+node_modules/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# ML experiment tracking and artifacts
+mlruns/
+wandb/
+
+# Environment and credential files
+.env
+*.pem
+credentials.json
+
+# OS and editor cruft
+.DS_Store

@@ -1,0 +1,20 @@
+# Core ML pipeline
+scikit-learn
+pandas
+numpy
+PyYAML
+
+# Experiment tracking
+mlflow
+
+# Model serving API
+fastapi
+uvicorn[standard]
+pydantic
+
+# Front-end
+streamlit
+requests
+
+# Cloud storage access (Google Cloud Storage)
+google-cloud-storage
