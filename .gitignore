@@ -5,6 +5,10 @@ mkdocs.yml
 .cursor/
 .kiro/
 
+# Downloaded and cleaned game tables. The leading slash limits this to the top-level
+# data/ folder, so the source folder src/data/ is not ignored.
+/data/
+
 # Built documentation site
 site/
 

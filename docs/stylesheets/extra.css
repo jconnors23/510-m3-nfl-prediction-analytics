@@ -12,68 +12,51 @@
 /* Larger, more readable body copy and navigation text than the cramped
    Material defaults. */
 .md-typeset {
-  font-size: 0.82rem;
-  line-height: 1.65;
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .md-nav {
-  font-size: 0.78rem;
+  font-size: 0.88rem;
 }
 
 /* ------------------------------------------------------------------
-   Color theme for an NFL analytics and machine learning site.
-   Palette: black, white, purple, blue, orange, green.
-     Black   page background and surfaces
-     White   text
-     Purple  structure: header, table headers, section labels
-     Blue    links and the second half of the header gradient
-     Orange  emphasis: the page being read, hover, "Purpose" callouts
-     Green   confirmation: "Confirm" notes and success states
+   Color theme: a light page with sky blue as the main color.
+     Sky blue   header, section labels, links
+     Navy       headings and the page being read
+     Slate gray body text
+     Green      "note" callouts
+     Orange     "Purpose" callouts
    ------------------------------------------------------------------ */
 
 :root > * {
-  --md-primary-fg-color: #7c3aed;
-  --md-primary-fg-color--light: #8b5cf6;
-  --md-primary-fg-color--dark: #5b21b6;
+  --md-primary-fg-color: #0ea5e9;
+  --md-primary-fg-color--light: #38bdf8;
+  --md-primary-fg-color--dark: #0284c7;
   --md-primary-bg-color: #ffffff;
-  --md-primary-bg-color--light: rgba(255, 255, 255, 0.72);
-  --md-accent-fg-color: #ff7a1a;
-  --md-accent-fg-color--transparent: rgba(255, 122, 26, 0.12);
-  --md-accent-bg-color: #0a0a10;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.8);
+  --md-accent-fg-color: #0369a1;
+  --md-accent-fg-color--transparent: rgba(3, 105, 161, 0.1);
 }
 
-[data-md-color-scheme="slate"] {
-  --md-default-bg-color: #0a0a10;
-  --md-default-bg-color--light: rgba(10, 10, 16, 0.54);
-  --md-default-bg-color--lighter: rgba(10, 10, 16, 0.26);
-  --md-default-bg-color--lightest: rgba(10, 10, 16, 0.07);
-  --md-default-fg-color: rgba(255, 255, 255, 0.92);
-  --md-default-fg-color--light: rgba(255, 255, 255, 0.72);
-  --md-default-fg-color--lighter: rgba(255, 255, 255, 0.32);
-  --md-default-fg-color--lightest: rgba(255, 255, 255, 0.1);
-  --md-typeset-color: rgba(255, 255, 255, 0.92);
-  --md-typeset-a-color: #60a5fa;
-  --md-code-bg-color: #13131d;
-  --md-code-fg-color: #e8e8f2;
-  --md-footer-bg-color: #07070b;
-  --md-footer-bg-color--dark: #050508;
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #f4faff;
+  --md-default-fg-color: #1e293b;
+  --md-default-fg-color--light: #475569;
+  --md-default-fg-color--lighter: #94a3b8;
+  --md-default-fg-color--lightest: #dbeafe;
+  --md-typeset-color: #1e293b;
+  --md-typeset-a-color: #0369a1;
+  --md-code-bg-color: #e6f3fc;
+  --md-code-fg-color: #0f2a43;
+  --md-footer-bg-color: #0c4a6e;
+  --md-footer-bg-color--dark: #0a3d5c;
 }
 
-/* Header: a purple to blue gradient with very faint yard lines and an
-   orange line along the bottom edge. */
+/* Header: a soft sky blue gradient with white text. */
 .md-header {
-  background-color: var(--md-primary-fg-color--dark);
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.05) 0,
-      rgba(255, 255, 255, 0.05) 1px,
-      transparent 1px,
-      transparent 64px
-    ),
-    linear-gradient(100deg, #5b21b6 0%, #4338ca 55%, #1d4ed8 100%);
-  border-bottom: 2px solid var(--md-accent-fg-color);
-  box-shadow: none;
+  background-image: linear-gradient(100deg, #38bdf8 0%, #0ea5e9 55%, #0284c7 100%);
+  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.25);
 }
 
 .md-header__title {
@@ -81,89 +64,81 @@
   letter-spacing: 0.02em;
 }
 
-/* Left navigation: orange marks the page being read, and purple marks
-   the section labels. */
+/* Left navigation: navy marks the page being read, and sky blue marks the
+   section labels. */
 .md-nav__link--active,
 .md-nav__item .md-nav__link--active {
-  color: var(--md-accent-fg-color);
+  color: #0c4a6e;
   font-weight: 700;
 }
 
 .md-nav__item--section > .md-nav__link {
-  color: #a78bfa;
+  color: #0284c7;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
 }
 
-/* Headings: a purple, blue, and green gradient line under the page title,
-   and a purple to blue bar beside section titles. */
+/* Headings: navy text, with a sky blue line under the page title and a
+   sky blue bar beside section titles. */
 .md-typeset h1 {
-  color: #ffffff;
+  color: #0c4a6e;
   font-weight: 700;
   letter-spacing: -0.01em;
   padding-bottom: 0.35em;
-  border-bottom: 3px solid;
-  border-image: linear-gradient(90deg, #8b5cf6, #3b82f6, #22c55e) 1;
+  border-bottom: 3px solid #38bdf8;
 }
 
 .md-typeset h2 {
-  color: #ffffff;
+  color: #0c4a6e;
   font-weight: 700;
   padding-left: 0.7rem;
-  border-left: 4px solid;
-  border-image: linear-gradient(180deg, #8b5cf6, #3b82f6) 1;
+  border-left: 4px solid #38bdf8;
 }
 
 .md-typeset h3 {
-  color: #a78bfa;
+  color: #0369a1;
   font-weight: 700;
 }
 
-/* Tables read like a stat sheet: a purple header row, faint stripes, and
-   an orange tint on the row under the cursor. */
+/* Tables (the few that remain): a sky blue header row and light stripes. */
 .md-typeset table:not([class]) {
-  border: 0.05rem solid rgba(255, 255, 255, 0.12);
+  border: 0.05rem solid #bae6fd;
   border-radius: 0.3rem;
 }
 
 .md-typeset table:not([class]) th {
-  background-color: var(--md-primary-fg-color--dark);
+  background-color: #0ea5e9;
   color: #ffffff;
   font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
 .md-typeset table:not([class]) tbody tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: #eaf6fe;
 }
 
-.md-typeset table:not([class]) tbody tr:hover {
-  background-color: var(--md-accent-fg-color--transparent);
-}
-
-/* Callout boxes. "Purpose" blocks use the orange abstract style, and
-   "Confirm" notes use green. */
+/* Callout boxes. "Purpose" blocks use the abstract style in orange, and
+   notes use green. */
 .md-typeset .admonition.abstract,
 .md-typeset details.abstract {
-  border-color: var(--md-accent-fg-color);
-  background-color: var(--md-accent-fg-color--transparent);
+  border-color: #f97316;
+  background-color: rgba(249, 115, 22, 0.07);
 }
 
 .md-typeset .abstract > .admonition-title,
 .md-typeset .abstract > summary {
-  background-color: rgba(255, 122, 26, 0.18);
+  background-color: rgba(249, 115, 22, 0.16);
 }
 
 .md-typeset .abstract > .admonition-title::before,
 .md-typeset .abstract > summary::before {
-  background-color: var(--md-accent-fg-color);
+  background-color: #f97316;
 }
 
 .md-typeset .admonition.note,
 .md-typeset details.note {
   border-color: #22c55e;
-  background-color: rgba(34, 197, 94, 0.06);
+  background-color: rgba(34, 197, 94, 0.07);
 }
 
 .md-typeset .note > .admonition-title,
@@ -176,13 +151,13 @@
   background-color: #22c55e;
 }
 
-/* Code blocks get a purple edge. */
+/* Code blocks get a sky blue edge. */
 .md-typeset pre > code {
-  border-left: 3px solid var(--md-primary-fg-color);
+  border-left: 3px solid #38bdf8;
 }
 
 .md-typeset code {
-  color: #c4b5fd;
+  color: #075985;
 }
 
 .md-typeset pre > code,
@@ -190,7 +165,7 @@
   color: var(--md-code-fg-color);
 }
 
-/* Footer: black, with the disclaimer in a quiet tone. */
+/* Footer: deep blue, with the disclaimer in a quiet tone. */
 .md-footer-meta {
   background-color: var(--md-footer-bg-color--dark);
 }
