@@ -1,0 +1,15 @@
+data:
+  source_url: https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv
+  raw_path: data/raw/games.csv
+  processed_path: data/processed/nfl_matchups_2020_2026.csv
+  from_s3_path: data/from-s3/nfl_matchups_2020_2026.csv
+  s3_bucket: 510-m3-nfl-dataset
+  s3_key: data/processed/nfl_matchups_2020_2026.csv
+  aws_region: us-east-1
+
+# Last fully scored week of the final season. Later weeks have no scores yet,
+# so cleaning drops them before it checks for blank scores.
+window:
+  start_season: 2020
+  end_season: 2026
+  live_through_week: 10

@@ -1,20 +1,33 @@
+# Every package is pinned to an exact version so any machine installs the same thing.
+# Install with: pip install -r requirements.txt
+
 # Core ML pipeline
-scikit-learn
-pandas
-numpy
-PyYAML
+# pandas and numpy hold the game tables and do the math. scikit-learn supplies the scaler
+# and model (Phase 2). PyYAML reads config/config.yaml.
+scikit-learn==1.9.1
+pandas==3.1.1
+numpy==2.5.4
+PyYAML==6.0.3
 
 # Experiment tracking
-mlflow
+# Records the settings, scores, and files of each training run (Phase 2).
+mlflow==3.18.0
 
 # Model serving API
-fastapi
-uvicorn[standard]
-pydantic
+# fastapi builds the /predict route, pydantic checks the request, uvicorn runs it locally,
+# and mangum lets AWS Lambda call it (Phases 3 and 4).
+fastapi==0.162.2
+uvicorn[standard]==0.54.0
+pydantic==2.14.3
+mangum==0.22.0
 
-# Front-end
-streamlit
-requests
+# Data download
+# requests downloads the games file in the fetch step (Phase 1).
+requests==2.34.2
 
-# Cloud storage access (Google Cloud Storage)
-google-cloud-storage
+# Cloud storage access (Amazon S3)
+# boto3 is the Python library for talking to AWS from code.
+boto3==1.44.5
+
+# Tests
+pytest==9.2.0
