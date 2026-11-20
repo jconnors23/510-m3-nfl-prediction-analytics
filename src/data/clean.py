@@ -25,7 +25,7 @@ def clean_games(
     raw: pd.DataFrame,
     start_season: int,
     end_season: int,
-    live_through_week: int,
+    test_through_week: int,
 ) -> tuple[pd.DataFrame, dict[str, int]]:
     """Apply the cleaning rules in order.
 
@@ -47,7 +47,7 @@ def clean_games(
     # Rule 3: cut the unplayed weeks of the last season.
     # Unplayed weeks of the last season have blank scores. Drop them before the
     # blank-score check, or that check would stop the step on games that have not been played.
-    later = (window["season"] == end_season) & (window["week"] > live_through_week)
+    later = (window["season"] == end_season) & (window["week"] > test_through_week)
     window = window.loc[~later].copy()
     counts["through_completed_weeks"] = len(window)
 
@@ -108,9 +108,10 @@ def format_counts(counts: dict[str, int]) -> str:
 
 
 def main() -> None:
+    """Command for Step 2: clean the saved raw file and write the cleaned table."""
     try:
         config = load_config()
-        start_season, end_season, live_through_week = season_window(config)
+        start_season, end_season, test_through_week = season_window(config)
         raw_path = data_file(config, "raw_path")
         # Check the input first so a missing file gives a plain "run the fetch step" message.
         if not raw_path.is_file():
@@ -118,7 +119,7 @@ def main() -> None:
         raw = pd.read_csv(raw_path)
         if raw.empty:
             raise ValueError(f"Raw file at {config['data']['raw_path']} is empty. Run the fetch step first.")
-        cleaned, counts = clean_games(raw, start_season, end_season, live_through_week)
+        cleaned, counts = clean_games(raw, start_season, end_season, test_through_week)
         require_current_teams(cleaned)
         dest = data_file(config, "processed_path")
         dest.parent.mkdir(parents=True, exist_ok=True)

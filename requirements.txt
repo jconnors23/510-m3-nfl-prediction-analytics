@@ -31,3 +31,8 @@ boto3==1.44.5
 
 # Tests
 pytest==9.2.0
+
+# Training outputs
+# matplotlib draws the confusion matrix. joblib writes the saved model file.
+matplotlib==3.11.2
+joblib==1.6.0

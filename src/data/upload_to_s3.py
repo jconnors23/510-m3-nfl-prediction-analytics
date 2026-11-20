@@ -39,6 +39,7 @@ def upload(config: dict, client=None) -> None:
 
 
 def main() -> None:
+    """Command for Step 3: upload the cleaned table to S3."""
     try:
         upload(load_config())
     except (ClientError, BotoCoreError, SizeMismatchError, ValueError) as exc:

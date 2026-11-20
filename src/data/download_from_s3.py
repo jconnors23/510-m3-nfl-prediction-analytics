@@ -41,6 +41,7 @@ def download(config: dict, client=None) -> None:
 
 
 def main() -> None:
+    """Command for Step 4: download the cleaned table from S3."""
     try:
         download(load_config())
     except (ClientError, BotoCoreError, ValueError, FileNotFoundError) as exc:

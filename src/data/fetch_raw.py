@@ -52,6 +52,7 @@ def fetch_raw(url: str, dest) -> int:
 
 
 def main() -> None:
+    """Command for Step 1: download the games file and save it unchanged."""
     try:
         config = load_config()
         url = config["data"]["source_url"]

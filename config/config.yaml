@@ -12,4 +12,27 @@ data:
 window:
   start_season: 2020
   end_season: 2026
-  live_through_week: 10
+  test_through_week: 10
+
+# Training stops before the validation season. The test season is window.end_season,
+# so that year is not written here a second time.
+split:
+  train_end_season: 2024
+  validation_season: 2025
+
+# Saved with the model when training runs. The solver itself does not use the seed;
+# the seed is here so a later random step can repeat.
+model:
+  version: v1.0
+  random_seed: 42
+  output_path: models/model.joblib
+  logistic_regression:
+    C: 1.0
+    solver: lbfgs
+    max_iter: 1000
+
+# This MLflow version refuses its plain folder store, so the run record goes in a database file.
+tracking:
+  experiment_name: nfl-pregame-winner-v1
+  database_path: mlflow.db
+  artifact_folder: mlartifacts

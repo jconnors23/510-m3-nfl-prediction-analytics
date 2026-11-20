@@ -1,13 +1,10 @@
 # Local working artifacts (never committed)
 local/
 local-docs/
+specs/
 mkdocs.yml
 .cursor/
 .kiro/
-
-# Downloaded and cleaned game tables. The leading slash limits this to the top-level
-# data/ folder, so the source folder src/data/ is not ignored.
-/data/
 
 # Built documentation site
 site/
@@ -32,6 +29,9 @@ env/
 # ML experiment tracking and artifacts
 mlruns/
 wandb/
+models/
+mlflow.db
+mlartifacts/
 
 # Environment and credential files
 .env
