@@ -1,0 +1,416 @@
+---
+hide:
+  - toc
+---
+
+# Phase 2 Implementation, Part 2: Steps 4 to 7
+
+This page explains how the last four Phase 2 steps work: fitting the model, scoring it, recording the run in MLflow, and saving the trained model. [Part 1](./implementation-part-1.md) covers the inputs, the split, and the settings. For the short version, see the [Synopsis](./synopsis.md).
+
+**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores, and `pytest` passes 26 tests.
+
+## How Does the Data Flow?
+
+```mermaid
+flowchart LR
+    A["Training 1,339<br/>Validation 271<br/>Test 149"] --> B["Step 4: fit scaler<br/>and model"]
+    B --> C["Step 5: score<br/>and draw plot"]
+    C --> D["Step 6: record<br/>in MLflow"]
+    B --> E["Step 7: save<br/>model.joblib"]
+    D -.-> E
+```
+
+### Which Files Were Added?
+
+- `src/model/train.py` holds the command, the fit, the saved file, and the MLflow logging.
+- `src/model/evaluate.py` holds the scores and the plot. It has no MLflow code and reads no files.
+- `tests/test_train.py` and `tests/test_evaluate.py` hold the tests. They use made-up data, and every file they write goes in a temporary folder.
+- `requirements.txt` gains `matplotlib==3.11.2` and `joblib==1.6.0`. Both were already installed, because MLflow and scikit-learn bring them in, but the project pins them.
+- `.gitignore` gains `models/`, `mlflow.db`, and `mlartifacts/`.
+
+The command reads the table that Phase 1 downloaded, so run the download step first.
+
+## Step 4: Fit the Scaler and the Model
+
+!!! abstract "Purpose"
+    **Goal:** Learn the model from the training games, and keep the scaler and the model together as one object.
+
+    **Why:** The two inputs are on very different scales (about 0.35 versus about 10). Standardizing them first lets the model weigh them fairly, and keeping both in one object means the API cannot apply the model without the scaler.
+
+    **If skipped:** There would be no model to score or serve.
+
+### How Is the Pipeline Built?
+
+```python
+def build_pipeline(config: dict):
+    """A scaler and a logistic regression, with every setting taken from the config file."""
+    logistic = config["model"]["logistic_regression"]
+    return make_pipeline(
+        StandardScaler(),
+        LogisticRegression(
+            C=logistic["C"],
+            solver=logistic["solver"],
+            max_iter=logistic["max_iter"],
+            random_state=config["model"]["random_seed"],
+        ),
+    )
+
+
+def fit_pipeline(config: dict, training):
+    """Fit the scaler and the model on the training games only."""
+    pipeline = build_pipeline(config)
+    # Validation and test games stay out of this call, so their results cannot move the weights.
+    pipeline.fit(training[INPUT_COLUMNS], training["home_win"])
+    return pipeline
+```
+
+- **Training rows only.** The scaler's averages and spreads, and the model's weights, come from the 1,339 training games. Validation and test games never touch the fit.
+- **Named columns.** The inputs are passed as a table with the two column names, not as a bare array, so the order of the inputs is fixed and the API can rely on it.
+- **Every value comes from `config.yaml`.** Nothing about the model is written in the code.
+
+### What Does the Fit Learn?
+
+- **The scaler** learns one average and one spread for each input, from the training games:
+    - `win_pct_differential`: average -0.0004, spread 0.3476
+    - `point_diff_per_game_differential`: average -0.1762, spread 10.1117
+- **The model** learns one weight for each standardized input, plus an intercept:
+    - weight for `win_pct_differential`: 0.2138
+    - weight for `point_diff_per_game_differential`: 0.3081
+    - intercept: 0.1403
+    - The solver finished in 6 steps (the limit is 1000).
+- **Reading the weights:** both are positive, so a stronger home team on either input raises the home win probability. The margin input has the larger weight.
+- **Reading the intercept:** it is positive, which is the home-field edge. With both inputs at 0, the home win probability is 0.5364. Home teams won 53.32% of the training games.
+- **Repeatable:** a second fit with the same settings gives identical probabilities.
+
+### What Is a Worked Example?
+
+Game `2025_07_NE_TEN` has inputs -0.5 and -18.0. The scaler turns them into standardized values, and the model adds them up:
+
+- Standardized win percentage input: (-0.5 - (-0.0004)) / 0.3476 = about -1.44.
+- Standardized margin input: (-18.0 - (-0.1762)) / 10.1117 = about -1.76.
+- Weighted sum: 0.1403 + 0.2138 x (-1.44) + 0.3081 x (-1.76) = about -0.71.
+- The logistic function turns -0.71 into a probability of about 0.33.
+
+The model's own output for this game is **0.3296**, a 33% chance that Tennessee wins. That is below 0.5, so the prediction is an away win. New England won, so it is correct.
+
+## Step 5: Score the Model
+
+!!! abstract "Purpose"
+    **Goal:** Measure how often the model picks the winner, and compare it with the always-pick-home baseline.
+
+    **Why:** A score on its own means little. Beating a simple rule shows the inputs add something.
+
+    **If skipped:** There would be no result to report.
+
+### How Is a Game Scored?
+
+- The model gives a home win probability for each game. A probability **above 0.5** is a pick for the home team, and anything else is a pick for the away team.
+- **Two scores** are used, and each answers a different question:
+    - **Accuracy:** how often is the pick right?
+    - **Log loss:** are the percentages the model gives believable?
+- **Baseline** is the score of always picking the home team, which is the share of games the home team won.
+- **Safeguard:** log loss is always given the labels `[0, 1]`, so a group with only one outcome does not raise an error.
+
+```python
+def score_group(pipeline, group) -> dict:
+    """Accuracy, the always-home baseline, and log loss for one group."""
+    # Keep the column names so the pipeline applies the inputs in the saved order.
+    probability = pipeline.predict_proba(group[INPUT_COLUMNS])[:, 1]
+    # Exactly 0.5 is an away pick. Only a higher probability picks the home team.
+    picked_home = (probability > 0.5).astype(int)
+    home_win = group["home_win"].to_numpy()
+    games = int(len(group))
+    correct = int((picked_home == home_win).sum())
+    return {
+        "games": games,
+        "correct": correct,
+        "accuracy": correct / games,
+        "baseline": float((home_win == 1).mean()),
+        "log_loss": float(log_loss(home_win, probability, labels=[0, 1])),
+    }
+```
+
+### What Is Accuracy?
+
+Accuracy is the share of games where the model's pick matches the real result. It is the headline number the project reports, and it is shown next to the baseline so a reader can see whether the model adds anything.
+
+| Group | Games | Correct | Accuracy | Always pick home |
+| :--- | :--- | :--- | :--- | :--- |
+| Training | 1,339 | 820 | 61.24% | 53.32% |
+| Validation | 271 | 171 | 63.10% | 53.87% |
+| Test | 149 | 88 | 59.06% | 47.65% |
+
+- **The model beats the baseline in every group:** by 7.9 points on training, 9.2 on validation, and 11.4 on test.
+- **The validation score is the one to report.** It is a finished season the model never saw.
+- **The test score is noisy.** With 149 games, accuracy can move by about 4 points either way by chance. The test baseline is low (47.65%) because home teams won fewer than half of those games.
+- **Accuracy is not graded.** A poor score would still be acceptable, and the score is reported whatever it is.
+- **What accuracy cannot see:** a pick of "home team, 51% chance" and a pick of "home team, 90% chance" count the same. Log loss looks at what accuracy ignores.
+
+### What Is Log Loss?
+
+**Short answer: a high log loss is bad, and a low one is good.** It works like a golf score. It is a penalty, so lower is better.
+
+**In plain words:** for every game, the model gives a percentage chance that the home team wins. After the game, look at how much chance the model had given to what really happened. If it gave the real result a high chance, the penalty is small. If it gave the real result a low chance, the penalty is large. Log loss is the average penalty over all the games.
+
+- **A high log loss** means the model was often surprised. It kept giving low chances to things that then happened, usually by being sure of itself and wrong.
+- **A low log loss** means the model was rarely surprised, so its percentages matched what happened.
+
+**How to read the number**
+
+- **0** is the best possible, and it would mean the model gave 100% to every real result. It never happens in practice.
+- **0.6931** is what a model that knows nothing scores. It is the penalty for saying "50-50" about every game.
+- **Above 0.6931** is worse than knowing nothing, because the model is confidently wrong too often.
+- **Between 0 and 0.6931** means the model has learned something. Football games are hard to predict, so a model that is honest about its uncertainty stays fairly close to 0.69.
+- **This model:** 0.6451 on validation and 0.6815 on the test set. Both are below 0.6931, so it has learned something. The test number is only a little below, which fits a small set of 149 games.
+
+**How the penalty works.** It depends on how much chance the model gave to what actually happened. Say the home team won:
+
+- The model said 90%: penalty **0.11** (small).
+- The model said 70%: penalty **0.36**.
+- The model said 50%: penalty **0.69**.
+- The model said 30%: penalty **1.20**.
+- The model said 10%: penalty **2.30** (large).
+
+**Why accuracy is not enough.** Two models can pick the same winners and still score very differently. Say both pick the home team in three games, and the home team wins two and loses one. Both have the same accuracy, 2 of 3.
+
+- **Model A** says 60% each time. Its penalties are 0.51, 0.51, and 0.92, so its log loss is **0.646**.
+- **Model B** says 95% each time. Its penalties are 0.05, 0.05, and 3.00, so its log loss is **1.033**.
+
+Model B is worse because the one game it lost cost a huge penalty. Log loss rewards a model for saying "50-50" when it does not know, and for saving high percentages for games where it has a reason.
+
+**Why it matters here.** The web app shows a win probability, not only a pick. Log loss is the check that those percentages mean something, which accuracy cannot tell you.
+
+**Does the model's confidence mean anything?** Yes.
+
+- In 2025, the model gave one team at least a 65% chance in 66 games, and it picked the winner in 75.76% of them. In the other 205 games, where it was less sure, it was right 59.02% of the time.
+- In the test set, it was at least 65% sure in 43 games and right in 62.79%, against 57.55% in the other 106.
+
+**A game that hurt.** In 2025, `2025_03_GB_CLE`, the model gave Cleveland (home) only a 23.1% chance, and Cleveland won. That one game had a penalty of 1.46, the largest in the validation season. In the test set, `2026_02_JAX_DEN` was the largest at 1.99, with Denver given a 13.7% chance.
+
+**Why it is not logged for the training games.** Logistic regression is fitted by pushing this very number down on the training games. A low training log loss is expected and says little. Only games the model never saw are a fair check.
+
+| Group | Model | Always 50% | Always the home win rate |
+| :--- | :--- | :--- | :--- |
+| Validation | 0.6451 | 0.6931 | 0.6902 |
+| Test | 0.6815 | 0.6931 | 0.6985 |
+
+"Always the home win rate" means saying 53.32% (the training share) for every game. The model is lower, which is better, than both on both groups.
+
+### How Do the Two Scores Fit Together?
+
+- **Accuracy** is the headline: how often the model picks the winner, next to the always-pick-home baseline.
+- **Log loss** supports it: it checks that the probabilities the web app will show are believable.
+- **Both are reported for validation and test, and only accuracy for training.** Neither is graded.
+
+### What Does the Confusion Matrix Show?
+
+Validation 2025, with the actual result down the side and the model's pick across the top:
+
+| Actual result | Picked away win | Picked home win |
+| :--- | :--- | :--- |
+| Away team won (125 games) | 62 | 63 |
+| Home team won (146 games) | 37 | 109 |
+
+The model picks the home team in 172 of 271 games (63.5%), more often than home teams actually win (53.87%). The 171 correct picks are the 62 and the 109.
+
+### Which Plot Is Drawn?
+
+One image is drawn for the validation season with matplotlib's non-window drawing mode (`Agg`), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.
+
+- **`confusion_matrix_validation.png`:** the table above as a heat map, with the count written in each cell.
+- **Wording:** the title is bold ("Validation 2025: Predicted vs Actual", with the year read from the games in the group), a one-line takeaway under it says how many games were picked correctly (171 of 271), and both axis labels are bold.
+
+```python
+def plot_confusion_matrix(pipeline, group, path) -> Path:
+    """Save the group's confusion matrix and return the image path."""
+    probability = pipeline.predict_proba(group[INPUT_COLUMNS])[:, 1]
+    # The same 0.5 rule as the score, so the picture counts the same picks.
+    picked_home = (probability > 0.5).astype(int)
+    matrix = confusion_matrix(group["home_win"], picked_home, labels=[0, 1])
+    figure, axes = plt.subplots(figsize=(5, 4.5))
+    ConfusionMatrixDisplay(matrix, display_labels=["Away win", "Home win"]).plot(
+        ax=axes,
+        colorbar=False,
+        cmap="Blues",
+        values_format="d",
+    )
+    # The year comes from the games in this group, so a different validation season renames the figure.
+    season = int(group["season"].iloc[0])
+    correct = int((picked_home == group["home_win"].to_numpy()).sum())
+    figure.suptitle(f"Validation {season}: Predicted vs Actual", fontweight="bold")
+    axes.set_title(f"{correct} of {len(group)} games were picked correctly")
+    axes.set_xlabel(axes.get_xlabel(), fontweight="bold")
+    axes.set_ylabel(axes.get_ylabel(), fontweight="bold")
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(destination, dpi=150, bbox_inches="tight")
+    plt.close(figure)
+    return destination
+```
+
+## Step 6: Record the Run in MLflow
+
+!!! abstract "Purpose"
+    **Goal:** Save the settings, scores, and files of every training run, so runs can be compared and traced.
+
+    **Why:** The requirements ask for logged parameters, metrics, and artifacts (the saved model and the plot).
+
+    **If skipped:** There would be no record of which settings produced which scores.
+
+### How Is MLflow Set Up?
+
+This is the first half of `log_run` in `src/model/train.py`.
+
+```python
+def log_run(config: dict, scores: dict, files: dict) -> str:
+    """Record one run's settings, scores, and files, and return the run name."""
+    database = resolve_path(config["tracking"]["database_path"])
+    artifacts = resolve_path(config["tracking"]["artifact_folder"])
+    # The path already starts with /, so this address has four slashes.
+    mlflow.set_tracking_uri(f"sqlite:///{database}")
+    experiment_name = config["tracking"]["experiment_name"]
+    # The artifact folder is fixed at creation, so a later run must join the same experiment.
+    if mlflow.get_experiment_by_name(experiment_name) is None:
+        artifacts.mkdir(parents=True, exist_ok=True)
+        mlflow.create_experiment(experiment_name, artifact_location=artifacts.as_uri())
+    mlflow.set_experiment(experiment_name)
+```
+
+- The run record goes in the database file `mlflow.db`, and each run's files go under `mlartifacts/<run id>/artifacts/`.
+- Run again, and a new run is added to the same experiment. Two runs with the same settings and data give the same scores, and only the run ids differ.
+
+### What Is Logged for Each Run?
+
+This is the second half of `log_run`.
+
+```python
+    start_season, train_end_season, validation_season, test_season = split_seasons(config)
+    model = config["model"]
+    logistic = model["logistic_regression"]
+    run_name = f"LogisticRegression-{model['version']}"
+    # Training log loss is left out. The model is fit by pushing that number down, so it is not a fair check.
+    # A run that fails partway is closed by `with` and marked as failed, so it is never left open.
+    with mlflow.start_run(run_name=run_name):
+        # MLflow keeps every parameter as text. Scores below are numbers, so they can be charted.
+        mlflow.log_params(
+            {
+                "model_version": model["version"],
+                "random_seed": model["random_seed"],
+                "C": logistic["C"],
+                "solver": logistic["solver"],
+                "max_iter": logistic["max_iter"],
+                "feature_names": ",".join(INPUT_COLUMNS),
+                "train_start_season": start_season,
+                "train_end_season": train_end_season,
+                "validation_season": validation_season,
+                "test_season": test_season,
+                "n_train": scores["training"]["games"],
+                "n_validation": scores["validation"]["games"],
+                "n_test": scores["test"]["games"],
+            }
+        )
+        mlflow.log_metrics(
+            {
+                "train_accuracy": scores["training"]["accuracy"],
+                "validation_accuracy": scores["validation"]["accuracy"],
+                "test_accuracy": scores["test"]["accuracy"],
+                "validation_log_loss": scores["validation"]["log_loss"],
+                "test_log_loss": scores["test"]["log_loss"],
+                "baseline_train": scores["training"]["baseline"],
+                "baseline_validation": scores["validation"]["baseline"],
+                "baseline_test": scores["test"]["baseline"],
+            }
+        )
+        # The three files go in folders named model, plots, and config inside the run's artifacts.
+        mlflow.log_artifact(str(files["model"]), artifact_path="model")
+        mlflow.log_artifact(str(files["plot"]), artifact_path="plots")
+        mlflow.log_artifact(str(files["config"]), artifact_path="config")
+    return run_name
+```
+
+- **Run name:** `LogisticRegression-v1.0`, the model type and the version label.
+- **Settings (parameters), 13 in all:** `model_version`, `random_seed`, `C`, `solver`, `max_iter`, `feature_names`, `train_start_season`, `train_end_season`, `validation_season`, `test_season`, `n_train` (1339), `n_validation` (271), and `n_test` (149).
+- **Scores (metrics), 8 in all, stored as fractions:** `train_accuracy`, `validation_accuracy`, `test_accuracy`, `validation_log_loss`, `test_log_loss`, `baseline_train`, `baseline_validation`, and `baseline_test`.
+- **Files (artifacts), 3 in all:** `model/model.joblib`, `plots/confusion_matrix_validation.png`, and `config/config.yaml`, a copy of the settings used.
+- **Read back from the real run:** both recorded runs show these 13 parameters, these 8 metrics, and these 3 files, with identical scores.
+
+### How Is MLflow Kept Tidy?
+
+- **Quiet start-up.** MLflow prints a hint about its tracing helper when it is imported. This project does not use tracing, so `train.py` sets `MLFLOW_DISABLE_AGENT_HINT` before the import and the command prints nothing extra.
+- **No leftovers from tests.** The tests point MLflow at a temporary database and artifact folder, and each test puts the earlier tracking address back afterward, so no test affects the next one or writes into the project.
+- **One hidden warning.** MLflow's own database code uses a SQLAlchemy option that SQLAlchemy plans to remove. `pytest.ini` hides that single warning, because it comes from inside MLflow and not from this project.
+- **Why not the default folder.** See [Why a Database File and Not the Default Folder?](./implementation-part-1.md#why-a-database-file-and-not-the-default-folder).
+
+To browse the recorded runs, start the MLflow viewer and open the address it prints:
+
+```bash
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+## Step 7: Save the Final Pipeline
+
+!!! abstract "Purpose"
+    **Goal:** Write the trained pipeline to `models/model.joblib`, with the facts the API needs to load it safely.
+
+    **Why:** Phase 3 serves this file. It must load on its own and say which model it is.
+
+    **If skipped:** The API would have nothing to serve.
+
+### What Is Saved?
+
+One Python dictionary, written with `joblib.dump`:
+
+- `pipeline`: the fitted scaler and model.
+- `feature_names`: the two input column names, in order.
+- `model_version`: the `model.version` setting (`v1.0`).
+- `scikit_learn_version`: the installed version at training time (1.9.1). The API compares it with its own, because a saved model may fail to load, or answer differently, under another version.
+- `train_start_season` and `train_end_season`: 2020 and 2024.
+
+```python
+def save_model(pipeline, config: dict, start_season: int, train_end_season: int) -> Path:
+    """Write the fitted pipeline beside the facts needed to load it later."""
+    output = resolve_path(config["model"]["output_path"])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    bundle = {
+        "pipeline": pipeline,
+        "feature_names": INPUT_COLUMNS,
+        "model_version": config["model"]["version"],
+        "scikit_learn_version": sklearn.__version__,
+        "train_start_season": int(start_season),
+        "train_end_season": int(train_end_season),
+    }
+    # Write beside the real file and swap only after the write finishes, so a failed run
+    # cannot leave a half-written model in place of a good one.
+    partial = output.with_name(output.name + ".partial")
+    try:
+        joblib.dump(bundle, partial)
+        os.replace(partial, output)
+    except Exception:
+        partial.unlink(missing_ok=True)
+        raise
+    return output
+```
+
+- **Size:** 1,902 bytes, so it is small enough to copy into the Docker image.
+- **Round trip:** the saved file loads with the six keys above, and a fresh fit gives the same probabilities as the loaded pipeline.
+- **A failed save keeps the old file.** If the write fails, the half-written `.partial` file is removed and the earlier model is left as it was.
+- **The file extension** `.joblib` is a convention. joblib writes to any file name.
+- **Local only:** `models/`, `mlflow.db`, and `mlartifacts/` are added to `.gitignore`, so the saved model and run record are never committed. The README's results table is the permanent record.
+
+### Run It
+
+```bash
+python -m src.model.train
+```
+
+Output (the second run printed the same seven lines):
+
+```text
+training: 820 of 1339 correct (61.24%), always-home 53.32%
+validation: 171 of 271 correct (63.10%), always-home 53.87%
+test: 88 of 149 correct (59.06%), always-home 47.65%
+validation log loss 0.6451
+test log loss 0.6815
+saved: models/model.joblib
+MLflow run: LogisticRegression-v1.0
+```

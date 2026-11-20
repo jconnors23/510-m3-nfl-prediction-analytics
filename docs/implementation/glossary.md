@@ -15,6 +15,7 @@ Plain-language meanings of the technical terms used in these docs, grouped by to
 - **CSV:** a plain text table with one row per line and values separated by commas.
 - **Row and column:** a row is one record (here, one game). A column is one named field, such as `home_score`.
 - **Feature:** one input number the model uses to decide. This project has two.
+- **Feature engineering:** building the features from raw columns. Here: turning scores and weeks into each team's win percentage and point margin per game, and then into the two differentials.
 - **Differential:** one team's number minus the other team's. A positive value favors the home team.
 - **`win_pct_differential`:** the home team's win percentage minus the away team's, from earlier weeks of the same season. A team with no games counts as 0.5.
 - **`point_diff_per_game_differential`:** the home team's average point margin per game minus the away team's, from earlier weeks of the same season. A team with no games counts as 0.0.
@@ -28,13 +29,12 @@ Plain-language meanings of the technical terms used in these docs, grouped by to
 - **Classification and regression:** classification predicts a category. Regression predicts a number. They are the two kinds of supervised task.
 - **Binary classification:** classification with exactly two categories. Here: home win or away win.
 - **Probability and threshold:** the model outputs a probability from 0 to 1 for a home win. The threshold is the cutoff that turns it into a pick. Here a probability above 0.5 picks the home team.
-- **Training, validation, and live sets:** training games fit the model (2020 to 2024). Validation games compare model choices and give the reported score (2025). Live games are the 2026 weeks 1 to 10 already played, and they are never used to fit or choose.
+- **Training, validation, and test sets:** training games fit the model (2020 to 2024). Validation games give the reported score (2025). Test games are the 2026 weeks 1 to 10 already played, and they are never used to fit the model.
 - **Chronological split:** splitting by date, so the model trains on the past and is scored on later games.
 - **Baseline:** a simple rule the model must beat. Here: always pick the home team.
 - **Overfitting:** when a model memorizes the training games instead of learning a pattern that carries to new games.
 - **Logistic regression:** a simple classification model. It multiplies each feature by a learned weight, adds an intercept, and turns the sum into a probability. Despite its name, it is a classifier.
 - **Weight and intercept:** a weight says how much one feature moves the prediction. The intercept is the starting value before any feature is added. Here it holds the average home-team edge.
-- **Decision tree and random forest:** a tree predicts by answering a chain of yes or no questions about the features. A random forest is many trees that each vote. It is the second model type that can be compared.
 - **Scaler (standardization):** a step that puts the features on a common scale, by subtracting the training average and dividing by the training spread.
 - **Pipeline:** one object that chains the scaler and the model, so the API cannot forget the scaling.
 - **Parameter and hyperparameter:** a parameter is learned during training, such as a weight. A hyperparameter is a setting chosen before training, such as `C` (regularization strength) or `max_iter`. The settings file holds them.
@@ -46,13 +46,12 @@ Plain-language meanings of the technical terms used in these docs, grouped by to
 
 - **Metric:** any number used to score a model.
 - **Accuracy:** the share of games where the predicted winner matches the real winner. This is the main metric.
-- **Log loss:** a score that checks the probabilities, not just the picks. It punishes confident wrong answers. Lower is better.
-- **ROC-AUC:** how well the model ranks home wins above away wins. 0.5 is random ordering and 1.0 is perfect.
+- **Log loss:** a score that checks whether the model's percentages are honest. High is bad and low is good, like a golf score. Each game gets a penalty that is small when the model gave the real result a high chance and large when it gave that result a low chance, so being confidently wrong costs the most. Lower is better, and saying 50% for every game scores 0.6931.
 - **Confusion matrix:** a small table counting correct and wrong predictions for each real outcome.
 
 ## Tracking and Configuration
 
-- **MLflow:** a tool that records each training run (settings, scores, and files) so runs can be compared. The project stores it in a local SQLite file.
+- **MLflow:** a tool that records each training run (settings, scores, and files) so runs can be compared. The project stores it in a local database file, `mlflow.db`.
 - **Run, experiment, and artifact:** a run is one execution of training. An experiment is a named group of runs. An artifact is a file saved with a run, such as the model, a plot, or a copy of the settings.
 - **`config.yaml`:** the one file that holds every adjustable setting. YAML is a readable text format of indented `name: value` lines.
 - **Reproducibility:** getting the same result again from the same inputs on any machine.
