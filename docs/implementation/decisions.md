@@ -101,23 +101,22 @@ These are planned, in [Remaining Phases](./remaining-phases.md).
 
 ## Design Manifest
 
-**The initial project ideation was done with Gemini. The project is then built with spec-driven development: Kiro writes the spec, and Cursor writes the code.** Each piece of work starts as a written spec, and the code is built to that spec and checked against it. The docs are then written from the finished code, so they describe what exists and not what was planned.
+**The initial project ideation was done with Gemini. The developer sets the requirements and constraints. The project is then built with spec-driven development: Kiro writes the spec, Cursor writes the code, Kiro adds the comments and docs, and the developer reviews and commits.** Each piece of work starts as a written spec, and the code is built to that spec and checked against it. The docs are written from the finished code, so they describe what exists and not what was planned.
 
 ```mermaid
 flowchart LR
-    G["Gemini<br/>initial ideation"] --> A["Developer<br/>sets the task"]
-    A --> B["Kiro<br/>writes the spec"]
-    B --> C["Cursor<br/>implements the code"]
-    C --> D["Cursor<br/>reports deviations"]
-    D --> E["Kiro<br/>reviews and writes docs"]
-    E --> F["Developer<br/>commits"]
+    G["Gemini:<br/>initial ideation"] --> A["Developer:<br/>sets requirements<br/>and constraints"]
+    A --> B["Kiro:<br/>writes the spec"]
+    B --> C["Cursor:<br/>implements the code"]
+    C --> D["Kiro:<br/>reviews, adds<br/>comments and docs"]
+    D --> E["Developer:<br/>reviews and commits"]
 ```
 
-- **Gemini was used for the initial ideation:** the project idea and its starting scope, before any spec or code existed. The developer then took the idea forward as the task for Kiro.
+- **Gemini** produced the initial project ideation: the project idea and its starting scope, before any spec or code existed.
+- **The developer sets the requirements and constraints.** That covers the scope of each phase, key thresholds and choices, and the rules the work must follow, such as what each tool may edit. The developer then reviews every result and runs every git command. Each phase goes in its own branch and pull request.
 - **Kiro writes the spec** in `specs/`. It lists what to build (the exact files, functions, messages, and settings), what must not change, the numbers to match, and when to stop and report.
 - **Cursor implements the code** from the spec: `src/`, `tests/`, and running the commands. It keeps a log of what it did, and ends with a report of anything that differs from the spec, any choice the spec did not cover, and the real numbers beside the expected ones.
-- **Kiro reviews the result** against the spec and the repository, then writes the docs from the finished code. A number in the docs is recomputed from the data or the code before it is stated.
-- **The developer decides scope,** key thresholds and choices, and runs every git command. Each phase goes in its own branch and pull request.
+- **Kiro reviews the result** against the spec and the repository. It then adds comments and docstrings to the finished code, and writes the docs. Adding comments does not change behavior, and this is checked by comparing the structure of the code before and after. A number in the docs is recomputed from the data or the code before it is stated.
 - **Why this split.** A written spec with numbers to match makes the build checkable, and a separate review finds problems the builder would not. Specs are kept in `specs/archive/` once they are done.
 - **A phase gets full pages once it is built,** with a brief and an implementation page. Later phases share one high-level page until they begin.
 - **The original brief and requirements are kept unchanged** in `docs/initial-requirements/`.
