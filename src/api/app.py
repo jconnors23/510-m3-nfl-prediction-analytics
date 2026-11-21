@@ -107,7 +107,7 @@ def create_app(config: dict | None = None) -> FastAPI:
     async def lifespan(app: FastAPI):
         """Load the model when the service starts, so later requests reuse it."""
         # Loading here and not at import time keeps `import src.api.app` fast and file-free, and it
-        # runs once per start (once per cold start on AWS Lambda). The routes read app.state.model.
+        # runs once each time the service starts. The routes read app.state.model.
         app.state.model = load_model(config)
         yield
 
