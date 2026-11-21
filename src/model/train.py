@@ -29,6 +29,11 @@ from src.model.features import (
 def build_pipeline(config: dict):
     """A scaler and a logistic regression, with every setting taken from the config file."""
     logistic = config["model"]["logistic_regression"]
+    # A pipeline runs its steps in order. The scaler first puts both inputs on a common scale
+    # (their raw sizes differ by about 30 times), then the model learns a weight for each one.
+    # Keeping the two in one object means the saved model can never be used without the scaler.
+    # C is the strength of the pull that keeps weights small, solver is the method that finds
+    # them, and max_iter is the most steps that method may take. All come from config.yaml.
     return make_pipeline(
         StandardScaler(),
         LogisticRegression(
@@ -43,7 +48,9 @@ def build_pipeline(config: dict):
 def fit_pipeline(config: dict, training):
     """Fit the scaler and the model on the training games only."""
     pipeline = build_pipeline(config)
+    # fit learns the scaler's averages and spreads and the model's weights from these rows alone.
     # Validation and test games stay out of this call, so their results cannot move the weights.
+    # The answer column is home_win, which is 1 when the home team won.
     pipeline.fit(training[INPUT_COLUMNS], training["home_win"])
     return pipeline
 
@@ -52,6 +59,9 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
     """Write the fitted pipeline beside the facts needed to load it later."""
     output = resolve_path(config["model"]["output_path"])
     output.parent.mkdir(parents=True, exist_ok=True)
+    # The model travels with the facts the API will need to use it safely: the input names in
+    # order, which version it is, and which scikit-learn built it (a model saved by one version
+    # may fail to load, or answer differently, under another).
     bundle = {
         "pipeline": pipeline,
         "feature_names": INPUT_COLUMNS,
@@ -76,10 +86,13 @@ def log_run(config: dict, scores: dict, files: dict) -> str:
     """Record one run's settings, scores, and files, and return the run name."""
     database = resolve_path(config["tracking"]["database_path"])
     artifacts = resolve_path(config["tracking"]["artifact_folder"])
-    # The path already starts with /, so this address has four slashes.
+    # MLflow keeps its records in a local database file. Its address is the database type
+    # ("sqlite://") followed by the full path of the file, which starts with "/", so the
+    # address has four slashes in a row.
     mlflow.set_tracking_uri(f"sqlite:///{database}")
     experiment_name = config["tracking"]["experiment_name"]
-    # The artifact folder is fixed at creation, so a later run must join the same experiment.
+    # An experiment is the named group that holds every run. Where its files are stored can only
+    # be chosen when it is first created, so create it once and let later runs join it.
     if mlflow.get_experiment_by_name(experiment_name) is None:
         artifacts.mkdir(parents=True, exist_ok=True)
         mlflow.create_experiment(experiment_name, artifact_location=artifacts.as_uri())
@@ -142,7 +155,8 @@ def main() -> None:
         scores = {
             name: score_group(pipeline, groups[name]) for name in ("training", "validation", "test")
         }
-        # The image exists only so the run can store it. The temporary folder removes it afterward.
+        # The confusion-matrix image is drawn only so the run can store a copy of it. It goes in a
+        # temporary folder that is deleted afterward, so no image is left in the project.
         with tempfile.TemporaryDirectory() as folder:
             image = Path(folder) / "confusion_matrix_validation.png"
             plot_confusion_matrix(pipeline, groups["validation"], image)

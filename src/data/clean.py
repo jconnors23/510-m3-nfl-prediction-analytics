@@ -44,9 +44,9 @@ def clean_games(
     window = regular.loc[regular["season"].between(start_season, end_season)].copy()
     counts["in_window"] = len(window)
 
-    # Rule 3: cut the unplayed weeks of the last season.
-    # Unplayed weeks of the last season have blank scores. Drop them before the
-    # blank-score check, or that check would stop the step on games that have not been played.
+    # Rule 3: cut the unplayed weeks of the last season (every week after test_through_week).
+    # Those games have blank scores because they have not been played yet. Drop them before the
+    # blank-score check, or that check would stop the step on games that simply have no score yet.
     later = (window["season"] == end_season) & (window["week"] > test_through_week)
     window = window.loc[~later].copy()
     counts["through_completed_weeks"] = len(window)

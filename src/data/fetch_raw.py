@@ -30,6 +30,7 @@ def fetch_raw(url: str, dest) -> int:
     # A failed download must not replace a good file, so write beside it and rename after the checks.
     tmp = dest.with_name(dest.name + ".partial")
     try:
+        # timeout stops the step instead of hanging forever if GitHub does not answer.
         response = requests.get(url, timeout=120)
         # Stops on a 404 or a server error, so an error page is never saved as data.
         response.raise_for_status()

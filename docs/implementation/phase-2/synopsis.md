@@ -26,7 +26,7 @@ Phase 2 turns the cleaned games into two inputs per game, trains the model, and 
 - **Split:** training is 1,339 games, validation is 271, and test is 149. The test games never fit anything. With only 149 of them, their accuracy can move by about 4 points by chance.
 - **Baseline:** always picking the home team scores 53.32% on training, 53.87% on 2025, and 47.65% on the test games. The model must beat this.
 - **One saved object:** the scaler and the model travel together in one pipeline, so the API cannot apply the model without the scaler. The scaler learns its averages from training rows only.
-- **Tracking:** a local database file `mlflow.db`, with run files in `mlartifacts/`. The installed MLflow 3.18.0 refuses the plain `mlruns` folder.
+- **Tracking:** a local database file `mlflow.db`, with run files in `mlartifacts/`.
 - **Logistic regression only.** There is no model comparison. Random forest and XGBoost are left out, which keeps the model simple to explain and the serving image small.
 
 ## Done When

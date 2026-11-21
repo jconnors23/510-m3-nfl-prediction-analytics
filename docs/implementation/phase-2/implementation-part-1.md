@@ -341,27 +341,44 @@ def split_games(table, config):
 Three new blocks sit below the existing `data` and `window` blocks. Those two blocks did not change.
 
 ```yaml
-# Training stops before the validation season. The test season is window.end_season,
-# so that year is not written here a second time.
+# How the games are split by season. Training starts at window.start_season (2020) and stops
+# at train_end_season. The validation season is the finished season after it, and its score is
+# the one to report. The test season is window.end_season, so that year is not written here
+# a second time. The model is fit on the training seasons only.
 split:
   train_end_season: 2024
   validation_season: 2025
 
-# Saved with the model when training runs. The solver itself does not use the seed;
-# the seed is here so a later random step can repeat.
+# The model and how it is saved.
 model:
+  # A label for this trained model. It is saved inside the model file and in the MLflow run.
   version: v1.0
+  # A starting number for any random choice, so a rerun gives the same result. The solver
+  # below does not use randomness, so two fits match either way. The seed is kept so a random
+  # step added later stays repeatable.
   random_seed: 42
+  # Where the trained model is saved.
   output_path: models/model.joblib
+  # Logistic regression: the model gives each input a weight, adds them up, and turns the
+  # total into a chance (0 to 1) that the home team wins.
   logistic_regression:
+    # How strongly the weights are held close to zero, to stop the model from memorizing the
+    # training games. A smaller number holds them tighter. 1.0 is the usual starting point.
     C: 1.0
+    # The method that finds the best weights. "lbfgs" repeatedly nudges the weights to lower
+    # the model's errors until they stop improving. It suits a small table like this one.
     solver: lbfgs
+    # The most nudges the solver may make before it gives up. The solver finishes in about 6
+    # here, so 1000 leaves a wide safety margin.
     max_iter: 1000
 
-# This MLflow version refuses its plain folder store, so the run record goes in a database file.
+# MLflow, the tool that records every training run so runs can be compared later.
 tracking:
+  # The name that groups every run of this project.
   experiment_name: nfl-pregame-winner-v1
+  # The database file where MLflow keeps each run's settings and scores.
   database_path: mlflow.db
+  # The folder where MLflow keeps each run's files (the model, the plot, a copy of this file).
   artifact_folder: mlartifacts
 ```
 
@@ -379,6 +396,8 @@ tracking:
 - **`tracking.database_path`:** the database file that holds the run record (`mlflow.db`).
 - **`tracking.artifact_folder`:** the folder that holds each run's files (`mlartifacts`).
 
-### Why a Database File and Not the Default Folder?
+### Where Does MLflow Keep Its Records?
 
-The installed MLflow (3.18.0) refuses its plain `mlruns` folder and stops with an error that the file-based store is in maintenance mode. A local database file works, and it is MLflow's own default. The only place the database type shows up is the tracking address MLflow requires, which starts with `sqlite:///` followed by the full path of `mlflow.db`.
+- **A database file.** MLflow stores each run's settings and scores in a local database file, `mlflow.db`. It is a single file, it needs no server, and it is not committed to git.
+- **A folder of files.** Each run's files (the model, the plot, and a copy of the settings) go in `mlartifacts/`, in a subfolder for each run.
+- **The tracking address.** The only place the database type shows up is the address MLflow requires, which starts with `sqlite:///` followed by the full path of `mlflow.db`.

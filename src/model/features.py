@@ -7,6 +7,8 @@ import pandas as pd
 
 from src.config import data_file, load_config, split_seasons
 
+# The columns of the model table, in order. The first five only identify the game. The next
+# two are the model's inputs, and home_win is the answer the model learns to predict.
 MODEL_COLUMNS = [
     "game_id",
     "season",
@@ -18,6 +20,8 @@ MODEL_COLUMNS = [
     "home_win",
 ]
 
+# The only two columns the model sees. A positive value means the home team looks stronger.
+# Training, scoring, and saving all use this one list, so the inputs always stay in this order.
 INPUT_COLUMNS = [
     "win_pct_differential",
     "point_diff_per_game_differential",
@@ -26,6 +30,8 @@ INPUT_COLUMNS = [
 
 def load_games(config: dict) -> pd.DataFrame:
     """Read the cleaned table that was downloaded from S3."""
+    # The model always starts from the S3 copy, never from the local cleaned table, so every
+    # run uses the shared version of the data.
     path = data_file(config, "from_s3_path")
     if not path.is_file():
         raise ValueError(
@@ -76,6 +82,7 @@ def standings_before_week(
 
 def build_model_table(games: pd.DataFrame) -> pd.DataFrame:
     """One row per game, with the two pre-game differentials and the home-win answer."""
+    # Every team code that appears, so a team with no games yet still gets a row of standings.
     teams = sorted(set(games["home_team"]) | set(games["away_team"]))
     rows = []
     for (season, week), week_games in games.groupby(["season", "week"], sort=False):
@@ -84,6 +91,8 @@ def build_model_table(games: pd.DataFrame) -> pd.DataFrame:
         for game in week_games.itertuples(index=False):
             home = standings.loc[game.home_team]
             away = standings.loc[game.away_team]
+            # Home minus away, so a positive value means the home team looks stronger.
+            # home_win is the answer to learn. It is the only value that uses this game's score.
             rows.append(
                 {
                     "game_id": game.game_id,
@@ -104,8 +113,11 @@ def build_model_table(games: pd.DataFrame) -> pd.DataFrame:
 
 def check_model_table(table: pd.DataFrame) -> None:
     """Stop if a model input is blank or a week-1 differential is not zero."""
+    # A blank input would make the model fail later, so catch it here with a clear message.
     if table[INPUT_COLUMNS].isna().any().any():
         raise ValueError("a model input is blank")
+    # Before week 1 no team has played, so every team counts as 0.5 and 0.0. If a week-1 value
+    # is anything else, some number used a game it should not have, which would leak the answer.
     week_one = table.loc[table["week"] == 1, INPUT_COLUMNS]
     if (week_one != 0).any().any():
         raise ValueError("a week-1 differential is not 0")
@@ -113,6 +125,8 @@ def check_model_table(table: pd.DataFrame) -> None:
 
 def split_games(table: pd.DataFrame, config: dict) -> dict[str, pd.DataFrame]:
     """Training, validation, and test tables, one season range each."""
+    # Whole seasons go to one group, never single games, so a game is never scored by a model
+    # that trained on games played after it.
     start_season, train_end_season, validation_season, test_season = split_seasons(config)
     groups = {
         "training": table.loc[table["season"].between(start_season, train_end_season)].copy(),
@@ -141,10 +155,12 @@ def main() -> None:
     except ValueError as exc:
         raise SystemExit(str(exc)) from None
 
+    # The home win share is the score of always picking the home team, the baseline to beat.
     for name in ("training", "validation", "test"):
         group = groups[name]
         share = float(group["home_win"].mean())
         print(f"{name}: {len(group)} rows, home win share {share:.2%}")
+    # The smallest and largest value of each input, so an odd range is easy to spot.
     for column in INPUT_COLUMNS:
         print(f"{column}: min {float(table[column].min())}, max {float(table[column].max())}")
     print("week 1 differentials are all 0")

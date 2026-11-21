@@ -24,8 +24,11 @@ def upload(config: dict, client=None) -> None:
         raise ValueError(f"No cleaned table at {path}. Run the clean step first.")
 
     # Tests pass in a fake client. A real run builds one from the machine's AWS credentials.
+    # boto3 is the library that talks to AWS. It finds your credentials by itself (environment
+    # variables or the ~/.aws files), so no key is ever written in this project.
     if client is None:
         client = boto3.client("s3", region_name=config["data"]["aws_region"])
+    # The key is the file's name inside the bucket, like a path inside a folder.
     key = config["data"]["s3_key"]
     client.upload_file(str(path), bucket, key)
     # Ask S3 how big the stored object is. This is the proof the upload finished.

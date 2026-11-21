@@ -339,7 +339,7 @@ This is the second half of `log_run`.
 - **Quiet start-up.** MLflow prints a hint about its tracing helper when it is imported. This project does not use tracing, so `train.py` sets `MLFLOW_DISABLE_AGENT_HINT` before the import and the command prints nothing extra.
 - **No leftovers from tests.** The tests point MLflow at a temporary database and artifact folder, and each test puts the earlier tracking address back afterward, so no test affects the next one or writes into the project.
 - **One hidden warning.** MLflow's own database code uses a SQLAlchemy option that SQLAlchemy plans to remove. `pytest.ini` hides that single warning, because it comes from inside MLflow and not from this project.
-- **Why not the default folder.** See [Why a Database File and Not the Default Folder?](./implementation-part-1.md#why-a-database-file-and-not-the-default-folder).
+- **Where records are kept.** See [Where Does MLflow Keep Its Records?](./implementation-part-1.md#where-does-mlflow-keep-its-records).
 
 To browse the recorded runs, start the MLflow viewer and open the address it prints:
 
