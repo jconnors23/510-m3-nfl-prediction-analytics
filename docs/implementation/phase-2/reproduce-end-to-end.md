@@ -5,7 +5,7 @@ hide:
 
 # Reproducing the Pipeline End to End
 
-This page shows a new reader how to rebuild the Phase 2 model from a fresh copy of the project and check that the result matches the committed one. It is a **draft**.
+This page shows a new reader how to rebuild the Phase 2 model from a fresh copy of the project and check that the result matches the committed one.
 
 **Short answer:** yes. Starting from a clean checkout, one command (`python -m src.model.train`) rebuilds the model, the MLflow records, and `results/run-summary.json`. The summary file came out byte for byte identical to the committed one in a check on the author's machine (details in [What Was Checked?](#what-was-checked)).
 
