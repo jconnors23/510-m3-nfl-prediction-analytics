@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Phase 1 Implementation Details
+# Phase 1 Implementation
 
-This page explains how the Phase 1 data pipeline works, what it creates, and why. For the short version, see the [Synopsis](./synopsis.md).
+This page explains how the Phase 1 data pipeline works, what it creates, and why. For the short version, see the [Brief](./brief.md).
 
 ## How Does the Data Flow?
 
@@ -40,7 +40,7 @@ This is the one place the environment is stated. Other pages refer to it.
 
 ## What Is the Prediction Task?
 
-The assignment asks for "a single supervised learning task: either classification or regression." The choice is made in Phase 1 because it decides which rows are usable and which columns are kept.
+The first design choice is the prediction task: classification or regression. It is made in Phase 1 because it decides which rows are usable and which columns are kept.
 
 - **Supervised learning:** the model learns from past games where the answer is known, then predicts games where it is not.
 - **Classification** predicts one of a fixed set of labels. **Regression** predicts a number on a scale, such as a score margin.
@@ -98,7 +98,7 @@ The script prints the row count after each rule, so a reader can see where every
 
 Rule 3 runs before the missing-score check on purpose. Unplayed games have blank scores, and checking first would stop the step on those 122 rows. After the week cut, a blank score in a game that should have one is a real problem.
 
-The week cut is `window.live_through_week` (10) in `config/config.yaml`, applied to the `window.end_season` season (2026). If nflverse scores week 11 later, the cleaned table does not change until that number is raised.
+The week cut is `window.test_through_week` (10) in `config/config.yaml`, applied to the `window.end_season` season (2026). If nflverse scores week 11 later, the cleaned table does not change until that number is raised.
 
 ### What Stops the Step?
 
@@ -117,22 +117,18 @@ The week cut is `window.live_through_week` (10) in `config/config.yaml`, applied
 - **Values are never edited.** Cleaning only removes rows and columns. Neutral-site games, such as international games, stay in with the home label the schedule gives them.
 - **Size:** 1,759 rows and 63,908 bytes. Rows by season are 255 (2020), 271 (2021), 269 (2022), 272 (2023), 272 (2024), 271 (2025), and 149 (2026, weeks 1 to 10). 2022 has one fewer game than the other full seasons because one game was cancelled.
 
-### How Is Step 2 Tested?
-
-`tests/test_clean.py` uses made-up games with no download. One test checks that a tie, a playoff game, and a 2019 game are each removed while a normal game stays, and that scores come out as whole numbers. The other checks that an unplayed week 11 game with blank scores is removed by the week cut without stopping the step, and that a tie inside the allowed weeks is still removed.
-
 ## Step 3: Upload the Cleaned Table to S3
 
 !!! abstract "Purpose"
     **Goal:** Copy the cleaned table to a private S3 bucket.
 
-    **Why:** The assignment requires the pipeline to read its data from cloud storage, and one shared copy keeps every run on the same data.
+    **Why:** The pipeline reads its data from cloud storage, and one shared copy keeps every run on the same data.
 
     **If skipped:** The pipeline would depend on a file on one laptop.
 
 The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/processed/nfl_matchups_2020_2026.csv`. Both come from `config.yaml`. Only the cleaned table is uploaded.
 
-- **The bucket was created by hand,** in the AWS console, with all four public-access blocks on. No script creates it, because the assignment only asks for an upload and a download script. S3 encrypts new objects with AES-256 by default.
+- **The bucket was created by hand,** in the AWS console, with all four public-access blocks on. No script creates it, because only an upload script and a download script are needed. S3 encrypts new objects with AES-256 by default.
 - `src/data/upload_to_s3.py` uploads the file, then asks S3 for the object's size and compares it with the local file (63,908 bytes). A difference stops the step.
 - A failed AWS call (missing credentials, a wrong bucket name, or no permission) ends the step with boto3's own error message and no traceback.
 
@@ -151,29 +147,20 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 
 - **Code:** `src/config.py` reads `config/config.yaml`, so no script hard-codes a season, path, or bucket. The four steps live in `src/data/`, one file per step, in run order: `fetch_raw.py`, `clean.py`, `upload_to_s3.py`, and `download_from_s3.py`. Later phases add their own folders next to it.
 - **Run commands:** `python -m src.data.fetch_raw`, `python -m src.data.clean`, `python -m src.data.upload_to_s3`, and `python -m src.data.download_from_s3`.
-- **Settings:** `config/config.yaml` has a `data` block (source address, the three file paths, bucket, S3 key, region) and a `window` block (`start_season` 2020, `end_season` 2026, `live_through_week` 10).
+- **Settings:** `config/config.yaml` has a `data` block (source address, the three file paths, bucket, S3 key, region) and a `window` block (`start_season` 2020, `end_season` 2026, `test_through_week` 10).
 - **Other files:** `requirements.txt` (exact versions), `pytest.ini`, and tests in `tests/test_clean.py` and `tests/test_upload.py`.
-- **Local data, not committed:** `data/raw/games.csv` (7,548 rows, 46 columns), `data/processed/nfl_matchups_2020_2026.csv` (1,759 rows, 7 columns), and `data/from-s3/nfl_matchups_2020_2026.csv` (identical to the cleaned table).
+- **Local data files:** `data/raw/games.csv` (7,548 rows, 46 columns), `data/processed/nfl_matchups_2020_2026.csv` (1,759 rows, 7 columns), and `data/from-s3/nfl_matchups_2020_2026.csv` (identical to the cleaned table).
 - **In AWS:** the bucket `510-m3-nfl-dataset` in `us-east-1`. It is private, has all four public-access blocks on, uses AES-256 encryption, and holds one object (63,908 bytes).
 
 ## Which Choices Were Made?
 
-- **Only the cleaned table goes to S3.** The raw file stays on the developer machine, because the assignment only needs the cleaned data in the cloud.
+- **Only the cleaned table goes to S3.** The raw file stays on the developer machine, because only the cleaned data needs to be in the cloud.
 - **Training always starts from the S3 copy.** The download step fetches again and never reuses an earlier local copy.
-- **AWS only.** Turned down: the Google Cloud and Azure options in the assignment brief.
+- **AWS only.** Turned down: Google Cloud and Azure.
 - **Two small S3 scripts:** upload (checks the object size) and download. Each ends with a short message on an AWS error. Turned down: a shared file that sorted AWS errors into named causes. boto3's own messages already say the same thing.
-- **The bucket is created by hand, not by code.** Turned down: a setup script. The requirements do not ask for one, and a script that creates AWS resources adds risk for no benefit.
+- **The bucket is created by hand, not by code.** Turned down: a setup script. A script that creates AWS resources adds risk for no benefit.
 - **Binary classification, not regression.** Turned down: predicting the score margin.
 - **Ties are removed (6 games).** Turned down: labeling a tie as an away win, and counting a tie as half a win.
 - **Playoffs and unplayed games are removed,** and the week cap is a setting, not a code edit.
 - **Dependencies are pinned to exact versions.**
 - **No notebooks.** They repeated what the scripts and these pages say.
-
-## How Is This Phase Checked?
-
-- **Raw file:** 7,548 rows, 46 columns, and the eight columns cleaning reads.
-- **Cleaned table:** 1,759 rows, seasons 2020 to 2026 week 10 only, no tied game, exactly 32 team codes, and 7 columns.
-- **S3 and the local copy:** the S3 object is 63,908 bytes, the same as the cleaned table, and the downloaded copy has the same 1,759 rows.
-- **Tests:** `pytest` passes with made-up data and a fake S3 client, with no AWS calls.
-
-If the source file changes, these counts change.

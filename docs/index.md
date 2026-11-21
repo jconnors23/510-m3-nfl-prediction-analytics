@@ -34,18 +34,18 @@ flowchart LR
 
 Each phase ends with something that runs. Git commits and pull requests are done by the developer.
 
-**[Phase 1: Data Pipeline](./implementation/phase-1/synopsis.md)** (being rebuilt from its docs)
+**[Phase 1: Data Pipeline](./implementation/phase-1/brief.md)** (built)
 
 - Fetch the raw game file and save it unchanged.
 - Clean it: regular season only, 2020 to 2026 week 10, no ties.
 - Upload the cleaned table to a private S3 bucket.
 - Download it back from S3, so later steps start from the cloud copy.
 
-**[Phase 2: Features, Training, and Tracking](./implementation/phase-2/synopsis.md)** (planned)
+**[Phase 2: Features, Training, and Tracking](./implementation/phase-2/brief.md)** (built)
 
-- Build the two inputs and split games by season: train 2020 to 2024, validate 2025, live 2026.
+- Build the two inputs and split games by season: train 2020 to 2024, validate 2025, test 2026.
 - Train the model and score it against the always-pick-home baseline.
-- Record every run in MLflow, compare two model types, and save the winner.
+- Record every run in MLflow and save the trained model.
 
 **[Remaining Phases](./implementation/remaining-phases.md)** (planned)
 
@@ -55,6 +55,7 @@ Each phase ends with something that runs. Git commits and pull requests are done
 
 ## Where Is Everything Else?
 
+- [Requirements Map](./implementation/requirements-map.md): where each finished requirement lives in the repository (files, functions, settings, and commands).
 - [Decisions](./implementation/decisions.md): choices made, why, and the open decisions waiting on the developer.
 - [Glossary](./implementation/glossary.md): plain-language meaning of the terms used here.
 - [Initial Requirements](./initial-requirements/index.md): the assignment brief and the project requirements.

@@ -64,7 +64,7 @@ def test_drops_tie_playoff_and_out_of_window_season():
         ]
     )
 
-    cleaned, counts = clean_games(raw, start_season=2020, end_season=2026, live_through_week=10)
+    cleaned, counts = clean_games(raw, start_season=2020, end_season=2026, test_through_week=10)
 
     # Only the normal game is left.
     assert cleaned["game_id"].tolist() == ["kept"]
@@ -125,7 +125,7 @@ def test_week_cut_drops_unplayed_games_and_ties():
             },
             {
                 # Inside the allowed weeks, but a tie, so it is removed by the tie rule instead.
-                "game_id": "live-tie",
+                "game_id": "test-tie",
                 "season": 2026,
                 "game_type": "REG",
                 "week": 5,
@@ -137,7 +137,7 @@ def test_week_cut_drops_unplayed_games_and_ties():
         ]
     )
 
-    cleaned, counts = clean_games(raw, start_season=2020, end_season=2026, live_through_week=10)
+    cleaned, counts = clean_games(raw, start_season=2020, end_season=2026, test_through_week=10)
 
     assert cleaned["game_id"].tolist() == ["played"]
     assert counts["in_window"] == 3  # all three are regular-season games in the window

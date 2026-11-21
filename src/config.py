@@ -10,6 +10,7 @@ import yaml
 
 
 def project_root() -> Path:
+    """The project folder, found from the location of this file."""
     # This file lives in <project>/src/, so two levels up is the project folder.
     return Path(__file__).resolve().parents[1]
 
@@ -44,5 +45,27 @@ def season_window(config: dict) -> tuple[int, int, int]:
     return (
         int(window["start_season"]),
         int(window["end_season"]),
-        int(window["live_through_week"]),
+        int(window["test_through_week"]),
     )
+
+
+def split_seasons(config: dict) -> tuple[int, int, int, int]:
+    """First training season, last training season, validation season, and test season."""
+    start_season, test_season, _test_week = season_window(config)
+    train_end_season = int(config["split"]["train_end_season"])
+    validation_season = int(config["split"]["validation_season"])
+    # A later season inside training would let the model learn from games played
+    # after the seasons it is scored on.
+    if start_season > train_end_season:
+        raise ValueError(
+            f"first training season {start_season} is after last training season {train_end_season}"
+        )
+    if train_end_season >= validation_season:
+        raise ValueError(
+            f"validation season {validation_season} is not after last training season {train_end_season}"
+        )
+    if validation_season >= test_season:
+        raise ValueError(
+            f"validation season {validation_season} is not before test season {test_season}"
+        )
+    return start_season, train_end_season, validation_season, test_season
