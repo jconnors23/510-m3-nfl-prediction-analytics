@@ -47,10 +47,13 @@ def standings_before_week(
     teams: list[str],
 ) -> pd.DataFrame:
     """One row per team from games played earlier in this season."""
-    # Same-week games are left out, so a result cannot describe itself or the other game that week.
+    # Only this season's games from a smaller week number. Same-week games are left out, so a
+    # result cannot describe itself or the other games played that week. A new season starts
+    # from nothing because the season filter drops every earlier year.
     earlier = games.loc[(games["season"] == season) & (games["week"] < week)]
     rows = []
     for team in teams:
+        # A team's games are split between its home games and its away games.
         home = earlier.loc[earlier["home_team"] == team]
         away = earlier.loc[earlier["away_team"] == team]
         played = len(home) + len(away)
@@ -60,9 +63,12 @@ def standings_before_week(
             win_pct = 0.5
             margin = 0.0
         else:
+            # A home game is a win when the home score is higher. An away game is a win when
+            # the away score is higher. Ties are already gone from the table, so each game is one or the other.
             wins = int((home["home_score"] > home["away_score"]).sum()) + int(
                 (away["away_score"] > away["home_score"]).sum()
             )
+            # Points the team scored and allowed, counted from its own side of each game.
             scored = float(home["home_score"].sum() + away["away_score"].sum())
             allowed = float(home["away_score"].sum() + away["home_score"].sum())
             # Divide by games played, not a season total, because bye weeks leave teams on different game counts.
@@ -85,8 +91,11 @@ def build_model_table(games: pd.DataFrame) -> pd.DataFrame:
     # Every team code that appears, so a team with no games yet still gets a row of standings.
     teams = sorted(set(games["home_team"]) | set(games["away_team"]))
     rows = []
+    # Take the games one (season, week) group at a time, because every game in a week uses the
+    # same standings. sort=False keeps the groups in the order they appear in the table.
     for (season, week), week_games in games.groupby(["season", "week"], sort=False):
-        # Once per week, then reused for every game in that week.
+        # Once per week, then reused for every game in that week. set_index("team") lets each
+        # team's row be looked up by its code below.
         standings = standings_before_week(games, int(season), int(week), teams).set_index("team")
         for game in week_games.itertuples(index=False):
             home = standings.loc[game.home_team]
@@ -108,6 +117,7 @@ def build_model_table(games: pd.DataFrame) -> pd.DataFrame:
                 }
             )
     table = pd.DataFrame(rows, columns=MODEL_COLUMNS)
+    # A fixed order, so the table is the same every run.
     return table.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
 
 
@@ -128,14 +138,19 @@ def split_games(table: pd.DataFrame, config: dict) -> dict[str, pd.DataFrame]:
     # Whole seasons go to one group, never single games, so a game is never scored by a model
     # that trained on games played after it.
     start_season, train_end_season, validation_season, test_season = split_seasons(config)
+    # `between` includes both end seasons, so training covers every season from start to end.
+    # .copy() gives each group its own table, so changing one cannot change the full table.
     groups = {
         "training": table.loc[table["season"].between(start_season, train_end_season)].copy(),
         "validation": table.loc[table["season"] == validation_season].copy(),
         "test": table.loc[table["season"] == test_season].copy(),
     }
+    # An empty group would train or score on nothing, so stop and say which one it is.
     for name, group in groups.items():
         if group.empty:
             raise ValueError(f"{name} has no rows")
+    # Compare the groups by game id: the ids of all three groups together must be exactly the
+    # ids in the table, with none repeated.
     game_ids = [set(group["game_id"]) for group in groups.values()]
     combined = set.union(*game_ids)
     # A season that falls in a gap, or a game id that lands in two groups, would make the sizes disagree.

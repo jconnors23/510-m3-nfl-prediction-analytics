@@ -5,7 +5,7 @@ hide:
 
 # Remaining Phases
 
-Phases 3 to 5 are not started, so this page stays high level. Each phase gets a detailed page and a build spec when it begins. Every requirement named here comes from the [Project Requirements](../initial-requirements/requirements.md).
+Phases 3 to 5 are not started, so this page stays high level. Each phase gets a detailed page when it begins.
 
 ## Phase 3: API and Docker
 
@@ -37,7 +37,7 @@ Build the part a person uses, and finish the repository.
 - **Build the team profiles file** (`python -m src.profiles`), which holds each team's record, win percentage, and point margin per game, so the browser can compute the two inputs.
 - **Host the built files** in a private S3 bucket served over HTTPS through CloudFront.
 - **Write the README** with the project overview, the dataset and its link, the model and its result, the cloud services used, setup and usage steps, and links to the live API and the live web app.
-- **Run a final check** that the repository holds everything the requirements list: code, `config.yaml`, a dependency file, a Dockerfile, MLflow logging, a clear structure, and at least one merged pull request.
+- **Run a final check** that the repository holds code, `config.yaml`, a dependency file, a Dockerfile, MLflow logging, a clear structure, and at least one merged pull request.
 
 ## Open Decisions
 

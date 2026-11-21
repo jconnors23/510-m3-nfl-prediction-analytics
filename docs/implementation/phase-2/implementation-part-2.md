@@ -5,9 +5,9 @@ hide:
 
 # Phase 2 Implementation, Part 2: Steps 4 to 7
 
-This page explains how the last four Phase 2 steps work: fitting the model, scoring it, recording the run in MLflow, and saving the trained model. [Part 1](./implementation-part-1.md) covers the inputs, the split, and the settings. For the short version, see the [Synopsis](./synopsis.md).
+This page explains how the last four Phase 2 steps work: fitting the model, scoring it, recording the run in MLflow, and saving the trained model. [Part 1](./implementation-part-1.md) covers the inputs, the split, and the settings. For the short version, see the [Brief](./brief.md).
 
-**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores, and `pytest` passes 26 tests.
+**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores, and `pytest` passes 30 tests.
 
 ## How Does the Data Flow?
 
@@ -22,11 +22,12 @@ flowchart LR
 
 ### Which Files Were Added?
 
-- `src/model/train.py` holds the command, the fit, the saved file, and the MLflow logging.
+- `src/model/train.py` holds the command, the fit, the saved file, the run summary file, and the MLflow logging.
 - `src/model/evaluate.py` holds the scores and the plot. It has no MLflow code and reads no files.
 - `tests/test_train.py` and `tests/test_evaluate.py` hold the tests. They use made-up data, and every file they write goes in a temporary folder.
 - `requirements.txt` gains `matplotlib==3.11.2` and `joblib==1.6.0`. Both were already installed, because MLflow and scikit-learn bring them in, but the project pins them.
 - `.gitignore` gains `models/`, `mlflow.db`, and `mlartifacts/`.
+- `results/run-summary.json` is a small readable record of the latest run. It is created by training and committed to git.
 
 The command reads the table that Phase 1 downloaded, so run the download step first.
 
@@ -143,7 +144,7 @@ Accuracy is the share of games where the model's pick matches the real result. I
 - **The model beats the baseline in every group:** by 7.9 points on training, 9.2 on validation, and 11.4 on test.
 - **The validation score is the one to report.** It is a finished season the model never saw.
 - **The test score is noisy.** With 149 games, accuracy can move by about 4 points either way by chance. The test baseline is low (47.65%) because home teams won fewer than half of those games.
-- **Accuracy is not graded.** A poor score would still be acceptable, and the score is reported whatever it is.
+- **The score is reported whatever it is,** even if it is poor.
 - **What accuracy cannot see:** a pick of "home team, 51% chance" and a pick of "home team, 90% chance" count the same. Log loss looks at what accuracy ignores.
 
 ### What Is Log Loss?
@@ -200,7 +201,7 @@ Model B is worse because the one game it lost cost a huge penalty. Log loss rewa
 
 - **Accuracy** is the headline: how often the model picks the winner, next to the always-pick-home baseline.
 - **Log loss** supports it: it checks that the probabilities the web app will show are believable.
-- **Both are reported for validation and test, and only accuracy for training.** Neither is graded.
+- **Both are reported for validation and test, and only accuracy for training.**
 
 ### What Does the Confusion Matrix Show?
 
@@ -253,23 +254,25 @@ def plot_confusion_matrix(pipeline, group, path) -> Path:
 !!! abstract "Purpose"
     **Goal:** Save the settings, scores, and files of every training run, so runs can be compared and traced.
 
-    **Why:** The requirements ask for logged parameters, metrics, and artifacts (the saved model and the plot).
+    **Why:** Each run's settings, scores, and files (the saved model and the plot) are recorded, so any run can be compared and traced later.
 
     **If skipped:** There would be no record of which settings produced which scores.
 
 ### How Is MLflow Set Up?
 
-This is the first half of `log_run` in `src/model/train.py`.
+This is the first half of `log_run` in `src/model/train.py`. It also takes the fitted pipeline, which it stores in MLflow's own model format (see below).
 
 ```python
-def log_run(config: dict, scores: dict, files: dict) -> str:
+def log_run(config: dict, scores: dict, files: dict, pipeline) -> str:
     """Record one run's settings, scores, and files, and return the run name."""
     database = resolve_path(config["tracking"]["database_path"])
     artifacts = resolve_path(config["tracking"]["artifact_folder"])
-    # The path already starts with /, so this address has four slashes.
+    # MLflow keeps its records in a local database file. The address is "sqlite://" plus the
+    # full path (which starts with "/"), so it has four slashes in a row.
     mlflow.set_tracking_uri(f"sqlite:///{database}")
     experiment_name = config["tracking"]["experiment_name"]
-    # The artifact folder is fixed at creation, so a later run must join the same experiment.
+    # An experiment is the named group that holds every run. Its file folder can only be set
+    # when it is created, so create it once and let later runs join it.
     if mlflow.get_experiment_by_name(experiment_name) is None:
         artifacts.mkdir(parents=True, exist_ok=True)
         mlflow.create_experiment(experiment_name, artifact_location=artifacts.as_uri())
@@ -288,7 +291,6 @@ This is the second half of `log_run`.
     model = config["model"]
     logistic = model["logistic_regression"]
     run_name = f"LogisticRegression-{model['version']}"
-    # Training log loss is left out. The model is fit by pushing that number down, so it is not a fair check.
     # A run that fails partway is closed by `with` and marked as failed, so it is never left open.
     with mlflow.start_run(run_name=run_name):
         # MLflow keeps every parameter as text. Scores below are numbers, so they can be charted.
@@ -307,32 +309,35 @@ This is the second half of `log_run`.
                 "n_train": scores["training"]["games"],
                 "n_validation": scores["validation"]["games"],
                 "n_test": scores["test"]["games"],
+                "scikit_learn_version": sklearn.__version__,
+                "data_sha256": file_fingerprint(data_file(config, "from_s3_path")),
             }
         )
-        mlflow.log_metrics(
-            {
-                "train_accuracy": scores["training"]["accuracy"],
-                "validation_accuracy": scores["validation"]["accuracy"],
-                "test_accuracy": scores["test"]["accuracy"],
-                "validation_log_loss": scores["validation"]["log_loss"],
-                "test_log_loss": scores["test"]["log_loss"],
-                "baseline_train": scores["training"]["baseline"],
-                "baseline_validation": scores["validation"]["baseline"],
-                "baseline_test": scores["test"]["baseline"],
-            }
-        )
-        # The three files go in folders named model, plots, and config inside the run's artifacts.
+        mlflow.log_metrics({...})  # the 8 scores listed below
         mlflow.log_artifact(str(files["model"]), artifact_path="model")
         mlflow.log_artifact(str(files["plot"]), artifact_path="plots")
         mlflow.log_artifact(str(files["config"]), artifact_path="config")
+        mlflow.sklearn.log_model(pipeline, name=MLFLOW_MODEL_NAME)
     return run_name
 ```
 
 - **Run name:** `LogisticRegression-v1.0`, the model type and the version label.
-- **Settings (parameters), 13 in all:** `model_version`, `random_seed`, `C`, `solver`, `max_iter`, `feature_names`, `train_start_season`, `train_end_season`, `validation_season`, `test_season`, `n_train` (1339), `n_validation` (271), and `n_test` (149).
-- **Scores (metrics), 8 in all, stored as fractions:** `train_accuracy`, `validation_accuracy`, `test_accuracy`, `validation_log_loss`, `test_log_loss`, `baseline_train`, `baseline_validation`, and `baseline_test`.
+- **Settings (parameters), 15 in all:** `model_version`, `random_seed`, `C`, `solver`, `max_iter`, `feature_names`, `train_start_season`, `train_end_season`, `validation_season`, `test_season`, `n_train` (1339), `n_validation` (271), `n_test` (149), `scikit_learn_version` (1.9.1), and `data_sha256`.
+- **`data_sha256`:** a fingerprint of the downloaded table, worked out from every byte of the file by `file_fingerprint`. If one byte of the data changes, the code changes, so two runs with the same fingerprint used the same data. For the current table it is `7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`.
+- **Scores (metrics), 8 in all, stored as fractions:** `train_accuracy`, `validation_accuracy`, `test_accuracy`, `validation_log_loss`, `test_log_loss`, `baseline_train`, `baseline_validation`, and `baseline_test`. Training log loss is left out, because the model is fit by pushing that number down.
 - **Files (artifacts), 3 in all:** `model/model.joblib`, `plots/confusion_matrix_validation.png`, and `config/config.yaml`, a copy of the settings used.
-- **Read back from the real run:** both recorded runs show these 13 parameters, these 8 metrics, and these 3 files, with identical scores.
+- **Logged model, 1:** an MLflow-format copy of the pipeline, named `pipeline-mlflow-format`. See the next section.
+- **Automatic tags:** MLflow also records the git commit, branch, and repository address on every run.
+- **Read back from the real run:** the one recorded run shows 15 parameters, 8 metrics, the 3 files, and 1 logged model.
+
+### Why Is the Model Stored Twice?
+
+Each run keeps the trained pipeline in two forms, for two different readers.
+
+- **`model/model.joblib` is the working copy.** It is a plain file in the run's file list. It is what the API will load, and it carries the input names, the model version, the scikit-learn version, and the training seasons.
+- **The MLflow-format copy** lets MLflow's own screen and loader open the model with one call (`mlflow.sklearn.load_model`). No project code loads it. Only its test does.
+- **Where the MLflow copy lives:** MLflow 3 records it as a separate logged model linked to the run, not in the run's file list. Its files are in `mlartifacts/models/m-<id>/artifacts/`: `MLmodel` (the description), `model.skops` (the model, about 25 KB), `conda.yaml`, `python_env.yaml`, and `requirements.txt` (the packages it needs).
+- **Same model:** both copies come from the same fitted pipeline in the same call, so they cannot disagree. The MLflow copy reloads with identical probabilities.
 
 ### How Is MLflow Kept Tidy?
 
@@ -395,7 +400,92 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
 - **Round trip:** the saved file loads with the six keys above, and a fresh fit gives the same probabilities as the loaded pipeline.
 - **A failed save keeps the old file.** If the write fails, the half-written `.partial` file is removed and the earlier model is left as it was.
 - **The file extension** `.joblib` is a convention. joblib writes to any file name.
-- **Local only:** `models/`, `mlflow.db`, and `mlartifacts/` are added to `.gitignore`, so the saved model and run record are never committed. The README's results table is the permanent record.
+- **Local only:** `models/`, `mlflow.db`, and `mlartifacts/` are in `.gitignore`, so the saved model and the MLflow records are not committed. `results/run-summary.json` is committed, and it is the readable record of the latest run.
+
+### What Is the Run Summary File?
+
+Each training run also writes `results/run-summary.json`, a small readable record of the run. A reader can open it without MLflow and without loading the saved model.
+
+- **What it holds:** the settings, the scikit-learn version, the data file and its fingerprint, the scores for each group, and the values the model learned.
+- **Learned values:** the scaler's averages and spreads, the two weights, and the intercept. They let a reader check a prediction by hand: standardize each input with the average and spread, multiply by its weight, add the intercept, and pass the total through the logistic function.
+- **Committed to git.** The file is overwritten on every run, so it always describes the latest run, and MLflow keeps the full history on your machine.
+- **Stable on purpose.** It has no run ID, no timestamp, no git commit, and no machine paths, because each of those changes on every run or commit. Decimals are rounded to 6 places. A rerun with the same settings and data writes the identical bytes, so the file shows a change in git only when something real changed.
+- **Written safely.** It is written to a `.partial` file and swapped into place, like the model file.
+
+```python
+    # Rounding to six places keeps this file identical when the run itself did not change.
+    text = json.dumps(summary, indent=2) + "\n"
+    output = resolve_path(config["tracking"]["summary_path"])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    partial = output.with_name(output.name + ".partial")
+    try:
+        partial.write_text(text, encoding="utf-8")
+        os.replace(partial, output)
+    except Exception:
+        partial.unlink(missing_ok=True)
+        raise
+```
+
+The file from the real run, 1,174 bytes:
+
+```json
+{
+  "model_version": "v1.0",
+  "model_type": "LogisticRegression",
+  "random_seed": 42,
+  "C": 1.0,
+  "solver": "lbfgs",
+  "max_iter": 1000,
+  "scikit_learn_version": "1.9.1",
+  "inputs": [
+    "win_pct_differential",
+    "point_diff_per_game_differential"
+  ],
+  "train_start_season": 2020,
+  "train_end_season": 2024,
+  "validation_season": 2025,
+  "test_season": 2026,
+  "data_file": "data/from-s3/nfl_matchups_2020_2026.csv",
+  "data_sha256": "7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb",
+  "scores": {
+    "training": {
+      "games": 1339,
+      "correct": 820,
+      "accuracy": 0.612397,
+      "baseline": 0.533234
+    },
+    "validation": {
+      "games": 271,
+      "correct": 171,
+      "accuracy": 0.630996,
+      "baseline": 0.538745,
+      "log_loss": 0.64507
+    },
+    "test": {
+      "games": 149,
+      "correct": 88,
+      "accuracy": 0.590604,
+      "baseline": 0.47651,
+      "log_loss": 0.681518
+    }
+  },
+  "learned": {
+    "scaler_mean": [
+      -0.000438,
+      -0.176192
+    ],
+    "scaler_scale": [
+      0.347597,
+      10.111656
+    ],
+    "weights": [
+      0.213767,
+      0.30814
+    ],
+    "intercept": 0.140264
+  }
+}
+```
 
 ### Run It
 
@@ -403,7 +493,7 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
 python -m src.model.train
 ```
 
-Output (the second run printed the same seven lines):
+Output (the second run printed the same eight lines):
 
 ```text
 training: 820 of 1339 correct (61.24%), always-home 53.32%
@@ -412,5 +502,6 @@ test: 88 of 149 correct (59.06%), always-home 47.65%
 validation log loss 0.6451
 test log loss 0.6815
 saved: models/model.joblib
+summary: results/run-summary.json
 MLflow run: LogisticRegression-v1.0
 ```

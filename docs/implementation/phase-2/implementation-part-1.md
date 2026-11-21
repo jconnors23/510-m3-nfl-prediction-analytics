@@ -5,7 +5,7 @@ hide:
 
 # Phase 2 Implementation, Part 1: Steps 1 to 3
 
-This page explains how the first three Phase 2 steps work: feature engineering (the two model inputs), the split by season, and the new settings. [Part 2](./implementation-part-2.md) covers training, scoring, MLflow, and saving the model. For the short version, see the [Synopsis](./synopsis.md).
+This page explains how the first three Phase 2 steps work: feature engineering (the two model inputs), the split by season, and the new settings. [Part 2](./implementation-part-2.md) covers training, scoring, MLflow, and saving the model. For the short version, see the [Brief](./brief.md).
 
 **Status: built and tested.** The code is in `src/model/features.py`, with the new setting reader in `src/config.py`. Every number below was recomputed from the downloaded table (`data/from-s3/nfl_matchups_2020_2026.csv`, 1,759 rows) with this code, and from a second, independent calculation that matched it row for row.
 
@@ -334,7 +334,7 @@ def split_games(table, config):
 !!! abstract "Purpose"
     **Goal:** Put every new tunable value for Phase 2 into `config/config.yaml`.
 
-    **Why:** The requirements say a changed run means editing the settings file, not the code.
+    **Why:** Changing a run should mean editing the settings file, not the code.
 
     **If skipped:** Seasons, model values, and file names would be written inside the code.
 
@@ -380,6 +380,9 @@ tracking:
   database_path: mlflow.db
   # The folder where MLflow keeps each run's files (the model, the plot, a copy of this file).
   artifact_folder: mlartifacts
+  # A small readable summary of the latest run (settings, data fingerprint, scores, and the
+  # learned weights). It is committed to git. MLflow keeps the full history of runs.
+  summary_path: results/run-summary.json
 ```
 
 ### What Does Each Setting Do?
@@ -395,6 +398,7 @@ tracking:
 - **`tracking.experiment_name`:** the MLflow group that holds every run (`nfl-pregame-winner-v1`).
 - **`tracking.database_path`:** the database file that holds the run record (`mlflow.db`).
 - **`tracking.artifact_folder`:** the folder that holds each run's files (`mlartifacts`).
+- **`tracking.summary_path`:** where each run writes its readable summary (`results/run-summary.json`). See [What Is the Run Summary File?](./implementation-part-2.md#what-is-the-run-summary-file).
 
 ### Where Does MLflow Keep Its Records?
 

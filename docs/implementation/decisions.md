@@ -16,6 +16,14 @@ The project-wide choices, and the choices for phases not built yet, with the rea
 - **Home minus away,** so a positive value favors the home team.
 - **`rank_gap`, `mismatch`, and `record_ahead_by` are removed.** They were display-only columns for the web app and never model inputs.
 
+## Run Records (Decided)
+
+- **Each run also writes `results/run-summary.json`,** a small readable file with the settings, the data fingerprint, the scores, and the learned weights. It is committed to git, so a reader can check the numbers without MLflow or the saved model.
+- **The summary has no run ID, timestamp, git commit, or machine paths.** Each of those changes on every run or commit, so the file would show a change in git when nothing real changed. MLflow keeps the commit for each run.
+- **Two parameters were added to every run:** the scikit-learn version and a fingerprint of the data file, so a run can be traced to the exact library and data it used.
+- **The model is stored twice in each run, on purpose.** The plain `model.joblib` is the working copy the API will load, and it carries the input names, version, and training seasons. The MLflow-format copy lets MLflow's own screen and loader open the model. MLflow's format alone was not enough: in MLflow 3 it is not in the run's file list, and it does not carry those facts.
+- **The MLflow records stay local.** `mlflow.db`, `mlartifacts/`, and `models/` are not committed. The database is a binary file that changes on every run, it records the artifact folder as a full path on one machine, and one command recreates all three with identical scores.
+
 ## Phase Boundaries (Decided)
 
 - **Phase 1 is fetch, clean, upload, and download from S3.** It has no feature or front-end work.
@@ -33,16 +41,16 @@ Each shows the proposed answer first.
 
 ## Model and API (Planned)
 
-- **Logistic regression only,** with no model comparison. Turned down: a random forest as a second candidate, and XGBoost. The requirements ask for one simple model, the two inputs are simple, and an earlier test had the forest and logistic regression within a game or two of each other. Fixing the model type means the 2025 validation season is used only to report the score, so it is never used to choose between models.
+- **Logistic regression only,** with no model comparison. Turned down: a random forest as a second candidate, and XGBoost. One simple model is enough, the two inputs are simple, and an earlier test had the forest and logistic regression within a game or two of each other. Fixing the model type means the 2025 validation season is used only to report the score, so it is never used to choose between models.
 - **A standardizing step is kept** and saved with the model as one pipeline, so the API cannot skip it. The two inputs are on different scales: win percentage differences run from -1 to 1 and point margin differences run about -49 to 39.
-- **MLflow tracks each run.** The run record stays local and is not committed. The README's results table is the permanent record.
+- **MLflow tracks each run.** See [Run Records](#run-records-decided).
 - **The API takes two decimal numbers** (the win percentage difference and the point margin per game difference), rejects unknown fields, and returns `prediction`, `predicted_label`, `home_win_probability`, and `model_version`. A `GET /health` route is an extra.
 - **One Dockerfile with two targets,** `train` and `serve`. The model file is copied in at build time. It is not committed to git and is not downloaded at start-up.
 - **A smaller dependency list for serving,** so the image starts faster after idle time.
 
 ## Cloud and Front-End (Planned)
 
-- **AWS only:** S3, ECR, Lambda behind an API Gateway HTTP API, and CloudFront. Turned down: the Google Cloud and Azure options in the assignment brief.
+- **AWS only:** S3, ECR, Lambda behind an API Gateway HTTP API, and CloudFront. Turned down: Google Cloud and Azure.
 - **One region, `us-east-1`,** because the data bucket is already there. Decided.
 - **Lambda runs an `arm64` image,** to match the images this Mac builds.
 - **CORS is set on the gateway only,** with the CloudFront address and the local Vite address allowed.
@@ -54,9 +62,8 @@ Each shows the proposed answer first.
 ## Documentation and Process
 
 - **MkDocs with the Material theme** and no right-hand contents list. The theme is light, with sky blue as the main color.
-- **The assignment brief and the project requirements are kept unchanged** in `docs/initial-requirements/`. They are the only two reference documents. The first design draft and the gap list were removed.
-- **A phase gets full pages only once it is built.** Phases 1 and 2 have a synopsis (Phase 1 also has an implementation page). Phases 3 to 5 share one high-level page.
-- **Each synopsis copies its requirements word for word** from the Project Requirements, next to what the phase does.
+- **The brief and the requirements pages are kept unchanged** in `docs/initial-requirements/`. They are the only two reference documents. The first design draft and the gap list were removed.
+- **A phase gets full pages only once it is built.** Phases 1 and 2 have a brief (Phase 1 also has an implementation page). Phases 3 to 5 share one high-level page.
 - **Each implementation step has a purpose block** (Goal, Why, If skipped).
 - **Cursor builds the code from a written spec, and the docs are written from the finished code.** Kiro writes a spec in `specs/` with what to build and the numbers to match, Cursor builds it and ends with a deviations report, and the developer, Kiro, and the report are reviewed together before the next spec.
 - **Git is run by the developer only.** Phases 1 and 2 go in one branch and one pull request, and the developer names the branch.

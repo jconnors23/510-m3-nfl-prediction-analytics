@@ -8,6 +8,7 @@ import pytest
 
 from src.model.features import build_model_table, check_model_table
 
+# The two model inputs, so the tests can pick them out of the model table.
 INPUTS = ["win_pct_differential", "point_diff_per_game_differential"]
 
 

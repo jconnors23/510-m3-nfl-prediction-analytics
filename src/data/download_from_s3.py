@@ -21,8 +21,8 @@ def download(config: dict, client=None) -> None:
     # A failed download must not replace a good copy, so write beside it and rename after it finishes.
     tmp = dest.with_name(dest.name + ".partial")
     # Tests pass in a fake client. A real run builds one from the machine's AWS credentials.
-    # boto3 is the library that talks to AWS. It finds your credentials by itself (environment
-    # variables or the ~/.aws files), so no key is ever written in this project.
+    # boto3 finds your AWS credentials itself (environment variables or ~/.aws), so no key is
+    # ever written in this project.
     if client is None:
         client = boto3.client("s3", region_name=config["data"]["aws_region"])
     try:

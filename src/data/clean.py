@@ -37,10 +37,13 @@ def clean_games(
     # Rule 1: regular season only. Playoff games are played under different conditions, and
     # they give some teams extra games, so they stay out of every team's record.
     # .copy() gives us our own table, so later edits cannot touch the raw one.
+    # game_type "REG" is the regular season. The other values are the playoff rounds: WC (wild
+    # card), DIV (divisional), CON (conference championship), and SB (Super Bowl).
     regular = raw.loc[raw["game_type"] == "REG"].copy()
     counts["regular_season"] = len(regular)
 
-    # Rule 2: keep only the seasons in the project window (2020 through 2026).
+    # Rule 2: keep only the seasons in the project window (2020 through 2026). `between` includes
+    # both end seasons.
     window = regular.loc[regular["season"].between(start_season, end_season)].copy()
     counts["in_window"] = len(window)
 
@@ -61,7 +64,8 @@ def clean_games(
             f" (first ids: {sample})"
         )
 
-    # Rule 4: remove tied games. A tie has no winner, so it cannot be labeled a home win or an away win.
+    # Rule 4: remove tied games. A tie has no winner, so it cannot be labeled a home win or an
+    # away win. Equal scores mean a tie, so only games where the two scores differ are kept.
     decided = window.loc[window["home_score"] != window["away_score"]].copy()
     counts["no_ties"] = len(decided)
 
@@ -120,8 +124,11 @@ def main() -> None:
         if raw.empty:
             raise ValueError(f"Raw file at {config['data']['raw_path']} is empty. Run the fetch step first.")
         cleaned, counts = clean_games(raw, start_season, end_season, test_through_week)
+        # Stop before saving if the table does not hold exactly 32 teams, so a bad table is never written.
         require_current_teams(cleaned)
         dest = data_file(config, "processed_path")
+        # Create the data/processed folder on the first run. index=False keeps the row numbers
+        # out of the file, so it holds only the 7 kept columns.
         dest.parent.mkdir(parents=True, exist_ok=True)
         cleaned.to_csv(dest, index=False)
     except (ValueError, FileNotFoundError, pd.errors.EmptyDataError) as exc:

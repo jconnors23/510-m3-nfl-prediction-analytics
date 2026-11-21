@@ -1,0 +1,56 @@
+{
+  "model_version": "v1.0",
+  "model_type": "LogisticRegression",
+  "random_seed": 42,
+  "C": 1.0,
+  "solver": "lbfgs",
+  "max_iter": 1000,
+  "scikit_learn_version": "1.9.1",
+  "inputs": [
+    "win_pct_differential",
+    "point_diff_per_game_differential"
+  ],
+  "train_start_season": 2020,
+  "train_end_season": 2024,
+  "validation_season": 2025,
+  "test_season": 2026,
+  "data_file": "data/from-s3/nfl_matchups_2020_2026.csv",
+  "data_sha256": "7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb",
+  "scores": {
+    "training": {
+      "games": 1339,
+      "correct": 820,
+      "accuracy": 0.612397,
+      "baseline": 0.533234
+    },
+    "validation": {
+      "games": 271,
+      "correct": 171,
+      "accuracy": 0.630996,
+      "baseline": 0.538745,
+      "log_loss": 0.64507
+    },
+    "test": {
+      "games": 149,
+      "correct": 88,
+      "accuracy": 0.590604,
+      "baseline": 0.47651,
+      "log_loss": 0.681518
+    }
+  },
+  "learned": {
+    "scaler_mean": [
+      -0.000438,
+      -0.176192
+    ],
+    "scaler_scale": [
+      0.347597,
+      10.111656
+    ],
+    "weights": [
+      0.213767,
+      0.30814
+    ],
+    "intercept": 0.140264
+  }
+}

@@ -5,7 +5,7 @@ hide:
 
 # Phase 1 Implementation
 
-This page explains how the Phase 1 data pipeline works, what it creates, and why. For the short version, see the [Synopsis](./synopsis.md).
+This page explains how the Phase 1 data pipeline works, what it creates, and why. For the short version, see the [Brief](./brief.md).
 
 ## How Does the Data Flow?
 
@@ -40,7 +40,7 @@ This is the one place the environment is stated. Other pages refer to it.
 
 ## What Is the Prediction Task?
 
-The assignment asks for "a single supervised learning task: either classification or regression." The choice is made in Phase 1 because it decides which rows are usable and which columns are kept.
+The first design choice is the prediction task: classification or regression. It is made in Phase 1 because it decides which rows are usable and which columns are kept.
 
 - **Supervised learning:** the model learns from past games where the answer is known, then predicts games where it is not.
 - **Classification** predicts one of a fixed set of labels. **Regression** predicts a number on a scale, such as a score margin.
@@ -122,13 +122,13 @@ The week cut is `window.test_through_week` (10) in `config/config.yaml`, applied
 !!! abstract "Purpose"
     **Goal:** Copy the cleaned table to a private S3 bucket.
 
-    **Why:** The assignment requires the pipeline to read its data from cloud storage, and one shared copy keeps every run on the same data.
+    **Why:** The pipeline reads its data from cloud storage, and one shared copy keeps every run on the same data.
 
     **If skipped:** The pipeline would depend on a file on one laptop.
 
 The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/processed/nfl_matchups_2020_2026.csv`. Both come from `config.yaml`. Only the cleaned table is uploaded.
 
-- **The bucket was created by hand,** in the AWS console, with all four public-access blocks on. No script creates it, because the assignment only asks for an upload and a download script. S3 encrypts new objects with AES-256 by default.
+- **The bucket was created by hand,** in the AWS console, with all four public-access blocks on. No script creates it, because only an upload script and a download script are needed. S3 encrypts new objects with AES-256 by default.
 - `src/data/upload_to_s3.py` uploads the file, then asks S3 for the object's size and compares it with the local file (63,908 bytes). A difference stops the step.
 - A failed AWS call (missing credentials, a wrong bucket name, or no permission) ends the step with boto3's own error message and no traceback.
 
@@ -154,11 +154,11 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 
 ## Which Choices Were Made?
 
-- **Only the cleaned table goes to S3.** The raw file stays on the developer machine, because the assignment only needs the cleaned data in the cloud.
+- **Only the cleaned table goes to S3.** The raw file stays on the developer machine, because only the cleaned data needs to be in the cloud.
 - **Training always starts from the S3 copy.** The download step fetches again and never reuses an earlier local copy.
-- **AWS only.** Turned down: the Google Cloud and Azure options in the assignment brief.
+- **AWS only.** Turned down: Google Cloud and Azure.
 - **Two small S3 scripts:** upload (checks the object size) and download. Each ends with a short message on an AWS error. Turned down: a shared file that sorted AWS errors into named causes. boto3's own messages already say the same thing.
-- **The bucket is created by hand, not by code.** Turned down: a setup script. The requirements do not ask for one, and a script that creates AWS resources adds risk for no benefit.
+- **The bucket is created by hand, not by code.** Turned down: a setup script. A script that creates AWS resources adds risk for no benefit.
 - **Binary classification, not regression.** Turned down: predicting the score margin.
 - **Ties are removed (6 games).** Turned down: labeling a tie as an away win, and counting a tie as half a win.
 - **Playoffs and unplayed games are removed,** and the week cap is a setting, not a code edit.

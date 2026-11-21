@@ -1,5 +1,7 @@
 """Fit the model on the training seasons, score it, record the run, and save the file."""
 
+import hashlib
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -10,12 +12,13 @@ import joblib
 # not use tracing, so the hint is switched off here, before the import.
 os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
 import mlflow  # noqa: E402
+import mlflow.sklearn  # noqa: E402
 import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from src.config import load_config, project_root, resolve_path, split_seasons
+from src.config import data_file, load_config, project_root, resolve_path, split_seasons
 from src.model.evaluate import plot_confusion_matrix, score_group
 from src.model.features import (
     INPUT_COLUMNS,
@@ -25,15 +28,29 @@ from src.model.features import (
     split_games,
 )
 
+# The name MLflow uses for its own copy of the pipeline. Project code does not load this copy.
+MLFLOW_MODEL_NAME = "pipeline-mlflow-format"
+
+
+def file_fingerprint(path) -> str:
+    """SHA-256 of a file, so two runs can be checked against the same data."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        digest.update(handle.read())
+    return digest.hexdigest()
+
+
+def _rounded(value):
+    """Six decimal places, so a rerun writes the same digits."""
+    return round(float(value), 6)
+
 
 def build_pipeline(config: dict):
     """A scaler and a logistic regression, with every setting taken from the config file."""
     logistic = config["model"]["logistic_regression"]
-    # A pipeline runs its steps in order. The scaler first puts both inputs on a common scale
-    # (their raw sizes differ by about 30 times), then the model learns a weight for each one.
-    # Keeping the two in one object means the saved model can never be used without the scaler.
-    # C is the strength of the pull that keeps weights small, solver is the method that finds
-    # them, and max_iter is the most steps that method may take. All come from config.yaml.
+    # The scaler puts both inputs on a common scale (their raw sizes differ about 30 times),
+    # then the model learns a weight for each. Keeping them in one pipeline means the saved
+    # model can never be used without the scaler. All settings come from config.yaml.
     return make_pipeline(
         StandardScaler(),
         LogisticRegression(
@@ -74,7 +91,76 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
     # cannot leave a half-written model in place of a good one.
     partial = output.with_name(output.name + ".partial")
     try:
+        # joblib.dump writes a Python object to a file, and is the usual way to save a scikit-learn model.
         joblib.dump(bundle, partial)
+        # os.replace swaps the finished file into place in one step, replacing any older model.
+        os.replace(partial, output)
+    except Exception:
+        # Whatever went wrong, remove the half-written file and pass the error on.
+        partial.unlink(missing_ok=True)
+        raise
+    return output
+
+
+def write_run_summary(config: dict, scores: dict, pipeline) -> Path:
+    """Write a small readable summary of the latest run, so the scores can be read without MLflow."""
+    start_season, train_end_season, validation_season, test_season = split_seasons(config)
+    model = config["model"]
+    logistic = model["logistic_regression"]
+    estimator = pipeline.named_steps["logisticregression"]
+    scaler = pipeline.named_steps["standardscaler"]
+    downloaded = data_file(config, "from_s3_path")
+    summary = {
+        "model_version": model["version"],
+        "model_type": type(estimator).__name__,
+        "random_seed": int(model["random_seed"]),
+        "C": _rounded(logistic["C"]),
+        "solver": logistic["solver"],
+        "max_iter": int(logistic["max_iter"]),
+        "scikit_learn_version": sklearn.__version__,
+        "inputs": list(INPUT_COLUMNS),
+        "train_start_season": int(start_season),
+        "train_end_season": int(train_end_season),
+        "validation_season": int(validation_season),
+        "test_season": int(test_season),
+        "data_file": config["data"]["from_s3_path"],
+        "data_sha256": file_fingerprint(downloaded),
+        "scores": {
+            "training": {
+                "games": int(scores["training"]["games"]),
+                "correct": int(scores["training"]["correct"]),
+                "accuracy": _rounded(scores["training"]["accuracy"]),
+                "baseline": _rounded(scores["training"]["baseline"]),
+            },
+            "validation": {
+                "games": int(scores["validation"]["games"]),
+                "correct": int(scores["validation"]["correct"]),
+                "accuracy": _rounded(scores["validation"]["accuracy"]),
+                "baseline": _rounded(scores["validation"]["baseline"]),
+                "log_loss": _rounded(scores["validation"]["log_loss"]),
+            },
+            "test": {
+                "games": int(scores["test"]["games"]),
+                "correct": int(scores["test"]["correct"]),
+                "accuracy": _rounded(scores["test"]["accuracy"]),
+                "baseline": _rounded(scores["test"]["baseline"]),
+                "log_loss": _rounded(scores["test"]["log_loss"]),
+            },
+        },
+        "learned": {
+            "scaler_mean": [_rounded(value) for value in scaler.mean_],
+            "scaler_scale": [_rounded(value) for value in scaler.scale_],
+            "weights": [_rounded(value) for value in estimator.coef_[0]],
+            "intercept": _rounded(estimator.intercept_[0]),
+        },
+    }
+    # Rounding to six places keeps this file identical when the run itself did not change.
+    text = json.dumps(summary, indent=2) + "\n"
+    output = resolve_path(config["tracking"]["summary_path"])
+    output.parent.mkdir(parents=True, exist_ok=True)
+    partial = output.with_name(output.name + ".partial")
+    try:
+        partial.write_text(text, encoding="utf-8")
         os.replace(partial, output)
     except Exception:
         partial.unlink(missing_ok=True)
@@ -82,17 +168,16 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
     return output
 
 
-def log_run(config: dict, scores: dict, files: dict) -> str:
+def log_run(config: dict, scores: dict, files: dict, pipeline) -> str:
     """Record one run's settings, scores, and files, and return the run name."""
     database = resolve_path(config["tracking"]["database_path"])
     artifacts = resolve_path(config["tracking"]["artifact_folder"])
-    # MLflow keeps its records in a local database file. Its address is the database type
-    # ("sqlite://") followed by the full path of the file, which starts with "/", so the
-    # address has four slashes in a row.
+    # MLflow keeps its records in a local database file. The address is "sqlite://" plus the
+    # full path (which starts with "/"), so it has four slashes in a row.
     mlflow.set_tracking_uri(f"sqlite:///{database}")
     experiment_name = config["tracking"]["experiment_name"]
-    # An experiment is the named group that holds every run. Where its files are stored can only
-    # be chosen when it is first created, so create it once and let later runs join it.
+    # An experiment is the named group that holds every run. Its file folder can only be set
+    # when it is created, so create it once and let later runs join it.
     if mlflow.get_experiment_by_name(experiment_name) is None:
         artifacts.mkdir(parents=True, exist_ok=True)
         mlflow.create_experiment(experiment_name, artifact_location=artifacts.as_uri())
@@ -121,8 +206,12 @@ def log_run(config: dict, scores: dict, files: dict) -> str:
                 "n_train": scores["training"]["games"],
                 "n_validation": scores["validation"]["games"],
                 "n_test": scores["test"]["games"],
+                "scikit_learn_version": sklearn.__version__,
+                "data_sha256": file_fingerprint(data_file(config, "from_s3_path")),
             }
         )
+        # Scores are stored as fractions between 0 and 1 (0.631 means 63.1%). The baseline is the
+        # accuracy of always picking the home team, saved beside each accuracy to compare against.
         mlflow.log_metrics(
             {
                 "train_accuracy": scores["training"]["accuracy"],
@@ -139,6 +228,11 @@ def log_run(config: dict, scores: dict, files: dict) -> str:
         mlflow.log_artifact(str(files["model"]), artifact_path="model")
         mlflow.log_artifact(str(files["plot"]), artifact_path="plots")
         mlflow.log_artifact(str(files["config"]), artifact_path="config")
+        # model/model.joblib is the working copy. It is what the API will load, and it carries
+        # the input names, the version, the scikit-learn version, and the training seasons.
+        # The MLflow-format copy exists so MLflow's screen and loader can open the model.
+        # No project code loads it. Only its test does.
+        mlflow.sklearn.log_model(pipeline, name=MLFLOW_MODEL_NAME)
     return run_name
 
 
@@ -163,6 +257,7 @@ def main() -> None:
             start_season, train_end_season, _, _ = split_seasons(config)
             # The model file is saved before logging, because the run stores a copy of it.
             save_model(pipeline, config, start_season, train_end_season)
+            write_run_summary(config, scores, pipeline)
             run_name = log_run(
                 config,
                 scores,
@@ -171,20 +266,25 @@ def main() -> None:
                     "plot": image,
                     "config": project_root() / "config" / "config.yaml",
                 },
+                pipeline,
             )
     except (ValueError, FileNotFoundError) as exc:
         # Expected problems (no downloaded table, a failed check) end with a short message.
         raise SystemExit(str(exc)) from None
 
+    # One line per group: how many picks were right, and the always-pick-home score beside it.
     for name in ("training", "validation", "test"):
         score = scores[name]
         print(
             f"{name}: {score['correct']} of {score['games']} correct "
             f"({score['accuracy']:.2%}), always-home {score['baseline']:.2%}"
         )
+    # Log loss is shown only for games the model did not train on. Lower is better, and 0.6931
+    # is the score of saying 50-50 on every game.
     print(f"validation log loss {scores['validation']['log_loss']:.4f}")
     print(f"test log loss {scores['test']['log_loss']:.4f}")
     print(f"saved: {config['model']['output_path']}")
+    print(f"summary: {config['tracking']['summary_path']}")
     print(f"MLflow run: {run_name}")
 
 

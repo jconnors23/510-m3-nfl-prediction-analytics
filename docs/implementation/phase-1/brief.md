@@ -3,11 +3,11 @@ hide:
   - toc
 ---
 
-# Phase 1 Synopsis: Data Pipeline
+# Phase 1 Brief: Data Pipeline
 
 **Status: Built and tested.** Steps 1 to 4 are done, and the 3 tests pass. The numbers below are the ones the code produces.
 
-Phase 1 gets the data into the cloud and back. It downloads a public file of NFL game results, cleans it, keeps the cleaned copy in Amazon S3, and downloads that copy so every later step starts from the S3 version. It builds no features and trains nothing. Those start in [Phase 2](../phase-2/synopsis.md).
+Phase 1 gets the data into the cloud and back. It downloads a public file of NFL game results, cleans it, keeps the cleaned copy in Amazon S3, and downloads that copy so every later step starts from the S3 version. It builds no features and trains nothing. Those start in [Phase 2](../phase-2/brief.md).
 
 ## Steps in Order
 

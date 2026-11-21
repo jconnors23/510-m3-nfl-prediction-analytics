@@ -31,6 +31,7 @@ def _table() -> pd.DataFrame:
 def test_rows_go_to_the_season_group():
     """2022 and 2023 train, 2024 validates, and 2025 is test."""
     groups = split_games(_table(), _settings())
+    # Training takes every season from the first one to the last training season, inclusive.
     assert set(groups["training"]["season"]) == {2022, 2023}
     assert set(groups["validation"]["season"]) == {2024}
     assert set(groups["test"]["season"]) == {2025}
@@ -43,13 +44,16 @@ def test_every_game_is_in_one_group():
     game_ids = []
     for group in groups.values():
         game_ids.extend(group["game_id"])
+    # Nothing lost: the groups together hold as many games as the table.
     assert len(game_ids) == len(table)
+    # Nothing repeated: no game id appears in two groups.
     assert len(game_ids) == len(set(game_ids))
 
 
 def test_empty_validation_group_names_validation():
     """Dropping the validation season makes the error name that group."""
     table = _table().loc[_table()["season"] != 2024]
+    # The error message must say which group is empty, so the fix is obvious.
     with pytest.raises(ValueError, match="validation"):
         split_games(table, _settings())
 
@@ -59,6 +63,7 @@ def test_validation_must_follow_the_last_training_season():
     settings = _settings()
     settings["split"]["train_end_season"] = 2024
     settings["split"]["validation_season"] = 2024
+    # Training would include the validation season, so the model would be scored on games it learned from.
     with pytest.raises(ValueError):
         split_seasons(settings)
 

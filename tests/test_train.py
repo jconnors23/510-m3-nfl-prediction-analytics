@@ -3,21 +3,34 @@
 The games are random but fixed, and every file goes under the test's temporary folder.
 """
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
 import joblib
 import mlflow
+import mlflow.sklearn
 import numpy as np
 import pandas as pd
 import pytest
+import sklearn
 from mlflow.tracking import MlflowClient
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
+from src.model.evaluate import score_group
 from src.model.features import INPUT_COLUMNS
-from src.model.train import build_pipeline, fit_pipeline, log_run, save_model
+from src.model.train import (
+    build_pipeline,
+    file_fingerprint,
+    fit_pipeline,
+    log_run,
+    save_model,
+    write_run_summary,
+)
 
+# The exact names a run must record. Phase 3 and the README read these names, so a rename or a
+# missing entry should fail a test instead of passing unnoticed.
 PARAMETER_NAMES = {
     "model_version",
     "random_seed",
@@ -32,8 +45,12 @@ PARAMETER_NAMES = {
     "n_train",
     "n_validation",
     "n_test",
+    "scikit_learn_version",
+    "data_sha256",
 }
 
+# Scores stored as fractions. There is no training log loss on purpose: the model is fit by
+# pushing that number down, so it would not be a fair check.
 METRIC_NAMES = {
     "train_accuracy",
     "validation_accuracy",
@@ -45,6 +62,7 @@ METRIC_NAMES = {
     "baseline_test",
 }
 
+# The three files stored with each run, as paths inside the run's artifacts.
 ARTIFACT_NAMES = {
     "model/model.joblib",
     "plots/confusion_matrix_validation.png",
@@ -62,6 +80,7 @@ def _restore_tracking_address():
 
 def _games() -> pd.DataFrame:
     """About 60 rows whose home-win label depends a little on the two inputs."""
+    # A generator with a fixed starting number, so every test run builds the same 60 rows.
     generator = np.random.default_rng(0)
     count = 60
     win_pct = generator.normal(0, 0.3, count)
@@ -79,6 +98,7 @@ def _games() -> pd.DataFrame:
 def _settings(tmp_path: Path) -> dict:
     """Settings shaped like the config file, with every output inside the temporary folder."""
     return {
+        "data": {"from_s3_path": str(tmp_path / "games.csv")},
         "window": {"start_season": 2020, "end_season": 2026, "test_through_week": 10},
         "split": {"train_end_season": 2024, "validation_season": 2025},
         "model": {
@@ -91,8 +111,16 @@ def _settings(tmp_path: Path) -> dict:
             "experiment_name": "nfl-pregame-winner-v1",
             "database_path": str(tmp_path / "mlflow.db"),
             "artifact_folder": str(tmp_path / "mlartifacts"),
+            "summary_path": str(tmp_path / "results" / "run-summary.json"),
         },
     }
+
+
+def _write_data_file(settings: dict) -> Path:
+    """A stand-in for the downloaded table, so a test can fingerprint a real file."""
+    path = Path(settings["data"]["from_s3_path"])
+    path.write_bytes(b"abc")
+    return path
 
 
 def _scores() -> dict:
@@ -209,10 +237,21 @@ def test_failed_save_keeps_the_old_file(tmp_path):
     assert not path.with_name(path.name + ".partial").exists()
 
 
+def test_file_fingerprint(tmp_path):
+    """The fingerprint of the bytes abc is the known SHA-256, and one changed byte differs."""
+    path = tmp_path / "sample.txt"
+    path.write_bytes(b"abc")
+    assert file_fingerprint(path) == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    path.write_bytes(b"abd")
+    assert file_fingerprint(path) != "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+
+
 def test_mlflow_logs_the_run(tmp_path):
     """One run stores the run name, every parameter, every score, and the three files."""
     settings = _settings(tmp_path)
-    run_name = log_run(settings, _scores(), _run_files(tmp_path))
+    data_path = _write_data_file(settings)
+    pipeline = fit_pipeline(settings, _games())
+    run_name = log_run(settings, _scores(), _run_files(tmp_path), pipeline)
     experiment = mlflow.get_experiment_by_name(settings["tracking"]["experiment_name"])
     runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id])
     assert len(runs) == 1
@@ -222,6 +261,8 @@ def test_mlflow_logs_the_run(tmp_path):
     client = MlflowClient()
     recorded = client.get_run(run_id)
     assert set(recorded.data.params) == PARAMETER_NAMES
+    assert recorded.data.params["scikit_learn_version"] == sklearn.__version__
+    assert recorded.data.params["data_sha256"] == file_fingerprint(data_path)
     assert set(recorded.data.metrics) == METRIC_NAMES
     assert "validation_roc_auc" not in recorded.data.metrics
     assert "train_log_loss" not in recorded.data.metrics
@@ -235,9 +276,91 @@ def test_mlflow_logs_the_run(tmp_path):
 def test_second_run_joins_the_same_experiment(tmp_path):
     """Logging again adds a second run to the same experiment."""
     settings = _settings(tmp_path)
+    _write_data_file(settings)
     files = _run_files(tmp_path)
-    log_run(settings, _scores(), files)
-    log_run(settings, _scores(), files)
+    pipeline = fit_pipeline(settings, _games())
+    log_run(settings, _scores(), files, pipeline)
+    log_run(settings, _scores(), files, pipeline)
     experiment = mlflow.get_experiment_by_name(settings["tracking"]["experiment_name"])
     runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id])
     assert len(runs) == 2
+
+
+def _summary_scores(pipeline, games: pd.DataFrame) -> dict:
+    """Scores for three slices of the made-up table."""
+    groups = {
+        "training": games.iloc[:40],
+        "validation": games.iloc[40:52],
+        "test": games.iloc[52:],
+    }
+    return {name: score_group(pipeline, group) for name, group in groups.items()}
+
+
+def test_run_summary_contents(tmp_path):
+    """The summary lists its keys in order, omits a training log loss, and rounds the weights."""
+    settings = _settings(tmp_path)
+    data_path = _write_data_file(settings)
+    games = _games()
+    pipeline = fit_pipeline(settings, games)
+    summary_path = write_run_summary(settings, _summary_scores(pipeline, games), pipeline)
+    loaded = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert list(loaded) == [
+        "model_version",
+        "model_type",
+        "random_seed",
+        "C",
+        "solver",
+        "max_iter",
+        "scikit_learn_version",
+        "inputs",
+        "train_start_season",
+        "train_end_season",
+        "validation_season",
+        "test_season",
+        "data_file",
+        "data_sha256",
+        "scores",
+        "learned",
+    ]
+    assert loaded["scikit_learn_version"] == sklearn.__version__
+    assert loaded["data_sha256"] == file_fingerprint(data_path)
+    estimator = pipeline.named_steps["logisticregression"]
+    assert loaded["learned"]["weights"] == [round(float(value), 6) for value in estimator.coef_[0]]
+    assert loaded["learned"]["intercept"] == round(float(estimator.intercept_[0]), 6)
+    assert "log_loss" not in loaded["scores"]["training"]
+    assert "log_loss" in loaded["scores"]["validation"]
+    assert "log_loss" in loaded["scores"]["test"]
+
+
+def test_run_summary_is_identical_on_a_rerun(tmp_path):
+    """Writing the same summary twice leaves identical bytes and no partial file."""
+    settings = _settings(tmp_path)
+    _write_data_file(settings)
+    games = _games()
+    pipeline = fit_pipeline(settings, games)
+    scores = _summary_scores(pipeline, games)
+    first = write_run_summary(settings, scores, pipeline)
+    first_bytes = first.read_bytes()
+    second = write_run_summary(settings, scores, pipeline)
+    assert second.read_bytes() == first_bytes
+    assert not second.with_name(second.name + ".partial").exists()
+
+
+def test_mlflow_format_model_is_logged(tmp_path):
+    """The run stores one MLflow-format model, and the run's own file list stays at three files."""
+    settings = _settings(tmp_path)
+    _write_data_file(settings)
+    games = _games()
+    pipeline = fit_pipeline(settings, games)
+    log_run(settings, _scores(), _run_files(tmp_path), pipeline)
+    experiment = mlflow.get_experiment_by_name(settings["tracking"]["experiment_name"])
+    logged = MlflowClient().search_logged_models(experiment_ids=[experiment.experiment_id])
+    assert len(logged) == 1
+    assert logged[0].name == "pipeline-mlflow-format"
+    reloaded = mlflow.sklearn.load_model(f"models:/{logged[0].model_id}")
+    assert np.allclose(
+        reloaded.predict_proba(games[INPUT_COLUMNS]),
+        pipeline.predict_proba(games[INPUT_COLUMNS]),
+    )
+    runs = mlflow.search_runs(experiment_ids=[experiment.experiment_id])
+    assert _artifact_paths(runs.iloc[0]["run_id"]) == ARTIFACT_NAMES

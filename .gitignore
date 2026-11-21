@@ -1,4 +1,4 @@
-# Local working artifacts (never committed)
+# Local working files. These stay on your machine and are never committed.
 local/
 local-docs/
 specs/
@@ -6,10 +6,10 @@ mkdocs.yml
 .cursor/
 .kiro/
 
-# Built documentation site
+# The built documentation site. `mkdocs build` recreates it from docs/.
 site/
 
-# Python caches and build outputs
+# Python files that are made automatically when code runs. They are recreated every time.
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -18,25 +18,28 @@ build/
 dist/
 *.egg-info/
 
-# Front-end tooling
+# Front-end tooling: the installed JavaScript libraries (Phase 5).
 node_modules/
 
-# Virtual environments
+# Virtual environments: the private folder of installed Python packages.
 .venv/
 venv/
 env/
 
-# ML experiment tracking and artifacts
+# Outputs of training. Running `python -m src.model.train` recreates them.
+# mlruns/ and wandb/ are the folders other tracking tools would create.
 mlruns/
 wandb/
+# The saved trained model.
 models/
+# MLflow's run record (settings and scores) and each run's files.
 mlflow.db
 mlartifacts/
 
-# Environment and credential files
+# Secrets. Keys and passwords must never be committed.
 .env
 *.pem
 credentials.json
 
-# OS and editor cruft
+# Files the Mac adds to folders.
 .DS_Store

@@ -64,3 +64,6 @@ tracking:
   database_path: mlflow.db
   # The folder where MLflow keeps each run's files (the model, the plot, a copy of this file).
   artifact_folder: mlartifacts
+  # A small readable summary of the latest run (settings, data fingerprint, scores, and the
+  # learned weights). It is committed to git. MLflow keeps the full history of runs.
+  summary_path: results/run-summary.json

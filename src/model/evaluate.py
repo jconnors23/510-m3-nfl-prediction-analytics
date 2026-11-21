@@ -26,10 +26,8 @@ def score_group(pipeline, group) -> dict:
     home_win = group["home_win"].to_numpy()
     games = int(len(group))
     correct = int((picked_home == home_win).sum())
-    # accuracy is the share of picks that were right. baseline is the share of games the home team
-    # won, which is the accuracy of always picking home. log_loss grades the percentages, not just
-    # the picks: a high chance on what really happened is a small penalty and a low chance is a
-    # large one, so lower is better.
+    # baseline is the accuracy of always picking the home team. log_loss grades the percentages,
+    # not just the picks, and lower is better.
     return {
         "games": games,
         "correct": correct,
