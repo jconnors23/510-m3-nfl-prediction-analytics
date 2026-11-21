@@ -1,6 +1,6 @@
 # Every package is pinned to an exact version (==) so any machine installs the same thing.
 # Install with: pip install -r requirements.txt
-# Python 3.13 is needed. The Lambda image in Phase 4 must use the same minor version.
+# Python 3.13 is needed. The Lambda function in Phase 4 and the Docker image in Phase 6 must use the same minor version.
 
 # Data tables and math
 # pandas holds the game tables and does the filtering and grouping. numpy does the number
@@ -45,3 +45,5 @@ mangum==0.22.0
 # pytest runs everything in tests/. The tests use made-up data and a stand-in S3 client, so
 # they need no internet and no AWS account.
 pytest==9.2.0
+# httpx2 is used only by the API tests (Starlette's test client asks for it), and it is not needed in the Lambda zip.
+httpx2==2.16.2
