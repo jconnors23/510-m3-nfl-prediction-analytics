@@ -22,22 +22,13 @@ Phase 2 turns the cleaned games into two inputs per game, trains the model, and 
 
 ## Details in Brief
 
-- **Inputs:** a team with no games yet counts as win percentage 0.5 and margin 0.0, so week 1 gives 0 for both inputs. Reasons for raw values over ranks are in [Decisions](../decisions.md#model-inputs-decided).
+- **Inputs:** a team with no games yet counts as win percentage 0.5 and margin 0.0, so week 1 gives 0 for both inputs. Reasons for raw values over ranks are in [Decisions](../decisions.md#the-inputs-and-the-split).
 - **Split:** training is 1,339 games, validation is 271, and test is 149. The test games never fit anything. With only 149 of them, their accuracy can move by about 4 points by chance.
 - **Baseline:** always picking the home team scores 53.32% on training, 53.87% on 2025, and 47.65% on the test games. The model must beat this.
 - **One saved object:** the scaler and the model travel together in one pipeline, so the API cannot apply the model without the scaler. The scaler learns its averages from training rows only.
 - **Tracking:** a local database file `mlflow.db`, with run files in `mlartifacts/`. Each run records 15 parameters (including the scikit-learn version and a fingerprint of the data file), 8 scores, 3 files, and an MLflow-format copy of the model.
 - **Readable record:** each run also writes `results/run-summary.json`, which is committed to git and stays identical when the settings and data do not change.
 - **Logistic regression only.** There is no model comparison. Random forest and XGBoost are left out, which keeps the model simple to explain and the serving image small.
-
-## Done When
-
-- [x] One training command, `python -m src.model.train`, runs after the download step with only `config.yaml`.
-- [x] Changing a model setting in `config.yaml` (`C`, `solver`, `max_iter`, or the random seed) changes the run with no code edit.
-- [x] Two runs with the same settings give identical scores.
-- [x] The scaler's saved average comes from the training rows only.
-- [x] The MLflow run lists 15 parameters, 8 scores, 3 files, and 1 logged model.
-- [x] `results/run-summary.json` is identical across two runs with the same settings and data.
 
 ## What Was Created
 

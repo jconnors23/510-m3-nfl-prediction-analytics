@@ -31,11 +31,11 @@ flowchart LR
 
 This is the one place the environment is stated. Other pages refer to it.
 
-- **Language:** Python 3.13 (the local virtual environment uses 3.13.14). The Lambda image in Phase 4 must use the same minor version.
+- **Language:** Python 3.13 (the local virtual environment uses 3.13.14). The Lambda function in Phase 4 and the Docker image in Phase 6 must use the same minor version.
 - **Python packages:** installed from `requirements.txt`, pinned to exact versions.
 - **AWS:** an account, AWS CLI version 2, and credentials configured on the machine. Steps 3 and 4 need them.
 - **Network:** access to GitHub (Step 1) and S3 (Steps 3 and 4).
-- **Later phases:** Docker Desktop (this Mac builds `arm64` images) for Phase 3, and Node.js with npm for the Phase 5 web app.
+- **Later phases:** Node.js with npm for the Phase 5 web app, and Docker Desktop for Phase 6.
 - **Docs:** MkDocs with the Material theme, kept out of the project dependency files.
 
 ## What Is the Prediction Task?
@@ -45,7 +45,7 @@ The first design choice is the prediction task: classification or regression. It
 - **Supervised learning:** the model learns from past games where the answer is known, then predicts games where it is not.
 - **Classification** predicts one of a fixed set of labels. **Regression** predicts a number on a scale, such as a score margin.
 - **This project uses binary classification** (two labels): did the home team win? The answer is 1 (home win) or 0 (away win). That answer is the target, in a column called `home_win`.
-- **Why not regression:** the web app shows a predicted winner and a win probability. A classifier gives both directly. A margin model would need an extra step to turn a margin into a probability.
+- **Why not regression:** the web app shows a predicted winner and a win probability. A classifier gives both directly. A margin model would need an extra step to turn a margin into a probability. The full reasoning, with the numbers, is in [Decisions](../decisions.md#why-binary-classification-and-not-regression).
 - **What the task needs from the data:**
     - Exactly two outcomes. A tie has neither, so the 6 tied games are removed.
     - Both final scores. `home_win` is 1 when `home_score` is greater than `away_score`. It is built in Phase 2, so the saved table holds only facts from the source file.
@@ -159,7 +159,7 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 - **AWS only.** Turned down: Google Cloud and Azure.
 - **Two small S3 scripts:** upload (checks the object size) and download. Each ends with a short message on an AWS error. Turned down: a shared file that sorted AWS errors into named causes. boto3's own messages already say the same thing.
 - **The bucket is created by hand, not by code.** Turned down: a setup script. A script that creates AWS resources adds risk for no benefit.
-- **Binary classification, not regression.** Turned down: predicting the score margin.
+- **Binary classification, not regression.** Turned down: predicting the score margin. See [Why Binary Classification and Not Regression?](../decisions.md#why-binary-classification-and-not-regression).
 - **Ties are removed (6 games).** Turned down: labeling a tie as an away win, and counting a tie as half a win.
 - **Playoffs and unplayed games are removed,** and the week cap is a setting, not a code edit.
 - **Dependencies are pinned to exact versions.**
