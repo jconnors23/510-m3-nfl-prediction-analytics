@@ -8,7 +8,7 @@ hide:
 **Status: Built and tested.** All 7 steps are done, and `pytest` passes 47 tests (30 from earlier phases and 17 new).
 **Needs first:** Phase 2, which is built. Its output is the saved model `models/model.joblib`. If that file is missing, run `python -m src.model.train` first.
 
-Phase 3 wraps the trained model in a small web service that runs on your own computer. A person (or a program) sends the two model inputs as JSON, and the service returns the predicted winner and the home win probability as JSON. Nothing in this phase touches AWS or Docker. Those come later, in [Phases 4 to 6](../remaining-phases.md).
+Phase 3 wraps the trained model in a small web service that runs on your own computer. A person (or a program) sends the two model inputs as JSON, and the service returns the predicted winner and the home win probability as JSON. Nothing in this phase touches AWS or Docker. Those come later, starting with [Phase 4](../phase-4/brief.md).
 
 To run it, activate the virtual environment and start the service. The [Implementation](./implementation.md#how-do-i-run-it-locally) page has the full run guide, with `curl` examples and the real output of each.
 
@@ -70,13 +70,13 @@ flowchart LR
 - **Unknown fields are rejected,** so a misspelled name fails loudly and is not ignored.
 - **The scaler is inside the model file,** so the API sends raw inputs. The API never standardizes anything itself.
 - **FastAPI, not Flask.** Both can serve this model. FastAPI does the input checks (missing field, extra field, wrong type, out-of-range number) from one request definition, and it gives a test page at `/docs` with no extra code. In Flask, those checks would be written by hand. FastAPI also pairs with the Mangum adapter already pinned for Lambda in Phase 4, while Flask would need a different adapter. Flask is a little shorter for a route with no checks, which is the one place it is simpler.
-- **No cloud code yet.** The adapter that lets AWS Lambda run the same app (Mangum) is added in Phase 4. See [What Is Mangum?](../remaining-phases.md#what-is-mangum).
+- **No cloud code yet.** The adapter that lets AWS Lambda run the same app (Mangum) is added in Phase 4. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
 - **Built so Lambda can reuse it.** Phase 4 runs this same app in Lambda, so Phase 3 keeps four things true:
     - The app is one object named `app`, importable from the module `src/api/app.py`, with no code that reads the command line when it is imported.
-    - The model loads in the app's start-up step, not inside a route. Lambda then loads it once per cold start and reuses it for later requests.
+    - The model loads in the app's start-up step through the `load_model` function, not inside a route. Phase 4 reuses `load_model` on Lambda and calls it once, on the first call.
     - Every file path goes through `resolve_path` in `src/config.py`, which finds the project folder from the code's own location. The Lambda zip keeps the same folder layout (`src/`, `config/`, `models/`), so the same paths work there.
     - Tests call the app in memory (FastAPI's test client), so they need no server and no network.
-- **NumPy, not pandas, in the API.** The Lambda zip fits under its size limit only without `pandas` (231.3 MB without it, 278.4 MB with it). So the API files must not import `pandas`, directly or through `src/model/features.py`, which imports it. The API reads the input names from the saved model file, passes the two numbers to the model as a plain numpy array in that order, and silences the one expected scikit-learn warning about column names. A test reads the API files and checks that none of them imports `pandas`. See the [Package Size Check](../phase-4/package-size-check.md).
+- **NumPy, not pandas, in the API.** The Lambda zip fits under its size limit only without `pandas` (231.3 MB without it, 278.4 MB with it). So the API files must not import `pandas`, directly or through `src/model/features.py`, which imports it. The API reads the input names from the saved model file, passes the two numbers to the model as a plain numpy array in that order, and silences the one expected scikit-learn warning about column names. A test reads the API files and checks that none of them imports `pandas`. See the [Phase 4 Implementation, Step 3](../phase-4/implementation.md#step-3-measure-the-package-size).
 - **Packages:** [`fastapi`](https://fastapi.tiangolo.com/), [`uvicorn`](https://uvicorn.dev/), and [`pydantic`](https://docs.pydantic.dev/latest/) are already pinned in `requirements.txt`. `uvicorn` is the program that runs the service on your machine, and `pydantic` checks that each request has the right fields. See the [Glossary](../glossary.md#phase-3-local-prediction-api) for both.
 
 ## What Was Created
@@ -88,8 +88,8 @@ flowchart LR
 
 ## What Is Not in This Phase
 
-- Docker, in [Phase 6](../remaining-phases.md#phase-6-docker-readme-and-final-check).
-- AWS Lambda, API Gateway, CORS, and the request limit, in [Phase 4](../remaining-phases.md#phase-4-aws-deployment).
+- Docker, in [Phase 6](../remaining-phases.md#phase-6-docker).
+- AWS Lambda, API Gateway, and CORS, in [Phase 4](../phase-4/brief.md).
 - The web app, in [Phase 5](../remaining-phases.md#phase-5-web-app-and-hosting).
 
 ## Where to Read More

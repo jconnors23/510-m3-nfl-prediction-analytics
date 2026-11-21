@@ -5,7 +5,7 @@ hide:
 
 # Project Requirements
 
-End-to-end requirements for one person building this project, stated as checkable items. The full assignment brief is in the [Project Instructions](./index.md).
+End-to-end requirements for one person building this project, stated as checkable items. The full assignment brief is in the [Project Instructions](./assignment-brief.md).
 
 Two things are delivered: a GitHub repository with the full pipeline, and a publicly reachable front-end linked from the repository README.
 

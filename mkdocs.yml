@@ -1,0 +1,80 @@
+site_name: NFL Prediction Analytics
+# The published address on GitHub Pages (https://<user>.github.io/<repository>/), and the
+# repository the site links back to.
+site_url: https://jconnors23.github.io/510-m3-nfl-prediction-analytics/
+repo_url: https://github.com/jconnors23/510-m3-nfl-prediction-analytics
+repo_name: 510-m3-nfl-prediction-analytics
+site_description: Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.
+copyright: NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+
+theme:
+  name: material
+  # One light scheme with sky blue as the main color, fixed for every reader.
+  # The exact colors are defined in stylesheets/extra.css (the "custom"
+  # values below point there).
+  palette:
+    scheme: default
+    primary: custom
+    accent: custom
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/football
+  favicon: assets/favicon.svg
+  features:
+    - navigation.top
+    - navigation.sections
+    - content.code.copy
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.highlight
+  # Turns "- [x]" and "- [ ]" into checkboxes, used for the status lists on the phase pages.
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+# Warn on broken links and broken section anchors, so a strict build catches them.
+validation:
+  links:
+    anchors: warn
+
+# The home page is the overview. The original brief, the project requirements, and the
+# requirements map sit in docs/implementation/requirements/, at the bottom of the
+# Implementation section.
+nav:
+  - Overview: index.md
+  - Implementation:
+      - "Phase 1: Data Pipeline":
+          - Brief: implementation/phase-1/brief.md
+          - Implementation: implementation/phase-1/implementation.md
+      - "Phase 2: Features, Training, and Tracking":
+          - Brief: implementation/phase-2/brief.md
+          - Implementation Part 1: implementation/phase-2/implementation-part-1.md
+          - Implementation Part 2: implementation/phase-2/implementation-part-2.md
+          - Reproducing End to End: implementation/phase-2/reproduce-end-to-end.md
+      - "Phase 3: Local Prediction API":
+          - Brief: implementation/phase-3/brief.md
+          - Implementation: implementation/phase-3/implementation.md
+      - "Phase 4: AWS Deployment":
+          - Brief: implementation/phase-4/brief.md
+          - Implementation: implementation/phase-4/implementation.md
+          - Deployment Guide: implementation/phase-4/deployment-guide.md
+      - "Remaining Phases (Planned)": implementation/remaining-phases.md
+      - Decisions: implementation/decisions.md
+      - Glossary: implementation/glossary.md
+      - Requirements:
+          - Assignment Brief: implementation/requirements/assignment-brief.md
+          - Project Requirements: implementation/requirements/project-requirements.md
+          - Requirements Map: implementation/requirements/requirements-map.md

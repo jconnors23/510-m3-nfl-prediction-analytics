@@ -12,7 +12,9 @@ Key terms and tools, grouped by the phase where they first matter, followed by g
 - [Phase 3: Local Prediction API](#phase-3-local-prediction-api)
 - [Phase 4: AWS Deployment](#phase-4-aws-deployment)
 - [Phase 5: Web App and Hosting](#phase-5-web-app-and-hosting)
-- [Phase 6: Docker, README, and Final Check](#phase-6-docker-readme-and-final-check)
+- [Phase 6: Docker](#phase-6-docker)
+- [Phase 7: Documentation and README](#phase-7-documentation-and-readme)
+- [Phase 8: Review](#phase-8-review)
 - [General Machine Learning Ideas](#general-machine-learning-ideas)
 - [General Tooling and Reproducibility](#general-tooling-and-reproducibility)
 
@@ -97,15 +99,16 @@ Built. See the [Phase 3 Brief](./phase-3/brief.md) and the [Phase 3 Implementati
 
 ## Phase 4: AWS Deployment
 
-Planned. See [Remaining Phases](./remaining-phases.md#phase-4-aws-deployment).
+Built. See the [Phase 4 Brief](./phase-4/brief.md) and the [Phase 4 Implementation](./phase-4/implementation.md).
 
 **Docs:** [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html), [API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html), [Mangum](https://mangum.fastapiexpert.com/), [Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html).
 
 - **AWS Lambda:** runs code only when a request arrives, with no server to manage.
-- **Cold start:** the first request after a quiet period is slower, because a fresh copy of the function must start and load the model.
-- **API Gateway:** gives the function a public web address, routes each request to it, and applies the request limit.
-- **Mangum:** a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See [What Is Mangum?](./remaining-phases.md#what-is-mangum).
-- **Lambda zip and size limit:** the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without `pandas`. See the [Package Size Check](./phase-4/package-size-check.md).
+- **API Gateway:** gives the function a public web address, and routes each request to it.
+- **Mangum:** a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See [What Is Mangum?](./phase-4/implementation.md#what-is-mangum).
+- **Lambda zip and size limit:** the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without `pandas`. See the [Phase 4 Implementation, Step 3](./phase-4/implementation.md#step-3-measure-the-package-size).
+- **Environment variable:** a named setting passed to the function when it starts. This function has one, `JOBLIB_MULTIPROCESSING=0`, which stops joblib from checking for multiprocessing support that Lambda does not have.
+- **CodeSha256:** the SHA-256 fingerprint AWS stores for the zip a function was created from. When it equals the hash of the local zip, Lambda is running the file built here.
 - **ECR:** stores Docker images. It is used only if the Lambda zip turns out to be too large.
 
 ## Phase 5: Web App and Hosting
@@ -117,15 +120,32 @@ Planned. See [Remaining Phases](./remaining-phases.md#phase-5-web-app-and-hostin
 - **Vite:** the tool that runs the web app on a laptop during development and builds the files that are published.
 - **CloudFront:** serves the built web app's files over HTTPS from a private S3 bucket.
 
-## Phase 6: Docker, README, and Final Check
+## Phase 6: Docker
 
-Planned. See [Remaining Phases](./remaining-phases.md#phase-6-docker-readme-and-final-check).
+Planned. See [Remaining Phases](./remaining-phases.md#phase-6-docker).
 
 **Docs:** [Docker](https://docs.docker.com/), [multi-stage builds](https://docs.docker.com/build/building/multi-stage/).
 
 - **Docker:** packages a program with everything it needs, so it runs the same on any machine.
 - **Image:** the packaged snapshot that Docker builds.
 - **Dockerfile and build target:** a Dockerfile lists the build steps. It can define several build targets, here `train` and `serve`.
+
+## Phase 7: Documentation and README
+
+Planned. See [Remaining Phases](./remaining-phases.md#phase-7-documentation-and-readme).
+
+**Docs:** [MkDocs](https://www.mkdocs.org/), [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [Mermaid](https://mermaid.js.org/), [GitHub Pages](https://docs.github.com/en/pages), [GitHub Actions](https://docs.github.com/en/actions).
+
+- **MkDocs:** builds the pages in `docs/` into a documentation site. A strict build (`mkdocs build --strict`) fails on a broken link, so it doubles as a link check.
+- **Material for MkDocs:** the theme that gives the site its layout, navigation, and diagram support.
+- **Mermaid:** a text format for diagrams, written inside a code block in a page and drawn by the site.
+- **GitHub Pages:** a GitHub feature that serves a built site from a repository. `mkdocs gh-deploy` builds the docs and pushes the result to a branch named `gh-pages`, and Pages serves that branch. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
+- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. See the [documentation](https://docs.github.com/en/actions).
+- **README:** the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.
+
+## Phase 8: Review
+
+Planned. See [Remaining Phases](./remaining-phases.md#phase-8-review). This phase uses no new tools.
 
 ## General Machine Learning Ideas
 

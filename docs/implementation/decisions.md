@@ -79,7 +79,7 @@ The key decisions behind the project, in the order they were made. Each one stat
 
 - **FastAPI, not Flask.** The input checks (missing field, extra field, wrong type, out-of-range number) come from one request definition, and the test page at `/docs` needs no extra code. FastAPI also works with the Mangum adapter that Lambda needs. Flask would need a different adapter.
 - **Strict input checks.** Unknown fields, numbers written as text, `NaN`, and out-of-range values are rejected with status 422 and an error that names the problem.
-- **The API uses NumPy, not pandas.** The Lambda zip is 231.3 MB without `pandas` and 278.4 MB with it, against a 250 MB limit. See the [Package Size Check](./phase-4/package-size-check.md).
+- **The API uses NumPy, not pandas.** The Lambda zip is 231.3 MB without `pandas` and 278.4 MB with it, against a 250 MB limit. See the [Phase 4 Implementation, Step 3](./phase-4/implementation.md#step-3-measure-the-package-size).
 - **The model loads once, at start-up,** and the service refuses to start if the file is missing, unreadable, or built by a different scikit-learn version.
 - **The pick rule is the scoring rule.** A probability above 0.5 is a home win, and exactly 0.5 is an away win.
 - **The API is built and tested locally first,** with no Docker and no AWS.
@@ -87,29 +87,33 @@ The key decisions behind the project, in the order they were made. Each one stat
 
 ## Deployment and Front-End
 
-These are planned, in [Remaining Phases](./remaining-phases.md).
+Phase 4 (AWS) is built, with its [brief](./phase-4/brief.md) and [implementation page](./phase-4/implementation.md). Phases 5 and 6 are planned, in [Remaining Phases](./remaining-phases.md).
 
 - **AWS only:** S3, Lambda behind an API Gateway HTTP API, and CloudFront, all in `us-east-1`, where the data bucket already is. Turned down: Google Cloud and Azure.
-- **The same FastAPI app runs locally and in Lambda, using Mangum.** Turned down: a separate hand-written Lambda function, which would repeat the input checks and the model call in a second place. See [What Is Mangum?](./remaining-phases.md#what-is-mangum).
+- **The same FastAPI app runs locally and in Lambda, using Mangum.** Turned down: a separate hand-written Lambda function, which would repeat the input checks and the model call in a second place. See [What Is Mangum?](./phase-4/implementation.md#what-is-mangum).
 - **Lambda runs from a zip file.** A container image in a private ECR repository is the fallback, used only if the zip goes over Lambda's size limit. The measured size fits.
-- **Docker comes last (Phase 6),** with one Dockerfile and two targets, `train` and `serve`. Nothing before it needs an image. Turned down: building Docker in Phase 3, which would put a packaging step ahead of the web app without unblocking anything.
+- **Docker comes after the API, AWS, and the web app (Phase 6),** with one Dockerfile and two targets, `train` and `serve`. Nothing before it needs an image. The README and the review (Phases 7 and 8) come after it, because they describe and check the finished project. Turned down: building Docker in Phase 3, which would put a packaging step ahead of the web app without unblocking anything.
+- **The deployed model is checked on every game.** All 1,759 games were sent through the public API and compared with the local model: every pick and every probability matched, and the accuracy from the deployed answers equals the run summary. The zip's hash equals the hash Lambda stores for the function, so Lambda runs the file built here. See [Step 10](./phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
+- **Accuracy is the only priority for the deployment.** Latency and cost are not concerns for this project. The Lambda function's memory is 1769 MB, and it may be changed if that helps, but it is not a priority.
 - **CORS is set on the gateway only,** with the CloudFront address and the local Vite address allowed. The CloudFront address is added once the distribution exists.
-- **The API is public, with no key.** It has a request limit (5 per second, burst of 10) and a budget alert. A key in a browser app would be visible to every visitor.
+- **The API is public, with no key, no request limit, and no firewall for now.** A key in a browser app would be visible to every visitor, so it would not protect the API. Protection can be added later if it is needed.
 - **The front-end is a Vite app,** and the published site is the built static files in a private S3 bucket behind CloudFront. Turned down: Streamlit, and S3's own website hosting (it serves only HTTP and needs a public bucket).
 - **The web app reads one snapshot of the standings,** taken after 2026 week 10.
-- **Deployment is a set of written steps,** with no `deploy.yml` workflow.
+- **The AWS deployment is a set of written steps,** with no workflow file for it. Only the docs site is published by a workflow.
 
 ## Design Manifest
 
 **The initial project ideation was done with Gemini. The developer sets the requirements and constraints. The project is then built with spec-driven development: Kiro writes the spec, Cursor writes the code, Kiro adds the comments and docs, and the developer reviews and commits.** Each piece of work starts as a written spec, and the code is built to that spec and checked against it. The docs are written from the finished code, so they describe what exists and not what was planned.
 
 ```mermaid
-flowchart LR
-    G["Gemini:<br/>initial ideation"] --> A["Developer:<br/>sets requirements<br/>and constraints"]
+%%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 70, "padding": 24}, "themeVariables": {"fontSize": "22px"}}}%%
+flowchart TB
+    G["Gemini:<br/>initial ideation<br/>(once, at the start)"] --> A["Developer:<br/>sets requirements<br/>and constraints"]
     A --> B["Kiro:<br/>writes the spec"]
     B --> C["Cursor:<br/>implements the code"]
     C --> D["Kiro:<br/>reviews, adds<br/>comments and docs"]
     D --> E["Developer:<br/>reviews and commits"]
+    E -->|"next task or phase"| A
 ```
 
 - **Gemini** produced the initial project ideation: the project idea and its starting scope, before any spec or code existed.
@@ -118,9 +122,10 @@ flowchart LR
 - **Cursor implements the code** from the spec: `src/`, `tests/`, and running the commands. It keeps a log of what it did, and ends with a report of anything that differs from the spec, any choice the spec did not cover, and the real numbers beside the expected ones.
 - **Kiro reviews the result** against the spec and the repository. It then adds comments and docstrings to the finished code, and writes the docs. Adding comments does not change behavior, and this is checked by comparing the structure of the code before and after. A number in the docs is recomputed from the data or the code before it is stated.
 - **Why this split.** A written spec with numbers to match makes the build checkable, and a separate review finds problems the builder would not. Specs are kept in `specs/archive/` once they are done.
+- **The docs are published with GitHub Pages,** built by MkDocs with the Material theme from `mkdocs.yml`, which is committed. A GitHub Actions workflow (`.github/workflows/deploy-docs.yml`) builds the site in strict mode and publishes it whenever a change to the docs reaches `main`. Turned down: keeping the site local only. Publishing needs no extra service, and the README can link to the live pages.
 - **A phase gets full pages once it is built,** with a brief and an implementation page. Later phases share one high-level page until they begin.
-- **The original brief and requirements are kept unchanged** in `docs/initial-requirements/`.
+- **The original brief and requirements are kept unchanged** in `docs/implementation/requirements/`, next to the requirements map.
 
 ## Open Decisions
 
-Each shows the proposed answer first. The Phase 3 to 6 choices (probability field name, zip or container image for Lambda, one Dockerfile or two, no `deploy.yml`, no API key, one standings snapshot, Vite template) are in [Remaining Phases](./remaining-phases.md#open-decisions).
+Each shows the proposed answer first. The Phase 5 and 6 choices (one Dockerfile or two, one standings snapshot, Vite template) are in [Remaining Phases](./remaining-phases.md#open-decisions).
