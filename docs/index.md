@@ -25,9 +25,10 @@ flowchart LR
     A[Download game results] --> B[Clean and store in S3]
     B --> C[Build the two inputs<br/>and split by season]
     C --> D[Train, score, and<br/>track with MLflow]
-    D --> E[Serve with an API<br/>in Docker]
-    E --> F[Deploy on AWS Lambda]
+    D --> E[Serve with a<br/>local API]
+    E --> F[Deploy on AWS Lambda<br/>behind API Gateway]
     F --> G[Web app on CloudFront]
+    G --> H[Package in Docker]
 ```
 
 ## What Are the Phases and Steps?
@@ -47,11 +48,16 @@ Each phase ends with something that runs. Git commits and pull requests are done
 - Train the model and score it against the always-pick-home baseline.
 - Record every run in MLflow and save the trained model.
 
+**[Phase 3: Local Prediction API](./implementation/phase-3/brief.md)** (built)
+
+- Serve the model on your own computer with a FastAPI `/predict` route and a `/health` route.
+- Reject bad input with a clear error, and test with `curl`.
+
 **[Remaining Phases](./implementation/remaining-phases.md)** (planned)
 
-- **Phase 3:** serve the model with a FastAPI `/predict` route and package it in Docker.
-- **Phase 4:** deploy the image to AWS Lambda behind API Gateway.
-- **Phase 5:** build the Vite web app, host it on S3 and CloudFront, write the README, and run a final check.
+- **Phase 4:** deploy the API to AWS Lambda behind API Gateway.
+- **Phase 5:** build the Vite web app and host it on S3 and CloudFront.
+- **Phase 6:** package the project in Docker, write the README, and run a final check.
 
 ## Where Is Everything Else?
 

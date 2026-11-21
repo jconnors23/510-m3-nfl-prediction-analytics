@@ -30,15 +30,6 @@ Phase 2 turns the cleaned games into two inputs per game, trains the model, and 
 - **Readable record:** each run also writes `results/run-summary.json`, which is committed to git and stays identical when the settings and data do not change.
 - **Logistic regression only.** There is no model comparison. Random forest and XGBoost are left out, which keeps the model simple to explain and the serving image small.
 
-## Done When
-
-- [x] One training command, `python -m src.model.train`, runs after the download step with only `config.yaml`.
-- [x] Changing a model setting in `config.yaml` (`C`, `solver`, `max_iter`, or the random seed) changes the run with no code edit.
-- [x] Two runs with the same settings give identical scores.
-- [x] The scaler's saved average comes from the training rows only.
-- [x] The MLflow run lists 15 parameters, 8 scores, 3 files, and 1 logged model.
-- [x] `results/run-summary.json` is identical across two runs with the same settings and data.
-
 ## What Was Created
 
 - **Settings:** new `split`, `model`, and `tracking` blocks in `config/config.yaml`, including `tracking.summary_path`.

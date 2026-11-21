@@ -31,11 +31,11 @@ flowchart LR
 
 This is the one place the environment is stated. Other pages refer to it.
 
-- **Language:** Python 3.13 (the local virtual environment uses 3.13.14). The Lambda image in Phase 4 must use the same minor version.
+- **Language:** Python 3.13 (the local virtual environment uses 3.13.14). The Lambda function in Phase 4 and the Docker image in Phase 6 must use the same minor version.
 - **Python packages:** installed from `requirements.txt`, pinned to exact versions.
 - **AWS:** an account, AWS CLI version 2, and credentials configured on the machine. Steps 3 and 4 need them.
 - **Network:** access to GitHub (Step 1) and S3 (Steps 3 and 4).
-- **Later phases:** Docker Desktop (this Mac builds `arm64` images) for Phase 3, and Node.js with npm for the Phase 5 web app.
+- **Later phases:** Node.js with npm for the Phase 5 web app, and Docker Desktop for Phase 6.
 - **Docs:** MkDocs with the Material theme, kept out of the project dependency files.
 
 ## What Is the Prediction Task?
