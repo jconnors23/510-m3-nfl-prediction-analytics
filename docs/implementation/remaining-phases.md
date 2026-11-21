@@ -70,7 +70,7 @@ flowchart TB
     end
 ```
 
-- **Why this and not a separate Lambda function:** a hand-written function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Decisions](./decisions.md#model-and-api).
+- **Why this and not a separate Lambda function:** a hand-written function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Decisions](./decisions.md#deployment-and-front-end).
 - **What Mangum does not do:** it does not deliver requests to Lambda, set permissions, or make the public address. API Gateway and AWS permissions do those.
 
 ### Implementation Steps

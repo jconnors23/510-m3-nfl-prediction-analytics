@@ -26,6 +26,8 @@ FEATURE_NAMES = ["win_pct_differential", "point_diff_per_game_differential"]
 @pytest.fixture
 def model_config(tmp_path):
     """A tiny saved model in the same dictionary shape as the real file."""
+    # Made-up games with a fixed seed, so every run builds the same model and the tests never
+    # depend on the real training data or on models/model.joblib.
     generator = np.random.default_rng(0)
     count = 40
     frame = pd.DataFrame(
@@ -34,12 +36,15 @@ def model_config(tmp_path):
             "point_diff_per_game_differential": generator.normal(0, 8, count),
         }
     )
+    # A stronger home team wins more often, so the made-up answers follow the same pattern as real games.
     chance = 1 / (1 + np.exp(-(frame["win_pct_differential"] + 0.05 * frame["point_diff_per_game_differential"])))
     labels = (generator.random(count) < chance).astype(int)
     # Both answers have to appear, or the probability of class 1 is not the second column.
     labels[0] = 0
     labels[1] = 1
     pipeline = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000, random_state=0))
+    # Fitted on a table with column names, like the real model, so the service's plain-array
+    # call goes through the same "no valid feature names" path that it does in production.
     pipeline.fit(frame, labels)
     path = tmp_path / "model.joblib"
     joblib.dump(
@@ -57,7 +62,9 @@ def model_config(tmp_path):
 
 
 def _client(config: dict) -> TestClient:
-    """A client whose start-up step has already loaded the given model."""
+    """A client for a service built from the given settings."""
+    # The model loads in the service's start-up step, and the test client only runs that step
+    # inside a `with` block. Every test below therefore uses `with _client(config) as client`.
     return TestClient(create_app(config))
 
 
@@ -67,6 +74,8 @@ def test_prediction_matches_the_pipeline(model_config):
     payload = {"win_pct_differential": -0.25, "point_diff_per_game_differential": 6.0}
     with _client(config) as client:
         body = client.post("/predict", json=payload).json()
+    # The service passes a plain array, and the pipeline was fitted on a table. Calling it here
+    # with a table checks that the two give the same probability.
     table = pd.DataFrame([payload])
     expected = round(float(pipeline.predict_proba(table)[0, 1]), 4)
     assert body["home_win_probability"] == expected
@@ -107,6 +116,7 @@ def test_response_fields(model_config):
 def test_field_order_does_not_change_the_answer(model_config):
     """The same two values give the same response when the JSON fields are swapped."""
     config, _pipeline = model_config
+    # The bodies are sent as raw text so the field order in the JSON is exactly what is written here.
     first = json.dumps({"win_pct_differential": 0.2, "point_diff_per_game_differential": -4.0})
     second = json.dumps({"point_diff_per_game_differential": -4.0, "win_pct_differential": 0.2})
     headers = {"Content-Type": "application/json"}
@@ -183,6 +193,8 @@ def test_out_of_range_value_is_rejected(model_config):
 def test_not_a_number_is_rejected(model_config):
     """A body that contains NaN is rejected."""
     config, _pipeline = model_config
+    # Sent as raw bytes, because Python's own JSON writer refuses to write NaN. Some other tools
+    # do write it, so the service has to reject it.
     raw = b'{"win_pct_differential": NaN, "point_diff_per_game_differential": 0}'
     with _client(config) as client:
         response = client.post(
@@ -221,6 +233,7 @@ def test_health(model_config):
 def test_missing_model_file_stops_startup(tmp_path):
     """Start-up stops when the model file is not there."""
     config = {"model": {"output_path": str(tmp_path / "missing.joblib")}}
+    # The error is raised when the `with` block starts the service, so the block body is empty.
     with pytest.raises(RuntimeError, match="No saved model at") as caught:
         with _client(config):
             pass
@@ -241,6 +254,7 @@ def test_version_mismatch_stops_startup(model_config, tmp_path):
     """Start-up stops when the saved scikit-learn version is not the installed one."""
     config, _pipeline = model_config
     path = Path(config["model"]["output_path"])
+    # Copy the good file with only the saved version changed, so the version is the one thing wrong.
     saved = joblib.load(path)
     saved["scikit_learn_version"] = "0.0.0"
     other = tmp_path / "other.joblib"
@@ -256,6 +270,7 @@ def test_wrong_feature_names_stop_startup(model_config, tmp_path):
     """Start-up stops when the saved input names are not the API fields."""
     config, _pipeline = model_config
     path = Path(config["model"]["output_path"])
+    # Copy the good file with only the input names changed, so the names are the one thing wrong.
     saved = joblib.load(path)
     saved["feature_names"] = ["x", "y"]
     other = tmp_path / "renamed.joblib"
@@ -268,6 +283,9 @@ def test_wrong_feature_names_stop_startup(model_config, tmp_path):
 
 def test_api_files_do_not_import_pandas():
     """The API files do not import pandas, mlflow, matplotlib, or the training code."""
+    # The files are read as text and their import lines are checked. Looking at sys.modules would
+    # not work, because scikit-learn loads pandas on its own when it is installed. The rule
+    # exists because the Lambda zip only fits under its size limit without pandas.
     root = Path(__file__).resolve().parents[1]
     for relative in ("src/api/app.py", "src/api/schemas.py"):
         tree = ast.parse((root / relative).read_text(encoding="utf-8"))
@@ -282,6 +300,7 @@ def test_api_files_do_not_import_pandas():
             assert not name.startswith("src.model")
 
 
+# models/model.joblib is not committed, so a fresh checkout skips this test until training has run.
 @pytest.mark.skipif(not SAVED_MODEL.is_file(), reason="models/model.joblib is not on disk")
 def test_real_model_worked_example():
     """The saved model answers the New England at Tennessee inputs with 0.3296."""

@@ -130,7 +130,7 @@ Planned. See [Remaining Phases](./remaining-phases.md#phase-6-docker-readme-and-
 ## General Machine Learning Ideas
 
 - **Supervised learning:** learning from examples that come with known answers. Every game has a known winner, so the model can be checked against answers it has not seen.
-- **Binary classification:** a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale.
+- **Binary classification:** a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale. See [Why Binary Classification and Not Regression?](./decisions.md#why-binary-classification-and-not-regression).
 - **Training, validation, and test sets:** training data fits the model, validation data gives the score to report, and test data is a final check on games the model never touched.
 - **Data leakage:** a feature that uses information from after the thing being predicted, which inflates scores. Using only earlier weeks prevents it, and a check stops the run if a week-1 feature is not 0.
 - **Overfitting:** memorizing the training games instead of learning a pattern that carries over, so the training score is high and the score on unseen games is lower.

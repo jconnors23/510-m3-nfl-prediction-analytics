@@ -96,4 +96,4 @@ flowchart LR
 
 - [Phase 3 Implementation](./implementation.md) explains each step in detail: start-up, the request and response, the routes, the error cases, the tests, and the `curl` commands.
 - [Phase 2 Implementation, Part 2](../phase-2/implementation-part-2.md) explains what is inside `models/model.joblib` and how the model scores a game.
-- [Decisions](../decisions.md#model-and-api) lists the API choices already made.
+- [Decisions](../decisions.md#the-api) lists the API choices already made.
