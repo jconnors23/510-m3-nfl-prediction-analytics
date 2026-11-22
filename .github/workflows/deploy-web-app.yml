@@ -1,0 +1,130 @@
+# Builds the web app and publishes the built files to CloudFront.
+# It runs when a change under frontend/ reaches the main branch,
+# and it can also be started by hand from the repository's Actions tab.
+# The run asks GitHub for a short-lived token, and AWS trades that token
+# for the deploy role. No access key is stored.
+name: Deploy Web App
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-web-app.yml"
+  workflow_dispatch:
+
+# The job only reads the repository. id-token is what lets the run ask
+# GitHub for the token AWS will exchange.
+permissions:
+  contents: read
+  id-token: write
+
+# Two deploys at the same time would upload over each other. A newer run waits
+# for the one already running to finish.
+concurrency:
+  group: deploy-web-app
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  BUCKET: 510-m3-nfl-web-app
+  DISTRIBUTION_ID: E1ZD23BE9RM77L
+  SITE_URL: https://d1nubiunzfwm0q.cloudfront.net
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install, test, and build
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      # The built files may name the API, SVG namespace strings, and React's own
+      # error text. Any other host would be a request the page should not make.
+      - name: Reject an outside address in the build
+        run: |
+          found=$(grep -rhoE 'https?://[a-zA-Z0-9.-]+' dist | sed -E 's#https?://##' | sort -u)
+          printf '%s\n' "$found"
+          extra=$(printf '%s\n' "$found" | grep -vxE '9awodatqc5.execute-api.us-east-1.amazonaws.com|www.w3.org|react.dev' || true)
+          if [ -n "$extra" ]; then
+            echo "Unexpected host:"
+            printf '%s\n' "$extra"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_WEB_APP_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: deploy-web-app-${{ github.run_id }}
+
+      # Hashed files go up first. index.html goes up last, and old hashed files stay.
+      - name: Upload the build
+        run: |
+          aws s3 cp dist/assets/ "s3://$BUCKET/assets/" --recursive --cache-control "public, max-age=31536000, immutable" --region "$AWS_REGION"
+          aws s3 cp dist/index.html "s3://$BUCKET/index.html" --cache-control "no-cache" --content-type "text/html; charset=utf-8" --region "$AWS_REGION"
+
+      - name: Invalidate the page
+        id: invalidation
+        run: |
+          id=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/index.html" "/" --query Invalidation.Id --output text --region "$AWS_REGION")
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$id" --region "$AWS_REGION"
+
+      - name: Check the served bytes
+        id: served
+        run: |
+          fail=0
+          check() {
+            url="$1"
+            file="$2"
+            tmp=$(mktemp)
+            curl -fsS "$url" -o "$tmp"
+            local_hash=$(sha256sum "$file" | awk '{print $1}')
+            remote_hash=$(sha256sum "$tmp" | awk '{print $1}')
+            rm -f "$tmp"
+            if [ "$local_hash" = "$remote_hash" ]; then
+              echo "ok $url"
+            else
+              echo "DIFF $url"
+              fail=1
+            fi
+          }
+          check "$SITE_URL/" dist/index.html
+          check "$SITE_URL/index.html" dist/index.html
+          for file in dist/assets/*; do
+            name=$(basename "$file")
+            check "$SITE_URL/assets/$name" "$file"
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "result=differed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "result=matched" >> "$GITHUB_OUTPUT"
+
+      - name: Write a summary
+        if: always()
+        run: |
+          {
+            echo "### Deployed files"
+            find dist -type f | sort
+            echo
+            echo "Invalidation: ${{ steps.invalidation.outputs.id || 'not checked' }}"
+            echo "Served bytes: ${{ steps.served.outputs.result || 'not checked' }}"
+          } >> "$GITHUB_STEP_SUMMARY"
