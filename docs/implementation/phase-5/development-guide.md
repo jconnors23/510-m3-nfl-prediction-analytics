@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Development Guide
 
-This guide shows how to run the web app on your own computer, test it, build it, check every matchup against the live API, and change it. Nothing on this page creates or changes anything on AWS. To put a new build online, see the [Deployment Guide](./deployment-guide.md). The contracts and the reasons are on the [Implementation](./implementation.md) page.
+This guide shows how to run the web app on your own computer, test it, build it, check every matchup against the live API, and change it. Nothing on this page creates or changes anything on AWS. To put a new build online, see the [Deployment Guide](./deployment-guide.md). The contracts and the reasons are on the [Implementation](./implementation-part-1.md) page.
 
 ## What Is Needed First?
 
@@ -20,6 +20,23 @@ npm ci
 - **No AWS account.** The live API is public, and nothing here writes to AWS.
 
 Run every `npm` command from `frontend/`, and every `python` command from the project folder.
+
+## Which Make Commands Are There?
+
+The `Makefile` in the project folder has six commands. Run them from the project folder.
+
+- **`make train`:** trains the model, logs the run to MLflow, and adds the run to the committed log in `mlflow-reference/`. See [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run).
+- **`make pytest`:** runs every Python test.
+- **`make webtest`:** runs the web app's tests.
+- **`make start`:** starts the FastAPI prediction service at `http://127.0.0.1:8000`.
+- **`make start-web`:** starts the web app's dev server at `http://localhost:5173`. It forwards `/predict` and `/health` to the service from `make start`.
+- **`make docs`:** previews the docs site at `http://127.0.0.1:8001`.
+
+For a local run, use two terminals: `make start` in one, then `make start-web` in the other. The steps below explain each one and what to check.
+
+- **Port 8000 must be free for `make start`.** If `mkdocs serve` is running with its default port, it holds 8000. Use `make docs` instead, which serves the docs on 8001.
+- **`make docs` uses the `mkdocs` on your PATH,** because MkDocs is not one of the project's Python packages. Install it once with `pip install mkdocs==1.6.1 mkdocs-material==9.7.7 pymdown-extensions==12.0.1`, the versions the docs workflow uses.
+- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See the [Deployment Guide](./deployment-guide.md#add-the-feedback-route).
 
 ## How Do I Run It Locally?
 
@@ -70,7 +87,7 @@ The browser now sends a preflight to the live API, which allows `http://localhos
 
 ### Step 4: Check a Known Matchup
 
-Pick **New England Patriots** as the home team and **Tennessee Titans** as the away team, then click Predict. The page shows the Patriots as the winner at **63.8%**, the Titans at **36.2%**, and the two numbers sent, 0.389 and 5.9. The full worked example is on the [Implementation](./implementation.md#what-is-a-worked-example) page.
+Open the **Custom Matchup** tab. Pick **New England Patriots** as the home team and **Tennessee Titans** as the away team, then click Analyze. The page shows the Patriots as the winner at **63.8%**, the Titans at **36.2%**, and the two numbers sent, 0.389 and 5.9. The full worked example is on the [Implementation](./implementation-part-1.md#what-is-a-worked-example) page.
 
 ## How Do I Run the Tests?
 
@@ -82,7 +99,7 @@ From `frontend/`:
 npm test
 ```
 
-Expected: **35 passed** when `build/expected-matchups.json` exists, and **34 passed with 1 skipped** when it does not, as on a fresh checkout or on GitHub. The tests use a stand-in for the network, so they make no real request. What each test checks is on the [Implementation](./implementation.md#which-tests-pin-these-contracts) page.
+Expected: **62 passed** when `build/expected-matchups.json` and `build/expected-season.json` exist, and **60 passed with 2 skipped** when they do not, as on a fresh checkout or on GitHub. The tests use a stand-in for the network, so they make no real request. What each test checks is on the [Implementation](./implementation-part-1.md#which-tests-pin-these-contracts) page.
 
 ### Python Tests for the Profiles File
 
@@ -92,7 +109,7 @@ From the project folder:
 python -m pytest tests/test_profiles.py
 ```
 
-Expected: **8 passed**. The whole project gives **61 passed** with `python -m pytest`.
+Expected: **8 passed**. The whole project gives **88 passed** with `make pytest`. `tests/test_season.py` (8), `tests/test_feedback.py` (9), and `tests/test_export_mlflow.py` (10) cover the Part 2 Python code.
 
 ## How Do I Build and Preview the Site?
 
@@ -152,13 +169,14 @@ It sends 992 requests, one at a time, and exits with an error on any mismatch. O
 - **The styles and both color themes:** `frontend/src/index.css`. Every color is a custom property at the top of the file, set once for the light theme and once for the dark theme.
 - **The fonts:** imported at the top of `frontend/src/main.tsx` from the two `@fontsource-variable` packages.
 - **The matchup logic** (the two inputs, the chances, the bar, the winner, and each team's record line): `frontend/src/matchup.ts`.
+- **The list used for every choice:** `frontend/src/Picker.tsx`. It follows the select-only combobox pattern, so it works with a keyboard and a screen reader. Tests choose an option by clicking the combobox by its label, then the option by its text.
 - **The API call and the answer check:** `frontend/src/api.ts`.
 - **The API address check:** `frontend/src/config.ts`.
 - **The types:** `frontend/src/types.ts`.
 - **The profiles file:** `frontend/src/data/team-profiles.json`, written by `src/profiles.py`.
 - **The settings:** `frontend/vite.config.ts` (port, proxy, build folder), `frontend/.env.development` and `frontend/.env.production` (the API address), and the `frontend` block of `config/config.yaml` (where the profiles file is written).
 - **The tests:** `frontend/src/*.test.ts` and `frontend/src/App.test.tsx`, and `tests/test_profiles.py`.
-- **The automatic deploy:** `.github/workflows/deploy-web-app.yml`. See [How Does a Change Reach the Live Page?](./implementation.md#how-does-a-change-reach-the-live-page).
+- **The automatic deploy:** `.github/workflows/deploy-web-app.yml`. See [How Does a Change Reach the Live Page?](./implementation-part-1.md#how-does-a-change-reach-the-live-page).
 
 ### What Rules Does the App Keep?
 

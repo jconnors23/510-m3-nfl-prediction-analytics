@@ -3,7 +3,7 @@ hide:
   - toc
 ---
 
-# Phase 5 Implementation: Web App and Hosting
+# Phase 5 Implementation Part 1: Web App and Hosting
 
 This page holds the exact contracts for the Phase 5 web app and explains how it is hosted. A contract here is the precise shape of what one part hands to another: the JSON the browser sends to the API, the JSON that comes back, the file that holds each team's standings, and the types and functions inside the app. It also answers one question directly: which part of the system does the arithmetic on each number. For the short version, see the [Brief](./brief.md). To run or change the app, see the [Development Guide](./development-guide.md). The AWS commands are on the [Deployment Guide](./deployment-guide.md).
 
@@ -431,7 +431,7 @@ Every name follows the pattern of the data bucket, `510-m3-nfl-dataset`: lowerca
 
 ## How Does a Change Reach the Live Page?
 
-A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, redeploys the page when a change under `frontend/` reaches `main`. It can also be started by hand from the repository's Actions tab. It has not run yet, because the workflow is not on `main`.
+A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, redeploys the page when a change under `frontend/` reaches `main`. It can also be started by hand from the repository's Actions tab. Its first run, on the merge of `phase-five` into `main`, passed.
 
 ```mermaid
 flowchart TB
@@ -444,7 +444,7 @@ flowchart TB
     G --> H["Write a summary<br/>for the run"]
 ```
 
-- **A failed test or check stops the run before anything is uploaded.** On GitHub, `build/expected-matchups.json` does not exist, so the parity test is skipped: the run expects 34 passed and 1 skipped.
+- **A failed test or check stops the run before anything is uploaded.** On GitHub, the every-game checks' expected files do not exist, so those tests are skipped: since Part 2, the run expects 54 passed and 2 skipped.
 - **No AWS key is stored in GitHub.** The run asks GitHub for a signed token that names the repository and the branch. AWS checks it against the GitHub sign-in provider (OpenID Connect) and trades it for the deploy role's credentials, which last at most an hour.
 - **Only `main` of this repository can use the role.** The role trusts the token only when it names `repo:jconnors23/510-m3-nfl-prediction-analytics:ref:refs/heads/main`. A run on another branch, a pull request, or a fork fails at the sign-in step.
 - **The role can do two things:** upload files into the web app bucket (`s3:PutObject`), and create and read invalidations on this one distribution. It cannot delete, list, or change settings, and it has no access to the data bucket, the Lambda function, the API, or any other distribution.
@@ -500,4 +500,4 @@ Two local scripts in `build/`, which is not committed, compare the live API with
 - **CORS:** the preflight from the CloudFront address and from `http://localhost:5173` is allowed, and from `http://example.com` it is not.
 - **The display rule,** for all 10,001 probabilities the API can return.
 
-**Not checked yet:** the two workflows have not run, because they run only on `main`. The first run of each comes when `phase-five` is merged, since the merge changes both workflow files.
+- **The two workflows' first runs,** on the merge of `phase-five` into `main` (pull request #5): Deploy Web App passed in 53 seconds, and Deploy Docs passed in 30 seconds.

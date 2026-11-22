@@ -304,7 +304,7 @@ Each restart runs the start-up step again, so the model file is read again.
 1. Edit the shapes in `src/api/schemas.py`. The request fields must be exactly the input names saved in the model file. At start-up the service compares the two and refuses to start if they differ, so adding or renaming an input starts in [Phase 2](../phase-2/development-guide.md#how-do-i-add-or-change-an-input).
 2. Update the tests in `tests/test_api.py`.
 3. Start the service and send the new request with `curl`, using the examples above.
-4. Everything that calls the API uses the same shapes: the Phase 4 function, and the Phase 5 web app. The contracts are on the [Phase 5 Implementation](../phase-5/implementation.md#what-does-the-browser-send) page.
+4. Everything that calls the API uses the same shapes: the Phase 4 function, and the Phase 5 web app. The contracts are on the [Phase 5 Implementation](../phase-5/implementation-part-1.md#what-does-the-browser-send) page.
 
 ### How Do I Change a Rule?
 
