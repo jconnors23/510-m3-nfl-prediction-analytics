@@ -1,6 +1,7 @@
 """Tests for the two pre-game inputs.
 
-The games are made up, so nothing reads the downloaded table.
+The games are made up and kept in memory, so nothing reads the downloaded table, touches
+the network, or writes a file. Each expected value is worked out by hand from the scores.
 """
 
 import pandas as pd
@@ -68,6 +69,7 @@ def test_hand_checked_week_2_and_week_3_values():
         "w3a": (1.0, 27.5, 1),
         "w3b": (0.0, 5.5, 1),
     }
+    # == is safe here: every expected value is a whole number or a half, which a float stores exactly.
     for game_id, (win_pct, margin, home_win) in expected.items():
         row = _row(table, game_id)
         assert row["win_pct_differential"] == win_pct

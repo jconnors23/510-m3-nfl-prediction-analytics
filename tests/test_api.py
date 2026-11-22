@@ -1,6 +1,8 @@
 """Tests for the local prediction service.
 
-The made-up model lives in a temporary folder. Only the last test reads models/model.joblib.
+The made-up model lives in a temporary folder, and FastAPI's TestClient calls the service in the
+same process, so no server starts and no network is used. Only the last test reads models/model.joblib,
+and it is skipped when that file is not on disk.
 """
 
 import ast
@@ -71,6 +73,7 @@ def _client(config: dict) -> TestClient:
 def test_prediction_matches_the_pipeline(model_config):
     """The route's rounded probability matches the same pipeline called directly."""
     config, pipeline = model_config
+    # The service rounds the probability to 4 decimals, so the expected value is rounded the same way.
     payload = {"win_pct_differential": -0.25, "point_diff_per_game_differential": 6.0}
     with _client(config) as client:
         body = client.post("/predict", json=payload).json()
@@ -83,6 +86,7 @@ def test_prediction_matches_the_pipeline(model_config):
 
 def test_pick_rule():
     """Exactly 0.5 and anything lower is an away win, and anything higher is a home win."""
+    # The same rule as the scoring code, so the service and the reported accuracy pick alike.
     assert label_for(0.0) == (0, "away win")
     assert label_for(0.4999) == (0, "away win")
     assert label_for(0.5) == (0, "away win")
@@ -93,6 +97,7 @@ def test_pick_rule():
 def test_response_fields(model_config):
     """The response has the four fields, and whole-number inputs are accepted."""
     config, _pipeline = model_config
+    # Whole numbers are sent on purpose. JSON from the browser may write 0 instead of 0.0.
     with _client(config) as client:
         response = client.post(
             "/predict",
@@ -105,6 +110,7 @@ def test_response_fields(model_config):
     assert isinstance(body["predicted_label"], str)
     assert isinstance(body["home_win_probability"], float)
     assert body["model_version"] == "test-1"
+    # The pick follows the probability in the same response, whichever side the made-up model lands on.
     if body["home_win_probability"] > 0.5:
         assert body["prediction"] == 1
         assert body["predicted_label"] == "home win"
@@ -138,22 +144,25 @@ def test_missing_field_is_rejected(model_config):
 def test_extra_field_is_rejected(model_config):
     """A request with an unknown field is rejected and names that field."""
     config, _pipeline = model_config
+    # Any unknown key is rejected. home_rest is a real nflverse column that the API does not take,
+    # so this also shows that a real but unsupported column is refused.
     with _client(config) as client:
         response = client.post(
             "/predict",
             json={
                 "win_pct_differential": 0.1,
                 "point_diff_per_game_differential": 1.0,
-                "spread": 3,
+                "home_rest": 3,
             },
         )
     assert response.status_code == 422
-    assert "spread" in response.text
+    assert "home_rest" in response.text
 
 
 def test_text_value_is_rejected(model_config):
     """A number written as text is rejected, whether or not the text looks numeric."""
     config, _pipeline = model_config
+    # Text is refused even when it looks like a number, so the service never guesses a conversion.
     with _client(config) as client:
         words = client.post(
             "/predict",
@@ -170,6 +179,7 @@ def test_text_value_is_rejected(model_config):
 def test_out_of_range_value_is_rejected(model_config):
     """Values past either limit are rejected, and the two edges are accepted."""
     config, _pipeline = model_config
+    # Values just past a limit fail, and values on a limit (1 and -100) pass.
     with _client(config) as client:
         high = client.post(
             "/predict",
@@ -257,6 +267,7 @@ def test_version_mismatch_stops_startup(model_config, tmp_path):
     # Copy the good file with only the saved version changed, so the version is the one thing wrong.
     saved = joblib.load(path)
     saved["scikit_learn_version"] = "0.0.0"
+    # A model saved by another scikit-learn version can load and still give wrong answers, so start-up refuses it.
     other = tmp_path / "other.joblib"
     joblib.dump(saved, other)
     mismatched = {"model": {"output_path": str(other)}}

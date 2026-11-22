@@ -1,4 +1,8 @@
-"""Fit the model on the training seasons, score it, record the run, and save the file."""
+"""Fit the model on the training seasons, score it, record the run, and save the file.
+
+Only the training games are used to fit the model. Validation and test games are scored but
+never fitted on.
+"""
 
 import hashlib
 import json
@@ -20,6 +24,7 @@ from sklearn.preprocessing import StandardScaler
 
 from src.config import data_file, load_config, project_root, resolve_path, split_seasons
 from src.model.evaluate import plot_confusion_matrix, score_group
+from src.model.export_mlflow import export_latest_run
 from src.model.features import (
     INPUT_COLUMNS,
     build_model_table,
@@ -189,7 +194,8 @@ def log_run(config: dict, scores: dict, files: dict, pipeline) -> str:
     run_name = f"LogisticRegression-{model['version']}"
     # Training log loss is left out. The model is fit by pushing that number down, so it is not a fair check.
     # A run that fails partway is closed by `with` and marked as failed, so it is never left open.
-    with mlflow.start_run(run_name=run_name):
+    # The owner is a fixed name, so the MLflow screen shows 510-m3-pipeline and not this computer's user name.
+    with mlflow.start_run(run_name=run_name, tags={"mlflow.user": "510-m3-pipeline"}):
         # MLflow keeps every parameter as text. Scores below are numbers, so they can be charted.
         mlflow.log_params(
             {
@@ -268,6 +274,9 @@ def main() -> None:
                 },
                 pipeline,
             )
+            # The readable copy is written after the run has finished, so it always matches the newest
+            # finished run. It sits inside this try, so a ValueError from it ends with a short message.
+            export_latest_run(config)
     except (ValueError, FileNotFoundError) as exc:
         # Expected problems (no downloaded table, a failed check) end with a short message.
         raise SystemExit(str(exc)) from None
@@ -286,6 +295,7 @@ def main() -> None:
     print(f"saved: {config['model']['output_path']}")
     print(f"summary: {config['tracking']['summary_path']}")
     print(f"MLflow run: {run_name}")
+    print(f"saved: {config['tracking']['reference_folder']}/latest-run")
 
 
 if __name__ == "__main__":

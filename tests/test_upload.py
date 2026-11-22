@@ -1,6 +1,7 @@
 """Tests for the S3 upload script.
 
-They use a Mock in place of the real S3 client, so no test calls AWS or needs credentials.
+They use a Mock in place of the real S3 client, and every file lives in pytest's temporary
+folder. No test calls AWS, needs credentials, or touches the project's data folders.
 """
 
 from pathlib import Path
@@ -31,6 +32,8 @@ def test_upload_stops_when_object_size_differs(tmp_path):
     """
     path = tmp_path / "games.csv"
     path.write_text("game_id\n1\n", encoding="utf-8")
+    # A Mock accepts any call and records it, so the upload runs without a network. Only
+    # head_object is given an answer, because the size check is the part under test.
     client = Mock()
     # Pretend S3 reports an object 5 bytes larger than the local file.
     client.head_object.return_value = {"ContentLength": path.stat().st_size + 5}

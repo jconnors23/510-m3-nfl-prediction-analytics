@@ -1,6 +1,10 @@
+// Calls the /predict endpoint. Every outcome comes back as a result value, and a call that
+// never answers is cut off after a timeout, so the page never waits forever.
+
 import type { PredictOutcome, PredictRequest, PredictResponse } from "./types.ts";
 
-// Accepts only an answer the page knows how to read. Extra fields are ignored.
+// Accepts only an answer the page knows how to read. Extra fields are ignored. The label must
+// match the prediction, so a mixed-up answer is refused and not shown.
 export function isPredictResponse(value: unknown): value is PredictResponse {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -23,6 +27,7 @@ export function isPredictResponse(value: unknown): value is PredictResponse {
   return typeof version === "string" && version.length > 0;
 }
 
+// Reads the error text from the shapes the API uses: a string detail, a list of detail items, or a message.
 function messageFrom(body: unknown): string {
   if (typeof body !== "object" || body === null) {
     return "";
@@ -48,12 +53,16 @@ export async function predict(
   request: PredictRequest,
   options: { baseUrl: string; timeoutMs: number; signal?: AbortSignal },
 ): Promise<PredictOutcome> {
+  // One controller ends the request for two reasons: the timeout below, or the caller's signal.
+  // timedOut records which one happened, so the catch block can report a timeout and not an outage.
   const controller = new AbortController();
   let timedOut = false;
   const timer = setTimeout(() => {
     timedOut = true;
     controller.abort();
   }, options.timeoutMs);
+  // The caller cancels when a newer request replaces this one. A signal that is already
+  // aborted must cancel at once, because it will not fire its event again.
   const onAbort = () => controller.abort();
   if (options.signal) {
     if (options.signal.aborted) {
@@ -63,6 +72,8 @@ export async function predict(
     }
   }
   try {
+    // The request body is the object the caller built, with no change, so the model gets exactly
+    // those two numbers.
     const response = await fetch(`${options.baseUrl}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,6 +81,7 @@ export async function predict(
       signal: controller.signal,
     });
     const text = await response.text();
+    // Only 200 is a prediction. Any other status is read as an error with an optional message.
     if (response.status === 200) {
       try {
         const parsed: unknown = JSON.parse(text);
@@ -89,11 +101,14 @@ export async function predict(
     }
     return { kind: "http-error", status: response.status, message };
   } catch {
+    // An abort and a network failure both land here. Only the timeout flag tells them apart.
+    // A cancel by the caller is also reported as unreachable, and the page drops that answer.
     if (timedOut) {
       return { kind: "timeout" };
     }
     return { kind: "unreachable" };
   } finally {
+    // Clean up on every path, so the timer cannot fire later and the listener does not pile up.
     clearTimeout(timer);
     options.signal?.removeEventListener("abort", onAbort);
   }

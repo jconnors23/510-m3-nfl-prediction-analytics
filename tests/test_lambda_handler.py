@@ -1,4 +1,9 @@
-"""Tests for the Lambda entry point, using made-up API Gateway events and a temporary model."""
+"""Tests for the Lambda entry point, using made-up API Gateway events and a temporary model.
+
+The events are plain dictionaries and the model is fitted on made-up games in a temporary
+folder, so no test calls AWS or the network. Only the last test reads models/model.joblib, and
+it is skipped when that file is not on disk.
+"""
 
 import ast
 import json
@@ -106,6 +111,7 @@ def test_handler_serves_a_predict_event(model_config):
     """A predict event returns 200 and the made-up model's version."""
     # build_handler is the one place the Lambda wiring is written, so calling it with a made-up
     # model tests the same code path that runs on AWS. The body is a JSON string, as in a real event.
+    # None stands in for the Lambda context object, which these tests do not need.
     wrapped = build_handler(create_app(model_config), model_config)
     result = wrapped(
         _event(
@@ -135,7 +141,8 @@ def test_handler_serves_a_health_event(model_config):
 
 
 def test_handler_rejects_a_bad_body(model_config):
-    """A body with one out-of-range field returns 422 and names both fields."""
+    """A body with one out-of-range field and one missing field returns 422 and names both."""
+    # win_pct_differential is above its limit of 1, and point_diff_per_game_differential is absent.
     wrapped = build_handler(create_app(model_config), model_config)
     result = wrapped(_event("POST", "/predict", '{"win_pct_differential": 1.5}'), None)
     assert result["statusCode"] == 422

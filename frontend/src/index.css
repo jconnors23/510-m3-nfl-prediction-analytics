@@ -1,3 +1,8 @@
+/* Styles for the whole page. Every color is a custom property set once for light and once for
+   dark, so no rule below needs a second version for dark. Fonts come from the bundled font
+   packages imported in main.tsx, so the page makes no request to an outside font service. */
+
+/* Theme: light colors */
 :root {
   color-scheme: light;
   --bg: #f6f5f8;
@@ -32,6 +37,9 @@
   background: var(--bg);
 }
 
+/* Theme: dark colors. These follow the system setting unless the page has data-theme="light".
+   The same values appear again in the data-theme="dark" rule below, because a CSS media query
+   and an attribute selector cannot share one block. Keep the two lists identical. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
@@ -63,6 +71,8 @@
   }
 }
 
+/* Theme: the toggle button sets data-theme on the page element. This choice beats the system
+   setting. The page does not store it, so the next visit starts from the system setting again. */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #0e0c12;
@@ -92,18 +102,22 @@
   --shadow: 0 10px 28px color-mix(in srgb, var(--ink) 4%, transparent);
 }
 
+/* A visitor on a dark system who picks light gets the light values from :root. This rule only
+   keeps the browser's own controls light as well. */
 :root[data-theme="light"] {
   color-scheme: light;
 }
 
+/* Page structure */
 body {
   margin: 0;
+  overflow-x: hidden;
   color: var(--ink);
   background: var(--bg);
 }
 
 /* The footer stays at the bottom of a short window. 100dvh is the visible
-   height on a phone; 100vh is the fallback. */
+   height on a phone, and 100vh is the fallback for browsers that lack it. */
 #root {
   display: flex;
   flex-direction: column;
@@ -111,6 +125,7 @@ body {
   min-height: 100dvh;
 }
 
+/* Type: headings, the model badge, buttons, and the big percentages use the condensed display font. */
 h1,
 h2,
 h3,
@@ -146,6 +161,7 @@ h3 {
   font-size: 1.1rem;
 }
 
+/* Header: a brand-colored band with faint vertical lines, like yard lines on a field. */
 .site-header {
   padding: 1.25rem 0;
   color: var(--on-brand);
@@ -158,6 +174,8 @@ h3 {
   border-bottom: 4px solid var(--amber);
 }
 
+/* The header and footer text share the card column: a 48rem box with 1.25rem of side padding.
+   Cards sit in a box built the same way (see main), so every left edge lines up. */
 .header-inner,
 .footer-inner {
   box-sizing: border-box;
@@ -176,6 +194,7 @@ h3 {
   margin-bottom: 0.75rem;
 }
 
+/* The theme button needs at least 44px of height so it is easy to tap. aria-pressed marks dark as on. */
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -227,6 +246,7 @@ h3 {
   color: var(--brand-soft);
 }
 
+/* Notice: the disclaimer under the header. */
 .notice-band {
   margin-top: 1rem;
   padding-top: 0.75rem;
@@ -247,9 +267,12 @@ h3 {
   border-left: 4px solid var(--amber);
 }
 
+/* Cards: the main column and the white panels in it. */
 main {
   box-sizing: border-box;
   flex: 1 0 auto;
+  /* A flex item's default minimum is its content width, which lets a wide table widen the page. */
+  min-width: 0;
   width: 100%;
   max-width: 48rem;
   margin-right: auto;
@@ -273,6 +296,8 @@ main {
   color: var(--link);
 }
 
+/* Pickers: the two team lists stack on a phone and sit side by side from 40rem. The middle column
+   is as wide as "vs" needs, so the two lists get equal widths. */
 .pickers {
   display: grid;
   gap: 0.75rem;
@@ -286,11 +311,24 @@ main {
   }
 }
 
-.team-picker label {
-  display: block;
-  margin-bottom: 0.25rem;
+/* Each label sits above its control, with a gap before the next field. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
+.field + .field {
+  margin-top: 1rem;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Controls: form fields take the page font, so they match the text around them. */
 select,
 button {
   font: inherit;
@@ -307,9 +345,134 @@ select {
   border-radius: 8px;
 }
 
-.team-record {
-  margin: 0.4rem 0 0;
+/* The message box matches the pickers: full width, the body font, and the same border. */
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 9rem;
+  padding: 0.6rem 0.75rem;
+  color: var(--ink);
+  font-family: "Inter Variable", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+/* Picker: the list the page draws in place of a native select (see Picker.tsx). The list is solid
+   and stacks above the button, and the button is the closed state of the same control. */
+
+/* The relative position lets the absolute list below anchor to this box. */
+.picker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* The global button rule uses the uppercase headline font, which would capitalize team names and
+   spread out their letters. So this button sets the body font, no letter spacing, and no case change. */
+.picker button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.6rem;
+  color: var(--ink);
+  font-family: "Inter Variable", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.picker-arrow {
+  flex: 0 0 auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.2rem;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: rotate(45deg);
+}
+
+/* The list floats over the content below it and scrolls when it is long. The z-index keeps it above
+   later fields, and the solid background stops them showing through. */
+.picker-list {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  left: 0;
+  z-index: 30;
+  max-height: 18rem;
+  margin: 0;
+  padding: 0.25rem 0;
+  overflow-y: auto;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.picker-list.is-above {
+  top: auto;
+  bottom: calc(100% + 0.25rem);
+}
+
+.picker-list [role="option"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.7rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* is-active marks the option the arrow keys are on, which is not always the chosen one. */
+.picker-list [role="option"].is-active {
+  /* A light tint of the link color, still dark enough that the ink text stays readable. */
+  background: color-mix(in srgb, var(--link) 18%, var(--surface));
+}
+
+.picker-list [role="option"][aria-disabled="true"] {
   color: var(--muted);
+  cursor: default;
+}
+
+/* The check mark is drawn with two borders on a rotated box, so it needs no icon file. Every option
+   keeps an empty box of the same size, so the labels line up whether or not one is chosen. */
+.picker-check {
+  flex: 0 0 auto;
+  width: 0.7rem;
+  height: 0.45rem;
+}
+
+.picker-check.is-chosen {
+  border-bottom: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+  transform: rotate(-45deg);
+}
+
+/* Small muted notes under a control: a team's record, and the character count under the message box. */
+.team-record,
+.char-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.char-count {
+  text-align: right;
 }
 
 .versus {
@@ -323,10 +486,12 @@ select {
   border-radius: 999px;
 }
 
+/* The main action button. .matchup > button also covers any direct button in the matchup card. */
+.analyze,
 .matchup > button {
   width: 100%;
   min-height: 3rem;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   color: var(--on-action);
   background: var(--action);
   border: 2px solid var(--action);
@@ -334,12 +499,15 @@ select {
   cursor: pointer;
 }
 
+.analyze:hover,
+.analyze:active,
 .matchup > button:hover,
 .matchup > button:active {
   background: var(--action-hover);
   border-color: var(--action-hover);
 }
 
+.analyze:disabled,
 .matchup > button:disabled {
   color: var(--muted);
   background: var(--disabled);
@@ -347,13 +515,17 @@ select {
   cursor: not-allowed;
 }
 
-.warning {
+/* A warning and the feedback "saved" status share one amber note style. */
+.warning,
+.status {
   color: var(--warn-ink);
   background: var(--warn-bg);
-  padding: 0.6rem 0.75rem;
+  padding: 0.7rem 0.8rem;
+  margin-top: 1rem;
   border-left: 4px solid var(--amber);
 }
 
+/* Waiting and error messages. */
 .waiting {
   display: flex;
   align-items: center;
@@ -379,9 +551,12 @@ select {
   color: var(--alert-ink);
   background: var(--alert-bg);
   padding: 0.7rem 0.8rem;
+  margin-top: 1rem;
   border-left: 4px solid var(--action);
 }
 
+/* Result: the split bar and the two percentage rows. The bar widths come from inline styles set in
+   App.tsx from the same tenths as the percentages, so the bar and the numbers always agree. */
 .chance-bar {
   display: flex;
   height: 1rem;
@@ -415,6 +590,7 @@ select {
   border-bottom: 1px solid var(--line);
 }
 
+/* Tabular figures give every digit the same width, so the two percentages line up in a column. */
 .chance-value {
   font-size: 1.75rem;
   font-variant-numeric: tabular-nums;
@@ -440,6 +616,7 @@ select {
   color: var(--muted);
 }
 
+/* Footer */
 .site-footer {
   padding-top: 1.25rem;
   padding-bottom: 1.5rem;
@@ -452,15 +629,120 @@ select {
   color: var(--on-brand);
 }
 
+.site-footer a {
+  color: var(--footer-soft);
+}
+
+/* Tabs: the bar is as wide as the card column. The list is at least as wide as its buttons
+   (max-content), so five tabs scroll sideways on a phone and never wrap or shrink. */
+.tab-bar {
+  box-sizing: border-box;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  overflow-x: auto;
+  /* Auto margins on a flex item turn off stretching, so without this width the bar grows to the
+     width of the tab row and the page scrolls sideways. */
+  width: 100%;
+  min-width: 0;
+}
+
+.tab-bar [role="tablist"] {
+  display: flex;
+  gap: 0.25rem;
+  width: max-content;
+  min-width: 100%;
+}
+
+.tab-bar [role="tab"] {
+  min-height: 44px;
+  padding: 0.4rem 0.75rem;
+  color: var(--link);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.tab-bar [role="tab"][aria-selected="true"] {
+  border-bottom-color: var(--amber);
+}
+
+/* Team Stats table. The wrapper scrolls sideways on a narrow screen, so the page itself does not
+   scroll. Cells never wrap (nowrap), because a wrapped number is hard to compare down a column. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table caption {
+  margin-bottom: 0.5rem;
+  color: var(--muted);
+  text-align: left;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 0.45rem 0.6rem;
+  white-space: nowrap;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+}
+
+/* The team column stays at the left edge while the numbers scroll under it. Sticky needs its own
+   background, or the scrolled cells would show through. */
+.stats-table th:first-child,
+.stats-table td:first-child {
+  position: sticky;
+  left: 0;
+  text-align: left;
+  background: var(--surface);
+}
+
+.stats-table th button {
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.model-input {
+  display: block;
+  color: var(--muted);
+  font-family: "Inter Variable", system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* The spam trap field is moved far off screen and made 1px. It is not display: none, because
+   simple bots skip a hidden field but fill in one that is still rendered. aria-hidden and
+   tabIndex -1 in the markup keep people and screen readers away from it. */
+.website-field {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Focus: a clear outline for keyboard users, shown only for keyboard focus. */
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
 
+/* The default outline color would be hard to see on the dark brand band. */
 .site-header :focus-visible {
   outline-color: var(--on-brand);
 }
 
+/* Motion: for visitors who ask their system for less motion, the spinner stops and the bar jumps
+   to its new width with no slide. */
 @media (prefers-reduced-motion: reduce) {
   .spinner {
     animation: none;
