@@ -1,0 +1,6307 @@
+{
+  "season": 2026,
+  "through_week": 10,
+  "weeks": [
+    {
+      "week": 1,
+      "first_day": "2026-09-09",
+      "last_day": "2026-09-14",
+      "status": "final",
+      "standings_before_week": 1,
+      "games": [
+        {
+          "game_id": "2026_01_NE_SEA",
+          "gameday": "2026-09-09",
+          "weekday": "Wednesday",
+          "gametime": "20:20",
+          "home": "SEA",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_01_SF_LA",
+          "gameday": "2026-09-10",
+          "weekday": "Thursday",
+          "gametime": "20:35",
+          "home": "LA",
+          "away": "SF",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 7,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_01_ATL_PIT",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PIT",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 13
+        },
+        {
+          "game_id": "2026_01_BAL_IND",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 41
+        },
+        {
+          "game_id": "2026_01_BUF_HOU",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 36
+        },
+        {
+          "game_id": "2026_01_CHI_CAR",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 37,
+          "away_score": 59
+        },
+        {
+          "game_id": "2026_01_CLE_JAX",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "JAX",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 34,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_01_NO_DET",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DET",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_01_NYJ_TEN",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 10,
+          "away_score": 23
+        },
+        {
+          "game_id": "2026_01_TB_CIN",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CIN",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 33,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_01_ARI_LAC",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LAC",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 14,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_01_GB_MIN",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "MIN",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 39,
+          "away_score": 22
+        },
+        {
+          "game_id": "2026_01_MIA_LV",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LV",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 13
+        },
+        {
+          "game_id": "2026_01_WAS_PHI",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "PHI",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 22
+        },
+        {
+          "game_id": "2026_01_DAL_NYG",
+          "gameday": "2026-09-13",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "NYG",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 28,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_01_DEN_KC",
+          "gameday": "2026-09-14",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "KC",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 10
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "first_day": "2026-09-17",
+      "last_day": "2026-09-21",
+      "status": "final",
+      "standings_before_week": 2,
+      "games": [
+        {
+          "game_id": "2026_02_DET_BUF",
+          "gameday": "2026-09-17",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "BUF",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 41,
+          "away_score": 31
+        },
+        {
+          "game_id": "2026_02_CAR_ATL",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 3,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_02_CIN_HOU",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 6,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_02_CLE_TB",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 19,
+          "away_score": 23
+        },
+        {
+          "game_id": "2026_02_GB_NYJ",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_02_MIN_CHI",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CHI",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 3,
+          "away_score": 9
+        },
+        {
+          "game_id": "2026_02_NO_BAL",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BAL",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_02_PHI_TEN",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_02_PIT_NE",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NE",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 3
+        },
+        {
+          "game_id": "2026_02_JAX_DEN",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "DEN",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 13
+        },
+        {
+          "game_id": "2026_02_LV_LAC",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LAC",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 14,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_02_MIA_SF",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SF",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 35,
+          "away_score": 13
+        },
+        {
+          "game_id": "2026_02_SEA_ARI",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "ARI",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 7,
+          "away_score": 31
+        },
+        {
+          "game_id": "2026_02_WAS_DAL",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "DAL",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 37,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_02_IND_KC",
+          "gameday": "2026-09-20",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "KC",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 33,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_02_NYG_LA",
+          "gameday": "2026-09-21",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "LA",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 28,
+          "away_score": 6
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "first_day": "2026-09-24",
+      "last_day": "2026-09-28",
+      "status": "final",
+      "standings_before_week": 3,
+      "games": [
+        {
+          "game_id": "2026_03_ATL_GB",
+          "gameday": "2026-09-24",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "GB",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 14,
+          "away_score": 35
+        },
+        {
+          "game_id": "2026_03_CAR_CLE",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CLE",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 18
+        },
+        {
+          "game_id": "2026_03_CIN_PIT",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PIT",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_03_HOU_IND",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 19,
+          "away_score": 17
+        },
+        {
+          "game_id": "2026_03_KC_MIA",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 10,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_03_LAC_BUF",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BUF",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 16
+        },
+        {
+          "game_id": "2026_03_NE_JAX",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "JAX",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 35,
+          "away_score": 6
+        },
+        {
+          "game_id": "2026_03_NYJ_DET",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DET",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_03_SEA_WAS",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "WAS",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 33,
+          "away_score": 31
+        },
+        {
+          "game_id": "2026_03_TEN_NYG",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 12,
+          "away_score": 7
+        },
+        {
+          "game_id": "2026_03_ARI_SF",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "SF",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 36,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_03_MIN_TB",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "TB",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 16,
+          "away_score": 23
+        },
+        {
+          "game_id": "2026_03_BAL_DAL",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "DAL",
+          "away": "BAL",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_03_LV_NO",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "NO",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 35
+        },
+        {
+          "game_id": "2026_03_LA_DEN",
+          "gameday": "2026-09-27",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "DEN",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_03_PHI_CHI",
+          "gameday": "2026-09-28",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "CHI",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 7
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "first_day": "2026-10-01",
+      "last_day": "2026-10-05",
+      "status": "final",
+      "standings_before_week": 4,
+      "games": [
+        {
+          "game_id": "2026_04_PIT_CLE",
+          "gameday": "2026-10-01",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "CLE",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_04_IND_WAS",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "09:30",
+          "home": "WAS",
+          "away": "IND",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_04_ARI_NYG",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 36,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_04_DAL_HOU",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_04_GB_TB",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 14,
+          "away_score": 17
+        },
+        {
+          "game_id": "2026_04_JAX_CIN",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CIN",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 22
+        },
+        {
+          "game_id": "2026_04_LA_PHI",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PHI",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_04_NE_BUF",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BUF",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 26,
+          "away_score": 29
+        },
+        {
+          "game_id": "2026_04_NYJ_CHI",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CHI",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 12
+        },
+        {
+          "game_id": "2026_04_TEN_BAL",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BAL",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 18
+        },
+        {
+          "game_id": "2026_04_MIA_MIN",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "MIN",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 15,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_04_DEN_SF",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SF",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 14
+        },
+        {
+          "game_id": "2026_04_KC_LV",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LV",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_04_LAC_SEA",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SEA",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 23
+        },
+        {
+          "game_id": "2026_04_DET_CAR",
+          "gameday": "2026-10-04",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "CAR",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 32,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_04_ATL_NO",
+          "gameday": "2026-10-05",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "NO",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 45
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "first_day": "2026-10-08",
+      "last_day": "2026-10-12",
+      "status": "final",
+      "standings_before_week": 5,
+      "games": [
+        {
+          "game_id": "2026_05_TB_DAL",
+          "gameday": "2026-10-08",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "DAL",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 16,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_05_PHI_JAX",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "09:30",
+          "home": "JAX",
+          "away": "PHI",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 19,
+          "away_score": 17
+        },
+        {
+          "game_id": "2026_05_CHI_GB",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "GB",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 7
+        },
+        {
+          "game_id": "2026_05_CIN_MIA",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 31
+        },
+        {
+          "game_id": "2026_05_CLE_NYJ",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 12
+        },
+        {
+          "game_id": "2026_05_HOU_TEN",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 3,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_05_IND_PIT",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PIT",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 34,
+          "away_score": 22
+        },
+        {
+          "game_id": "2026_05_LV_NE",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NE",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 45,
+          "away_score": 17
+        },
+        {
+          "game_id": "2026_05_MIN_NO",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NO",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 23
+        },
+        {
+          "game_id": "2026_05_NYG_WAS",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "WAS",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "tie",
+          "home_score": 27,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_05_DEN_LAC",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LAC",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 23
+        },
+        {
+          "game_id": "2026_05_DET_ARI",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "ARI",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 45
+        },
+        {
+          "game_id": "2026_05_SF_SEA",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SEA",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 29,
+          "away_score": 32
+        },
+        {
+          "game_id": "2026_05_BAL_ATL",
+          "gameday": "2026-10-11",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "ATL",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_05_BUF_LA",
+          "gameday": "2026-10-12",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "LA",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 34,
+          "away_score": 37
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "first_day": "2026-10-15",
+      "last_day": "2026-10-19",
+      "status": "final",
+      "standings_before_week": 6,
+      "games": [
+        {
+          "game_id": "2026_06_SEA_DEN",
+          "gameday": "2026-10-15",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "DEN",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 14
+        },
+        {
+          "game_id": "2026_06_HOU_JAX",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "09:30",
+          "home": "JAX",
+          "away": "HOU",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 31,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_06_BAL_CLE",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CLE",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_06_CAR_PHI",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PHI",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 14,
+          "away_score": 25
+        },
+        {
+          "game_id": "2026_06_CHI_ATL",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 31
+        },
+        {
+          "game_id": "2026_06_NO_NYG",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_06_NYJ_NE",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NE",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 26,
+          "away_score": 19
+        },
+        {
+          "game_id": "2026_06_PIT_TB",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 19,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_06_TEN_IND",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_06_ARI_LA",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LA",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 16,
+          "away_score": 18
+        },
+        {
+          "game_id": "2026_06_BUF_LV",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LV",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 33
+        },
+        {
+          "game_id": "2026_06_LAC_KC",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "KC",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 22,
+          "away_score": 6
+        },
+        {
+          "game_id": "2026_06_DAL_GB",
+          "gameday": "2026-10-18",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "GB",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 13
+        },
+        {
+          "game_id": "2026_06_WAS_SF",
+          "gameday": "2026-10-19",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "SF",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 17
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "first_day": "2026-10-22",
+      "last_day": "2026-10-26",
+      "status": "final",
+      "standings_before_week": 7,
+      "games": [
+        {
+          "game_id": "2026_07_NE_CHI",
+          "gameday": "2026-10-22",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "CHI",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_07_PIT_NO",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "09:30",
+          "home": "NO",
+          "away": "PIT",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 10,
+          "away_score": 16
+        },
+        {
+          "game_id": "2026_07_CIN_BAL",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BAL",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 35
+        },
+        {
+          "game_id": "2026_07_CLE_TEN",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_07_IND_MIN",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIN",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 16,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_07_MIA_NYJ",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 25,
+          "away_score": 28
+        },
+        {
+          "game_id": "2026_07_NYG_HOU",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_07_SF_ATL",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 29,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_07_TB_CAR",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 43
+        },
+        {
+          "game_id": "2026_07_DEN_ARI",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "ARI",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 16,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_07_GB_DET",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "DET",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 17
+        },
+        {
+          "game_id": "2026_07_LA_LV",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LV",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 35
+        },
+        {
+          "game_id": "2026_07_KC_SEA",
+          "gameday": "2026-10-25",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "SEA",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 3
+        },
+        {
+          "game_id": "2026_07_DAL_PHI",
+          "gameday": "2026-10-26",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "PHI",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 38
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "first_day": "2026-10-29",
+      "last_day": "2026-11-02",
+      "status": "final",
+      "standings_before_week": 8,
+      "games": [
+        {
+          "game_id": "2026_08_CAR_GB",
+          "gameday": "2026-10-29",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "GB",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 19
+        },
+        {
+          "game_id": "2026_08_ARI_DAL",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DAL",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 30,
+          "away_score": 33
+        },
+        {
+          "game_id": "2026_08_ATL_TB",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 16,
+          "away_score": 0
+        },
+        {
+          "game_id": "2026_08_BAL_BUF",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BUF",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 36,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_08_CLE_PIT",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PIT",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 6
+        },
+        {
+          "game_id": "2026_08_IND_JAX",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "JAX",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 42,
+          "away_score": 7
+        },
+        {
+          "game_id": "2026_08_LV_NYJ",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 33,
+          "away_score": 38
+        },
+        {
+          "game_id": "2026_08_MIN_DET",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DET",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 19,
+          "away_score": 15
+        },
+        {
+          "game_id": "2026_08_TEN_CIN",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CIN",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 43,
+          "away_score": 36
+        },
+        {
+          "game_id": "2026_08_LAC_LA",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LA",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 9
+        },
+        {
+          "game_id": "2026_08_KC_DEN",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "DEN",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 28,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_08_NE_MIA",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "MIA",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 19,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_08_PHI_WAS",
+          "gameday": "2026-11-01",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "WAS",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_08_CHI_SEA",
+          "gameday": "2026-11-02",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "SEA",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 34
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "first_day": "2026-11-05",
+      "last_day": "2026-11-09",
+      "status": "final",
+      "standings_before_week": 9,
+      "games": [
+        {
+          "game_id": "2026_09_JAX_BAL",
+          "gameday": "2026-11-05",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "BAL",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 10,
+          "away_score": 33
+        },
+        {
+          "game_id": "2026_09_CIN_ATL",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "09:30",
+          "home": "ATL",
+          "away": "CIN",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_09_CLE_NO",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NO",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 22
+        },
+        {
+          "game_id": "2026_09_DAL_IND",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 27
+        },
+        {
+          "game_id": "2026_09_DEN_CAR",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 26
+        },
+        {
+          "game_id": "2026_09_DET_MIA",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 9,
+          "away_score": 19
+        },
+        {
+          "game_id": "2026_09_LA_WAS",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "WAS",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_09_NYG_PHI",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PHI",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 11,
+          "away_score": 19
+        },
+        {
+          "game_id": "2026_09_NYJ_KC",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "KC",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 35,
+          "away_score": 12
+        },
+        {
+          "game_id": "2026_09_HOU_LAC",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LAC",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 22,
+          "away_score": 44
+        },
+        {
+          "game_id": "2026_09_ARI_SEA",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SEA",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 3
+        },
+        {
+          "game_id": "2026_09_GB_NE",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "NE",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 45
+        },
+        {
+          "game_id": "2026_09_LV_SF",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SF",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 38,
+          "away_score": 17
+        },
+        {
+          "game_id": "2026_09_TB_CHI",
+          "gameday": "2026-11-08",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "CHI",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_09_BUF_MIN",
+          "gameday": "2026-11-09",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "MIN",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 6,
+          "away_score": 23
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "first_day": "2026-11-12",
+      "last_day": "2026-11-16",
+      "status": "final",
+      "standings_before_week": 10,
+      "games": [
+        {
+          "game_id": "2026_10_WAS_NYG",
+          "gameday": "2026-11-12",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "NYG",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 21,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_10_NE_DET",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "09:30",
+          "home": "DET",
+          "away": "NE",
+          "neutral_site": true,
+          "status": "final",
+          "home_score": 35,
+          "away_score": 10
+        },
+        {
+          "game_id": "2026_10_BUF_NYJ",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 12,
+          "away_score": 31
+        },
+        {
+          "game_id": "2026_10_CAR_NO",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NO",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 17,
+          "away_score": 20
+        },
+        {
+          "game_id": "2026_10_HOU_CLE",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CLE",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 27,
+          "away_score": 24
+        },
+        {
+          "game_id": "2026_10_JAX_TEN",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 23,
+          "away_score": 40
+        },
+        {
+          "game_id": "2026_10_KC_ATL",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 35
+        },
+        {
+          "game_id": "2026_10_MIA_IND",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 24,
+          "away_score": 22
+        },
+        {
+          "game_id": "2026_10_MIN_GB",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "GB",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 10,
+          "away_score": 30
+        },
+        {
+          "game_id": "2026_10_LA_ARI",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "ARI",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 6,
+          "away_score": 34
+        },
+        {
+          "game_id": "2026_10_SEA_LV",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LV",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 13,
+          "away_score": 21
+        },
+        {
+          "game_id": "2026_10_SF_DAL",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "DAL",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 40,
+          "away_score": 46
+        },
+        {
+          "game_id": "2026_10_PIT_CIN",
+          "gameday": "2026-11-15",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "CIN",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 38,
+          "away_score": 18
+        },
+        {
+          "game_id": "2026_10_LAC_BAL",
+          "gameday": "2026-11-16",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "BAL",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "final",
+          "home_score": 20,
+          "away_score": 23
+        }
+      ]
+    },
+    {
+      "week": 11,
+      "first_day": "2026-11-19",
+      "last_day": "2026-11-23",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_11_IND_HOU",
+          "gameday": "2026-11-19",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "HOU",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_ARI_KC",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "KC",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_BAL_CAR",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_JAX_NYG",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_MIA_BUF",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BUF",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_NO_CHI",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CHI",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_TB_DET",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DET",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_TEN_DAL",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DAL",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_NYJ_LAC",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LAC",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_LV_DEN",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "DEN",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_PIT_PHI",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "PHI",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_MIN_SF",
+          "gameday": "2026-11-22",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "SF",
+          "away": "MIN",
+          "neutral_site": true,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_11_CIN_WAS",
+          "gameday": "2026-11-23",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "WAS",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "first_day": "2026-11-25",
+      "last_day": "2026-11-30",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_12_GB_LA",
+          "gameday": "2026-11-25",
+          "weekday": "Wednesday",
+          "gametime": "20:00",
+          "home": "LA",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_CHI_DET",
+          "gameday": "2026-11-26",
+          "weekday": "Thursday",
+          "gametime": "13:00",
+          "home": "DET",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_PHI_DAL",
+          "gameday": "2026-11-26",
+          "weekday": "Thursday",
+          "gametime": "16:30",
+          "home": "DAL",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_KC_BUF",
+          "gameday": "2026-11-26",
+          "weekday": "Thursday",
+          "gametime": "20:20",
+          "home": "BUF",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_DEN_PIT",
+          "gameday": "2026-11-27",
+          "weekday": "Friday",
+          "gametime": "15:00",
+          "home": "PIT",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_ATL_MIN",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIN",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_BAL_HOU",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_NO_CIN",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CIN",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_NYG_IND",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_NYJ_MIA",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_TEN_JAX",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "JAX",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_NE_LAC",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LAC",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_SEA_SF",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SF",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_WAS_ARI",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "ARI",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_LV_CLE",
+          "gameday": "2026-11-29",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "CLE",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_12_CAR_TB",
+          "gameday": "2026-11-30",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "TB",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 13,
+      "first_day": "2026-12-03",
+      "last_day": "2026-12-07",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_13_KC_LA",
+          "gameday": "2026-12-03",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "LA",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_CIN_CLE",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CLE",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_DET_ATL",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_GB_NO",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NO",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_JAX_CHI",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CHI",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_LAC_TB",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_SF_NYG",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_WAS_TEN",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_MIA_DEN",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "DEN",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_PHI_ARI",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "ARI",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_BUF_NE",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "NE",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_CAR_MIN",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "MIN",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_HOU_PIT",
+          "gameday": "2026-12-06",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "PIT",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_13_DAL_SEA",
+          "gameday": "2026-12-07",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "SEA",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 14,
+      "first_day": "2026-12-10",
+      "last_day": "2026-12-14",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_14_MIN_NE",
+          "gameday": "2026-12-10",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "NE",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_ATL_CLE",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CLE",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_CHI_MIA",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_DEN_NYJ",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_HOU_WAS",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "WAS",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_IND_PHI",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PHI",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_NO_CAR",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_TB_BAL",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BAL",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_TEN_DET",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DET",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_LAC_LV",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LV",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_KC_CIN",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "CIN",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_LA_SF",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SF",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_NYG_SEA",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "SEA",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_BUF_GB",
+          "gameday": "2026-12-13",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "GB",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_14_PIT_JAX",
+          "gameday": "2026-12-14",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "JAX",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 15,
+      "first_day": "2026-12-17",
+      "last_day": "2026-12-21",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_15_SF_LAC",
+          "gameday": "2026-12-17",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "LAC",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_SEA_PHI",
+          "gameday": "2026-12-19",
+          "weekday": "Saturday",
+          "gametime": "17:00",
+          "home": "PHI",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_CHI_BUF",
+          "gameday": "2026-12-19",
+          "weekday": "Saturday",
+          "gametime": "20:20",
+          "home": "BUF",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_ATL_WAS",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "WAS",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_BAL_PIT",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PIT",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_CIN_CAR",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_CLE_NYG",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_IND_TEN",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_JAX_HOU",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_MIA_GB",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "GB",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_NO_TB",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_NYJ_ARI",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "ARI",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_DAL_LA",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LA",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_DEN_LV",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "LV",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_DET_MIN",
+          "gameday": "2026-12-20",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "MIN",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_15_NE_KC",
+          "gameday": "2026-12-21",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "KC",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 16,
+      "first_day": "2026-12-24",
+      "last_day": "2026-12-28",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_16_HOU_PHI",
+          "gameday": "2026-12-24",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "PHI",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_GB_CHI",
+          "gameday": "2026-12-25",
+          "weekday": "Friday",
+          "gametime": "13:00",
+          "home": "CHI",
+          "away": "GB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_BUF_DEN",
+          "gameday": "2026-12-25",
+          "weekday": "Friday",
+          "gametime": "16:30",
+          "home": "DEN",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_LA_SEA",
+          "gameday": "2026-12-25",
+          "weekday": "Friday",
+          "gametime": "20:15",
+          "home": "SEA",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_ARI_NO",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NO",
+          "away": "ARI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_CAR_PIT",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "PIT",
+          "away": "CAR",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_CIN_IND",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "CIN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_CLE_BAL",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BAL",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_LAC_MIA",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_NE_NYJ",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "NE",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_TB_ATL",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_WAS_MIN",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIN",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_TEN_LV",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "LV",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_SF_KC",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "KC",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_JAX_DAL",
+          "gameday": "2026-12-27",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "DAL",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_16_NYG_DET",
+          "gameday": "2026-12-28",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "DET",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 17,
+      "first_day": "2026-12-31",
+      "last_day": "2027-01-04",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_17_BAL_CIN",
+          "gameday": "2026-12-31",
+          "weekday": "Thursday",
+          "gametime": "20:15",
+          "home": "CIN",
+          "away": "BAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_BUF_MIA",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIA",
+          "away": "BUF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_DEN_NE",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NE",
+          "away": "DEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_IND_CLE",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CLE",
+          "away": "IND",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_KC_LAC",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "LAC",
+          "away": "KC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_LA_TB",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TB",
+          "away": "LA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_MIN_NYJ",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYJ",
+          "away": "MIN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_NO_ATL",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ATL",
+          "away": "NO",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_NYG_DAL",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DAL",
+          "away": "NYG",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_PIT_TEN",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "TEN",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_SEA_CAR",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_WAS_JAX",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "JAX",
+          "away": "WAS",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_LV_ARI",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "16:05",
+          "home": "ARI",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_DET_CHI",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "16:25",
+          "home": "CHI",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_PHI_SF",
+          "gameday": "2027-01-03",
+          "weekday": "Sunday",
+          "gametime": "20:20",
+          "home": "SF",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_17_HOU_GB",
+          "gameday": "2027-01-04",
+          "weekday": "Monday",
+          "gametime": "20:15",
+          "home": "GB",
+          "away": "HOU",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    },
+    {
+      "week": 18,
+      "first_day": "2027-01-10",
+      "last_day": "2027-01-10",
+      "status": "upcoming",
+      "standings_before_week": 11,
+      "games": [
+        {
+          "game_id": "2026_18_ATL_CAR",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CAR",
+          "away": "ATL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_CHI_MIN",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "MIN",
+          "away": "CHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_CLE_CIN",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "CIN",
+          "away": "CLE",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_DAL_WAS",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "WAS",
+          "away": "DAL",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_DET_GB",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "GB",
+          "away": "DET",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_JAX_IND",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "IND",
+          "away": "JAX",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_LAC_DEN",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "DEN",
+          "away": "LAC",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_LV_KC",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "KC",
+          "away": "LV",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_MIA_NE",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NE",
+          "away": "MIA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_NYJ_BUF",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BUF",
+          "away": "NYJ",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_PHI_NYG",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NYG",
+          "away": "PHI",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_PIT_BAL",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "BAL",
+          "away": "PIT",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_SEA_LA",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "LA",
+          "away": "SEA",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_SF_ARI",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "ARI",
+          "away": "SF",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_TB_NO",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "NO",
+          "away": "TB",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        },
+        {
+          "game_id": "2026_18_TEN_HOU",
+          "gameday": "2027-01-10",
+          "weekday": "Sunday",
+          "gametime": "13:00",
+          "home": "HOU",
+          "away": "TEN",
+          "neutral_site": false,
+          "status": "upcoming",
+          "home_score": null,
+          "away_score": null
+        }
+      ]
+    }
+  ],
+  "standings": [
+    {
+      "before_week": 1,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "ATL",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "BAL",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "BUF",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "CAR",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "CHI",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "CIN",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "CLE",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "DAL",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "DEN",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "DET",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "GB",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "HOU",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "IND",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "JAX",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "KC",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "LA",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "LAC",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "LV",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "MIA",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "MIN",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "NE",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "NO",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "NYG",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "NYJ",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "PHI",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "PIT",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "SEA",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "SF",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "TB",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "TEN",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "WAS",
+          "games": 0,
+          "wins": 0,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        }
+      ]
+    },
+    {
+      "before_week": 2,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 12.0
+        },
+        {
+          "team": "ATL",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -7.0
+        },
+        {
+          "team": "BAL",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 18.0
+        },
+        {
+          "team": "BUF",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 5.0
+        },
+        {
+          "team": "CAR",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -22.0
+        },
+        {
+          "team": "CHI",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 22.0
+        },
+        {
+          "team": "CIN",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 6.0
+        },
+        {
+          "team": "CLE",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -24.0
+        },
+        {
+          "team": "DAL",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -8.0
+        },
+        {
+          "team": "DEN",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -21.0
+        },
+        {
+          "team": "DET",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 1.0
+        },
+        {
+          "team": "GB",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -17.0
+        },
+        {
+          "team": "HOU",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "IND",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -18.0
+        },
+        {
+          "team": "JAX",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 24.0
+        },
+        {
+          "team": "KC",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 21.0
+        },
+        {
+          "team": "LA",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -20.0
+        },
+        {
+          "team": "LAC",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -12.0
+        },
+        {
+          "team": "LV",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 14.0
+        },
+        {
+          "team": "MIA",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -14.0
+        },
+        {
+          "team": "MIN",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 17.0
+        },
+        {
+          "team": "NE",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -3.0
+        },
+        {
+          "team": "NO",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -1.0
+        },
+        {
+          "team": "NYG",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 8.0
+        },
+        {
+          "team": "NYJ",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 13.0
+        },
+        {
+          "team": "PHI",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 2.0
+        },
+        {
+          "team": "PIT",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 7.0
+        },
+        {
+          "team": "SEA",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 3.0
+        },
+        {
+          "team": "SF",
+          "games": 1,
+          "wins": 1,
+          "win_pct": 1.0,
+          "point_diff_per_game": 20.0
+        },
+        {
+          "team": "TB",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -6.0
+        },
+        {
+          "team": "TEN",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -13.0
+        },
+        {
+          "team": "WAS",
+          "games": 1,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -2.0
+        }
+      ]
+    },
+    {
+      "before_week": 3,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -6.0
+        },
+        {
+          "team": "ATL",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -19.0
+        },
+        {
+          "team": "BAL",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 5.5
+        },
+        {
+          "team": "BUF",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 7.5
+        },
+        {
+          "team": "CAR",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 4.5
+        },
+        {
+          "team": "CHI",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 8.0
+        },
+        {
+          "team": "CIN",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 10.0
+        },
+        {
+          "team": "CLE",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -10.0
+        },
+        {
+          "team": "DAL",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 4.5
+        },
+        {
+          "team": "DEN",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -7.0
+        },
+        {
+          "team": "DET",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -4.5
+        },
+        {
+          "team": "GB",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -7.0
+        },
+        {
+          "team": "HOU",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -9.5
+        },
+        {
+          "team": "IND",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -10.5
+        },
+        {
+          "team": "JAX",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 8.5
+        },
+        {
+          "team": "KC",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 12.0
+        },
+        {
+          "team": "LA",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 1.0
+        },
+        {
+          "team": "LAC",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -12.0
+        },
+        {
+          "team": "LV",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 13.0
+        },
+        {
+          "team": "MIA",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -18.0
+        },
+        {
+          "team": "MIN",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 11.5
+        },
+        {
+          "team": "NE",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 7.0
+        },
+        {
+          "team": "NO",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 3.0
+        },
+        {
+          "team": "NYG",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -7.0
+        },
+        {
+          "team": "NYJ",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": 5.0
+        },
+        {
+          "team": "PHI",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 3.0
+        },
+        {
+          "team": "PIT",
+          "games": 2,
+          "wins": 1,
+          "win_pct": 0.5,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "SEA",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 13.5
+        },
+        {
+          "team": "SF",
+          "games": 2,
+          "wins": 2,
+          "win_pct": 1.0,
+          "point_diff_per_game": 21.0
+        },
+        {
+          "team": "TB",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "TEN",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -8.5
+        },
+        {
+          "team": "WAS",
+          "games": 2,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -9.5
+        }
+      ]
+    },
+    {
+      "before_week": 4,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -6.0
+        },
+        {
+          "team": "ATL",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -5.666666666666667
+        },
+        {
+          "team": "BAL",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 4.666666666666667
+        },
+        {
+          "team": "BUF",
+          "games": 3,
+          "wins": 3,
+          "win_pct": 1.0,
+          "point_diff_per_game": 7.666666666666667
+        },
+        {
+          "team": "CAR",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 2.0
+        },
+        {
+          "team": "CHI",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 12.0
+        },
+        {
+          "team": "CIN",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 5.666666666666667
+        },
+        {
+          "team": "CLE",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -5.666666666666667
+        },
+        {
+          "team": "DAL",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 2.0
+        },
+        {
+          "team": "DEN",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -3.3333333333333335
+        },
+        {
+          "team": "DET",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -0.6666666666666666
+        },
+        {
+          "team": "GB",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -11.666666666666666
+        },
+        {
+          "team": "HOU",
+          "games": 3,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -7.0
+        },
+        {
+          "team": "IND",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -6.333333333333333
+        },
+        {
+          "team": "JAX",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 15.333333333333334
+        },
+        {
+          "team": "KC",
+          "games": 3,
+          "wins": 3,
+          "win_pct": 1.0,
+          "point_diff_per_game": 12.666666666666666
+        },
+        {
+          "team": "LA",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -0.6666666666666666
+        },
+        {
+          "team": "LAC",
+          "games": 3,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -10.666666666666666
+        },
+        {
+          "team": "LV",
+          "games": 3,
+          "wins": 3,
+          "win_pct": 1.0,
+          "point_diff_per_game": 11.333333333333334
+        },
+        {
+          "team": "MIA",
+          "games": 3,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -16.666666666666668
+        },
+        {
+          "team": "MIN",
+          "games": 3,
+          "wins": 3,
+          "win_pct": 1.0,
+          "point_diff_per_game": 10.0
+        },
+        {
+          "team": "NE",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "NO",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -0.6666666666666666
+        },
+        {
+          "team": "NYG",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -3.0
+        },
+        {
+          "team": "NYJ",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 1.0
+        },
+        {
+          "team": "PHI",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -4.666666666666667
+        },
+        {
+          "team": "PIT",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -2.3333333333333335
+        },
+        {
+          "team": "SEA",
+          "games": 3,
+          "wins": 2,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 8.333333333333334
+        },
+        {
+          "team": "SF",
+          "games": 3,
+          "wins": 3,
+          "win_pct": 1.0,
+          "point_diff_per_game": 16.0
+        },
+        {
+          "team": "TB",
+          "games": 3,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -5.666666666666667
+        },
+        {
+          "team": "TEN",
+          "games": 3,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -7.333333333333333
+        },
+        {
+          "team": "WAS",
+          "games": 3,
+          "wins": 1,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -5.666666666666667
+        }
+      ]
+    },
+    {
+      "before_week": 5,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 4,
+          "wins": 1,
+          "win_pct": 0.25,
+          "point_diff_per_game": -7.5
+        },
+        {
+          "team": "ATL",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": 1.0
+        },
+        {
+          "team": "BAL",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 5.0
+        },
+        {
+          "team": "BUF",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 5.0
+        },
+        {
+          "team": "CAR",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": 3.0
+        },
+        {
+          "team": "CHI",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 11.75
+        },
+        {
+          "team": "CIN",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": 3.0
+        },
+        {
+          "team": "CLE",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": -3.5
+        },
+        {
+          "team": "DAL",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": 2.5
+        },
+        {
+          "team": "DEN",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "DET",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -2.0
+        },
+        {
+          "team": "GB",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -8.0
+        },
+        {
+          "team": "HOU",
+          "games": 4,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -6.25
+        },
+        {
+          "team": "IND",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -0.5
+        },
+        {
+          "team": "JAX",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 12.75
+        },
+        {
+          "team": "KC",
+          "games": 4,
+          "wins": 4,
+          "win_pct": 1.0,
+          "point_diff_per_game": 10.25
+        },
+        {
+          "team": "LA",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.5
+        },
+        {
+          "team": "LAC",
+          "games": 4,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -9.75
+        },
+        {
+          "team": "LV",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 7.75
+        },
+        {
+          "team": "MIA",
+          "games": 4,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -13.75
+        },
+        {
+          "team": "MIN",
+          "games": 4,
+          "wins": 4,
+          "win_pct": 1.0,
+          "point_diff_per_game": 8.75
+        },
+        {
+          "team": "NE",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -3.0
+        },
+        {
+          "team": "NO",
+          "games": 4,
+          "wins": 1,
+          "win_pct": 0.25,
+          "point_diff_per_game": -5.75
+        },
+        {
+          "team": "NYG",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 0.75
+        },
+        {
+          "team": "NYJ",
+          "games": 4,
+          "wins": 1,
+          "win_pct": 0.25,
+          "point_diff_per_game": -2.0
+        },
+        {
+          "team": "PHI",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -4.5
+        },
+        {
+          "team": "PIT",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": -2.5
+        },
+        {
+          "team": "SEA",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 8.0
+        },
+        {
+          "team": "SF",
+          "games": 4,
+          "wins": 4,
+          "win_pct": 1.0,
+          "point_diff_per_game": 14.5
+        },
+        {
+          "team": "TB",
+          "games": 4,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "TEN",
+          "games": 4,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -7.0
+        },
+        {
+          "team": "WAS",
+          "games": 4,
+          "wins": 1,
+          "win_pct": 0.25,
+          "point_diff_per_game": -8.5
+        }
+      ]
+    },
+    {
+      "before_week": 6,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 5,
+          "wins": 1,
+          "win_pct": 0.2,
+          "point_diff_per_game": -10.8
+        },
+        {
+          "team": "ATL",
+          "games": 5,
+          "wins": 2,
+          "win_pct": 0.4,
+          "point_diff_per_game": -0.6
+        },
+        {
+          "team": "BAL",
+          "games": 5,
+          "wins": 4,
+          "win_pct": 0.8,
+          "point_diff_per_game": 5.4
+        },
+        {
+          "team": "BUF",
+          "games": 5,
+          "wins": 4,
+          "win_pct": 0.8,
+          "point_diff_per_game": 4.6
+        },
+        {
+          "team": "CAR",
+          "games": 4,
+          "wins": 2,
+          "win_pct": 0.5,
+          "point_diff_per_game": 3.0
+        },
+        {
+          "team": "CHI",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 4.6
+        },
+        {
+          "team": "CIN",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 3.8
+        },
+        {
+          "team": "CLE",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": -3.8
+        },
+        {
+          "team": "DAL",
+          "games": 5,
+          "wins": 2,
+          "win_pct": 0.4,
+          "point_diff_per_game": 0.4
+        },
+        {
+          "team": "DEN",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": -2.8
+        },
+        {
+          "team": "DET",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 3.2
+        },
+        {
+          "team": "GB",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": -1.6
+        },
+        {
+          "team": "HOU",
+          "games": 5,
+          "wins": 1,
+          "win_pct": 0.2,
+          "point_diff_per_game": -0.4
+        },
+        {
+          "team": "IND",
+          "games": 5,
+          "wins": 2,
+          "win_pct": 0.4,
+          "point_diff_per_game": -2.8
+        },
+        {
+          "team": "JAX",
+          "games": 5,
+          "wins": 4,
+          "win_pct": 0.8,
+          "point_diff_per_game": 10.6
+        },
+        {
+          "team": "KC",
+          "games": 4,
+          "wins": 4,
+          "win_pct": 1.0,
+          "point_diff_per_game": 10.25
+        },
+        {
+          "team": "LA",
+          "games": 5,
+          "wins": 2,
+          "win_pct": 0.4,
+          "point_diff_per_game": -0.2
+        },
+        {
+          "team": "LAC",
+          "games": 5,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -9.0
+        },
+        {
+          "team": "LV",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 0.6
+        },
+        {
+          "team": "MIA",
+          "games": 5,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -12.4
+        },
+        {
+          "team": "MIN",
+          "games": 5,
+          "wins": 5,
+          "win_pct": 1.0,
+          "point_diff_per_game": 9.0
+        },
+        {
+          "team": "NE",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 3.2
+        },
+        {
+          "team": "NO",
+          "games": 5,
+          "wins": 1,
+          "win_pct": 0.2,
+          "point_diff_per_game": -6.6
+        },
+        {
+          "team": "NYG",
+          "games": 4,
+          "wins": 3,
+          "win_pct": 0.75,
+          "point_diff_per_game": 0.75
+        },
+        {
+          "team": "NYJ",
+          "games": 5,
+          "wins": 2,
+          "win_pct": 0.4,
+          "point_diff_per_game": -0.6
+        },
+        {
+          "team": "PHI",
+          "games": 5,
+          "wins": 2,
+          "win_pct": 0.4,
+          "point_diff_per_game": -4.0
+        },
+        {
+          "team": "PIT",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 0.4
+        },
+        {
+          "team": "SEA",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 5.8
+        },
+        {
+          "team": "SF",
+          "games": 5,
+          "wins": 5,
+          "win_pct": 1.0,
+          "point_diff_per_game": 12.2
+        },
+        {
+          "team": "TB",
+          "games": 5,
+          "wins": 1,
+          "win_pct": 0.2,
+          "point_diff_per_game": -2.4
+        },
+        {
+          "team": "TEN",
+          "games": 5,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -10.2
+        },
+        {
+          "team": "WAS",
+          "games": 4,
+          "wins": 1,
+          "win_pct": 0.25,
+          "point_diff_per_game": -8.5
+        }
+      ]
+    },
+    {
+      "before_week": 7,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -8.666666666666666
+        },
+        {
+          "team": "ATL",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -1.8333333333333333
+        },
+        {
+          "team": "BAL",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 4.0
+        },
+        {
+          "team": "BUF",
+          "games": 6,
+          "wins": 5,
+          "win_pct": 0.8333333333333334,
+          "point_diff_per_game": 4.333333333333333
+        },
+        {
+          "team": "CAR",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 4.6
+        },
+        {
+          "team": "CHI",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 5.166666666666667
+        },
+        {
+          "team": "CIN",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 3.8
+        },
+        {
+          "team": "CLE",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -2.6666666666666665
+        },
+        {
+          "team": "DAL",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -1.3333333333333333
+        },
+        {
+          "team": "DEN",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": -1.8333333333333333
+        },
+        {
+          "team": "DET",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": 3.2
+        },
+        {
+          "team": "GB",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 0.3333333333333333
+        },
+        {
+          "team": "HOU",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 0.16666666666666666
+        },
+        {
+          "team": "IND",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -3.3333333333333335
+        },
+        {
+          "team": "JAX",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 8.333333333333334
+        },
+        {
+          "team": "KC",
+          "games": 5,
+          "wins": 5,
+          "win_pct": 1.0,
+          "point_diff_per_game": 11.4
+        },
+        {
+          "team": "LA",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -0.5
+        },
+        {
+          "team": "LAC",
+          "games": 6,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -10.166666666666666
+        },
+        {
+          "team": "LV",
+          "games": 6,
+          "wins": 3,
+          "win_pct": 0.5,
+          "point_diff_per_game": 0.0
+        },
+        {
+          "team": "MIA",
+          "games": 5,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -12.4
+        },
+        {
+          "team": "MIN",
+          "games": 5,
+          "wins": 5,
+          "win_pct": 1.0,
+          "point_diff_per_game": 9.0
+        },
+        {
+          "team": "NE",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 3.8333333333333335
+        },
+        {
+          "team": "NO",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -4.333333333333333
+        },
+        {
+          "team": "NYG",
+          "games": 5,
+          "wins": 3,
+          "win_pct": 0.6,
+          "point_diff_per_game": -0.8
+        },
+        {
+          "team": "NYJ",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -1.6666666666666667
+        },
+        {
+          "team": "PHI",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -5.166666666666667
+        },
+        {
+          "team": "PIT",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 1.5
+        },
+        {
+          "team": "SEA",
+          "games": 6,
+          "wins": 3,
+          "win_pct": 0.5,
+          "point_diff_per_game": 4.333333333333333
+        },
+        {
+          "team": "SF",
+          "games": 6,
+          "wins": 6,
+          "win_pct": 1.0,
+          "point_diff_per_game": 11.166666666666666
+        },
+        {
+          "team": "TB",
+          "games": 6,
+          "wins": 1,
+          "win_pct": 0.16666666666666666,
+          "point_diff_per_game": -3.1666666666666665
+        },
+        {
+          "team": "TEN",
+          "games": 6,
+          "wins": 1,
+          "win_pct": 0.16666666666666666,
+          "point_diff_per_game": -7.5
+        },
+        {
+          "team": "WAS",
+          "games": 5,
+          "wins": 1,
+          "win_pct": 0.2,
+          "point_diff_per_game": -8.0
+        }
+      ]
+    },
+    {
+      "before_week": 8,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -9.428571428571429
+        },
+        {
+          "team": "ATL",
+          "games": 7,
+          "wins": 3,
+          "win_pct": 0.42857142857142855,
+          "point_diff_per_game": -0.2857142857142857
+        },
+        {
+          "team": "BAL",
+          "games": 7,
+          "wins": 4,
+          "win_pct": 0.5714285714285714,
+          "point_diff_per_game": 0.2857142857142857
+        },
+        {
+          "team": "BUF",
+          "games": 6,
+          "wins": 5,
+          "win_pct": 0.8333333333333334,
+          "point_diff_per_game": 4.333333333333333
+        },
+        {
+          "team": "CAR",
+          "games": 6,
+          "wins": 3,
+          "win_pct": 0.5,
+          "point_diff_per_game": -1.1666666666666667
+        },
+        {
+          "team": "CHI",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 5.285714285714286
+        },
+        {
+          "team": "CIN",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 6.833333333333333
+        },
+        {
+          "team": "CLE",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": -1.8571428571428572
+        },
+        {
+          "team": "DAL",
+          "games": 7,
+          "wins": 3,
+          "win_pct": 0.42857142857142855,
+          "point_diff_per_game": 1.2857142857142858
+        },
+        {
+          "team": "DEN",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 0.42857142857142855
+        },
+        {
+          "team": "DET",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 3.1666666666666665
+        },
+        {
+          "team": "GB",
+          "games": 7,
+          "wins": 4,
+          "win_pct": 0.5714285714285714,
+          "point_diff_per_game": -0.14285714285714285
+        },
+        {
+          "team": "HOU",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -0.7142857142857143
+        },
+        {
+          "team": "IND",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -3.7142857142857144
+        },
+        {
+          "team": "JAX",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 8.333333333333334
+        },
+        {
+          "team": "KC",
+          "games": 6,
+          "wins": 5,
+          "win_pct": 0.8333333333333334,
+          "point_diff_per_game": 6.666666666666667
+        },
+        {
+          "team": "LA",
+          "games": 7,
+          "wins": 3,
+          "win_pct": 0.42857142857142855,
+          "point_diff_per_game": 1.5714285714285714
+        },
+        {
+          "team": "LAC",
+          "games": 6,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -10.166666666666666
+        },
+        {
+          "team": "LV",
+          "games": 7,
+          "wins": 3,
+          "win_pct": 0.42857142857142855,
+          "point_diff_per_game": -2.0
+        },
+        {
+          "team": "MIA",
+          "games": 6,
+          "wins": 1,
+          "win_pct": 0.16666666666666666,
+          "point_diff_per_game": -9.833333333333334
+        },
+        {
+          "team": "MIN",
+          "games": 6,
+          "wins": 6,
+          "win_pct": 1.0,
+          "point_diff_per_game": 8.5
+        },
+        {
+          "team": "NE",
+          "games": 7,
+          "wins": 4,
+          "win_pct": 0.5714285714285714,
+          "point_diff_per_game": 2.4285714285714284
+        },
+        {
+          "team": "NO",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -4.571428571428571
+        },
+        {
+          "team": "NYG",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 0.3333333333333333
+        },
+        {
+          "team": "NYJ",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -1.8571428571428572
+        },
+        {
+          "team": "PHI",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -6.857142857142857
+        },
+        {
+          "team": "PIT",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 2.142857142857143
+        },
+        {
+          "team": "SEA",
+          "games": 7,
+          "wins": 4,
+          "win_pct": 0.5714285714285714,
+          "point_diff_per_game": 6.142857142857143
+        },
+        {
+          "team": "SF",
+          "games": 7,
+          "wins": 6,
+          "win_pct": 0.8571428571428571,
+          "point_diff_per_game": 8.285714285714286
+        },
+        {
+          "team": "TB",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": 1.5714285714285714
+        },
+        {
+          "team": "TEN",
+          "games": 7,
+          "wins": 1,
+          "win_pct": 0.14285714285714285,
+          "point_diff_per_game": -6.857142857142857
+        },
+        {
+          "team": "WAS",
+          "games": 5,
+          "wins": 1,
+          "win_pct": 0.2,
+          "point_diff_per_game": -8.0
+        }
+      ]
+    },
+    {
+      "before_week": 9,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": -7.875
+        },
+        {
+          "team": "ATL",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": -2.25
+        },
+        {
+          "team": "BAL",
+          "games": 8,
+          "wins": 4,
+          "win_pct": 0.5,
+          "point_diff_per_game": -3.0
+        },
+        {
+          "team": "BUF",
+          "games": 7,
+          "wins": 6,
+          "win_pct": 0.8571428571428571,
+          "point_diff_per_game": 7.428571428571429
+        },
+        {
+          "team": "CAR",
+          "games": 7,
+          "wins": 3,
+          "win_pct": 0.42857142857142855,
+          "point_diff_per_game": -2.142857142857143
+        },
+        {
+          "team": "CHI",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 6.75
+        },
+        {
+          "team": "CIN",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 6.857142857142857
+        },
+        {
+          "team": "CLE",
+          "games": 8,
+          "wins": 5,
+          "win_pct": 0.625,
+          "point_diff_per_game": -4.25
+        },
+        {
+          "team": "DAL",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": 0.75
+        },
+        {
+          "team": "DEN",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 0.875
+        },
+        {
+          "team": "DET",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 3.2857142857142856
+        },
+        {
+          "team": "GB",
+          "games": 8,
+          "wins": 5,
+          "win_pct": 0.625,
+          "point_diff_per_game": 0.875
+        },
+        {
+          "team": "HOU",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -0.7142857142857143
+        },
+        {
+          "team": "IND",
+          "games": 8,
+          "wins": 2,
+          "win_pct": 0.25,
+          "point_diff_per_game": -7.625
+        },
+        {
+          "team": "JAX",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 12.142857142857142
+        },
+        {
+          "team": "KC",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 5.142857142857143
+        },
+        {
+          "team": "LA",
+          "games": 8,
+          "wins": 4,
+          "win_pct": 0.5,
+          "point_diff_per_game": 3.25
+        },
+        {
+          "team": "LAC",
+          "games": 7,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -10.857142857142858
+        },
+        {
+          "team": "LV",
+          "games": 8,
+          "wins": 4,
+          "win_pct": 0.5,
+          "point_diff_per_game": -1.125
+        },
+        {
+          "team": "MIA",
+          "games": 7,
+          "wins": 1,
+          "win_pct": 0.14285714285714285,
+          "point_diff_per_game": -9.142857142857142
+        },
+        {
+          "team": "MIN",
+          "games": 7,
+          "wins": 6,
+          "win_pct": 0.8571428571428571,
+          "point_diff_per_game": 6.714285714285714
+        },
+        {
+          "team": "NE",
+          "games": 8,
+          "wins": 5,
+          "win_pct": 0.625,
+          "point_diff_per_game": 2.75
+        },
+        {
+          "team": "NO",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -4.571428571428571
+        },
+        {
+          "team": "NYG",
+          "games": 6,
+          "wins": 4,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 0.3333333333333333
+        },
+        {
+          "team": "NYJ",
+          "games": 8,
+          "wins": 2,
+          "win_pct": 0.25,
+          "point_diff_per_game": -2.25
+        },
+        {
+          "team": "PHI",
+          "games": 8,
+          "wins": 2,
+          "win_pct": 0.25,
+          "point_diff_per_game": -8.125
+        },
+        {
+          "team": "PIT",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 4.5
+        },
+        {
+          "team": "SEA",
+          "games": 8,
+          "wins": 4,
+          "win_pct": 0.5,
+          "point_diff_per_game": 3.25
+        },
+        {
+          "team": "SF",
+          "games": 7,
+          "wins": 6,
+          "win_pct": 0.8571428571428571,
+          "point_diff_per_game": 8.285714285714286
+        },
+        {
+          "team": "TB",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": 3.375
+        },
+        {
+          "team": "TEN",
+          "games": 8,
+          "wins": 1,
+          "win_pct": 0.125,
+          "point_diff_per_game": -6.875
+        },
+        {
+          "team": "WAS",
+          "games": 6,
+          "wins": 2,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -3.8333333333333335
+        }
+      ]
+    },
+    {
+      "before_week": 10,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 9,
+          "wins": 3,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -8.555555555555555
+        },
+        {
+          "team": "ATL",
+          "games": 9,
+          "wins": 3,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -3.888888888888889
+        },
+        {
+          "team": "BAL",
+          "games": 9,
+          "wins": 4,
+          "win_pct": 0.4444444444444444,
+          "point_diff_per_game": -5.222222222222222
+        },
+        {
+          "team": "BUF",
+          "games": 8,
+          "wins": 7,
+          "win_pct": 0.875,
+          "point_diff_per_game": 8.625
+        },
+        {
+          "team": "CAR",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": -2.5
+        },
+        {
+          "team": "CHI",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 6.333333333333333
+        },
+        {
+          "team": "CIN",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 8.125
+        },
+        {
+          "team": "CLE",
+          "games": 9,
+          "wins": 5,
+          "win_pct": 0.5555555555555556,
+          "point_diff_per_game": -3.888888888888889
+        },
+        {
+          "team": "DAL",
+          "games": 9,
+          "wins": 4,
+          "win_pct": 0.4444444444444444,
+          "point_diff_per_game": 1.1111111111111112
+        },
+        {
+          "team": "DEN",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 1.3333333333333333
+        },
+        {
+          "team": "DET",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 4.125
+        },
+        {
+          "team": "GB",
+          "games": 9,
+          "wins": 6,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 2.7777777777777777
+        },
+        {
+          "team": "HOU",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": 2.125
+        },
+        {
+          "team": "IND",
+          "games": 9,
+          "wins": 2,
+          "win_pct": 0.2222222222222222,
+          "point_diff_per_game": -7.222222222222222
+        },
+        {
+          "team": "JAX",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 13.5
+        },
+        {
+          "team": "KC",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 7.375
+        },
+        {
+          "team": "LA",
+          "games": 9,
+          "wins": 5,
+          "win_pct": 0.5555555555555556,
+          "point_diff_per_game": 3.6666666666666665
+        },
+        {
+          "team": "LAC",
+          "games": 8,
+          "wins": 0,
+          "win_pct": 0.0,
+          "point_diff_per_game": -12.25
+        },
+        {
+          "team": "LV",
+          "games": 9,
+          "wins": 4,
+          "win_pct": 0.4444444444444444,
+          "point_diff_per_game": -3.3333333333333335
+        },
+        {
+          "team": "MIA",
+          "games": 8,
+          "wins": 1,
+          "win_pct": 0.125,
+          "point_diff_per_game": -9.25
+        },
+        {
+          "team": "MIN",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 3.75
+        },
+        {
+          "team": "NE",
+          "games": 9,
+          "wins": 5,
+          "win_pct": 0.5555555555555556,
+          "point_diff_per_game": 0.4444444444444444
+        },
+        {
+          "team": "NO",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": -3.875
+        },
+        {
+          "team": "NYG",
+          "games": 7,
+          "wins": 5,
+          "win_pct": 0.7142857142857143,
+          "point_diff_per_game": 1.4285714285714286
+        },
+        {
+          "team": "NYJ",
+          "games": 9,
+          "wins": 2,
+          "win_pct": 0.2222222222222222,
+          "point_diff_per_game": -4.555555555555555
+        },
+        {
+          "team": "PHI",
+          "games": 9,
+          "wins": 2,
+          "win_pct": 0.2222222222222222,
+          "point_diff_per_game": -8.11111111111111
+        },
+        {
+          "team": "PIT",
+          "games": 8,
+          "wins": 6,
+          "win_pct": 0.75,
+          "point_diff_per_game": 4.5
+        },
+        {
+          "team": "SEA",
+          "games": 9,
+          "wins": 5,
+          "win_pct": 0.5555555555555556,
+          "point_diff_per_game": 4.444444444444445
+        },
+        {
+          "team": "SF",
+          "games": 8,
+          "wins": 7,
+          "win_pct": 0.875,
+          "point_diff_per_game": 9.875
+        },
+        {
+          "team": "TB",
+          "games": 9,
+          "wins": 3,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 2.6666666666666665
+        },
+        {
+          "team": "TEN",
+          "games": 8,
+          "wins": 1,
+          "win_pct": 0.125,
+          "point_diff_per_game": -6.875
+        },
+        {
+          "team": "WAS",
+          "games": 7,
+          "wins": 2,
+          "win_pct": 0.2857142857142857,
+          "point_diff_per_game": -4.285714285714286
+        }
+      ]
+    },
+    {
+      "before_week": 11,
+      "teams": [
+        {
+          "team": "ARI",
+          "games": 10,
+          "wins": 3,
+          "win_pct": 0.3,
+          "point_diff_per_game": -10.5
+        },
+        {
+          "team": "ATL",
+          "games": 10,
+          "wins": 3,
+          "win_pct": 0.3,
+          "point_diff_per_game": -5.7
+        },
+        {
+          "team": "BAL",
+          "games": 10,
+          "wins": 4,
+          "win_pct": 0.4,
+          "point_diff_per_game": -5.0
+        },
+        {
+          "team": "BUF",
+          "games": 9,
+          "wins": 8,
+          "win_pct": 0.8888888888888888,
+          "point_diff_per_game": 9.777777777777779
+        },
+        {
+          "team": "CAR",
+          "games": 9,
+          "wins": 4,
+          "win_pct": 0.4444444444444444,
+          "point_diff_per_game": -1.8888888888888888
+        },
+        {
+          "team": "CHI",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 6.333333333333333
+        },
+        {
+          "team": "CIN",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 9.444444444444445
+        },
+        {
+          "team": "CLE",
+          "games": 10,
+          "wins": 6,
+          "win_pct": 0.6,
+          "point_diff_per_game": -3.2
+        },
+        {
+          "team": "DAL",
+          "games": 10,
+          "wins": 4,
+          "win_pct": 0.4,
+          "point_diff_per_game": 0.4
+        },
+        {
+          "team": "DEN",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 1.3333333333333333
+        },
+        {
+          "team": "DET",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 6.444444444444445
+        },
+        {
+          "team": "GB",
+          "games": 10,
+          "wins": 6,
+          "win_pct": 0.6,
+          "point_diff_per_game": 0.5
+        },
+        {
+          "team": "HOU",
+          "games": 9,
+          "wins": 3,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 1.5555555555555556
+        },
+        {
+          "team": "IND",
+          "games": 10,
+          "wins": 3,
+          "win_pct": 0.3,
+          "point_diff_per_game": -6.3
+        },
+        {
+          "team": "JAX",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 13.88888888888889
+        },
+        {
+          "team": "KC",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 9.0
+        },
+        {
+          "team": "LA",
+          "games": 10,
+          "wins": 6,
+          "win_pct": 0.6,
+          "point_diff_per_game": 6.1
+        },
+        {
+          "team": "LAC",
+          "games": 9,
+          "wins": 1,
+          "win_pct": 0.1111111111111111,
+          "point_diff_per_game": -10.555555555555555
+        },
+        {
+          "team": "LV",
+          "games": 10,
+          "wins": 4,
+          "win_pct": 0.4,
+          "point_diff_per_game": -3.8
+        },
+        {
+          "team": "MIA",
+          "games": 9,
+          "wins": 1,
+          "win_pct": 0.1111111111111111,
+          "point_diff_per_game": -8.444444444444445
+        },
+        {
+          "team": "MIN",
+          "games": 9,
+          "wins": 7,
+          "win_pct": 0.7777777777777778,
+          "point_diff_per_game": 5.555555555555555
+        },
+        {
+          "team": "NE",
+          "games": 10,
+          "wins": 5,
+          "win_pct": 0.5,
+          "point_diff_per_game": -2.1
+        },
+        {
+          "team": "NO",
+          "games": 9,
+          "wins": 3,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": -3.7777777777777777
+        },
+        {
+          "team": "NYG",
+          "games": 8,
+          "wins": 5,
+          "win_pct": 0.625,
+          "point_diff_per_game": 0.875
+        },
+        {
+          "team": "NYJ",
+          "games": 10,
+          "wins": 2,
+          "win_pct": 0.2,
+          "point_diff_per_game": -6.0
+        },
+        {
+          "team": "PHI",
+          "games": 9,
+          "wins": 2,
+          "win_pct": 0.2222222222222222,
+          "point_diff_per_game": -8.11111111111111
+        },
+        {
+          "team": "PIT",
+          "games": 9,
+          "wins": 6,
+          "win_pct": 0.6666666666666666,
+          "point_diff_per_game": 1.7777777777777777
+        },
+        {
+          "team": "SEA",
+          "games": 10,
+          "wins": 6,
+          "win_pct": 0.6,
+          "point_diff_per_game": 4.8
+        },
+        {
+          "team": "SF",
+          "games": 9,
+          "wins": 8,
+          "win_pct": 0.8888888888888888,
+          "point_diff_per_game": 9.444444444444445
+        },
+        {
+          "team": "TB",
+          "games": 9,
+          "wins": 3,
+          "win_pct": 0.3333333333333333,
+          "point_diff_per_game": 2.6666666666666665
+        },
+        {
+          "team": "TEN",
+          "games": 9,
+          "wins": 1,
+          "win_pct": 0.1111111111111111,
+          "point_diff_per_game": -8.0
+        },
+        {
+          "team": "WAS",
+          "games": 8,
+          "wins": 3,
+          "win_pct": 0.375,
+          "point_diff_per_game": -3.375
+        }
+      ]
+    }
+  ],
+  "team_totals": [
+    {
+      "team": "ARI",
+      "games": 10,
+      "wins": 3,
+      "losses": 7,
+      "points_for": 184,
+      "points_against": 289,
+      "point_diff": -105,
+      "win_pct": 0.3,
+      "point_diff_per_game": -10.5
+    },
+    {
+      "team": "ATL",
+      "games": 10,
+      "wins": 3,
+      "losses": 7,
+      "points_for": 201,
+      "points_against": 258,
+      "point_diff": -57,
+      "win_pct": 0.3,
+      "point_diff_per_game": -5.7
+    },
+    {
+      "team": "BAL",
+      "games": 10,
+      "wins": 4,
+      "losses": 6,
+      "points_for": 209,
+      "points_against": 259,
+      "point_diff": -50,
+      "win_pct": 0.4,
+      "point_diff_per_game": -5.0
+    },
+    {
+      "team": "BUF",
+      "games": 9,
+      "wins": 8,
+      "losses": 1,
+      "points_for": 287,
+      "points_against": 199,
+      "point_diff": 88,
+      "win_pct": 0.8888888888888888,
+      "point_diff_per_game": 9.777777777777779
+    },
+    {
+      "team": "CAR",
+      "games": 9,
+      "wins": 4,
+      "losses": 5,
+      "points_for": 219,
+      "points_against": 236,
+      "point_diff": -17,
+      "win_pct": 0.4444444444444444,
+      "point_diff_per_game": -1.8888888888888888
+    },
+    {
+      "team": "CHI",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 241,
+      "points_against": 184,
+      "point_diff": 57,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 6.333333333333333
+    },
+    {
+      "team": "CIN",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 278,
+      "points_against": 193,
+      "point_diff": 85,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 9.444444444444445
+    },
+    {
+      "team": "CLE",
+      "games": 10,
+      "wins": 6,
+      "losses": 4,
+      "points_for": 188,
+      "points_against": 220,
+      "point_diff": -32,
+      "win_pct": 0.6,
+      "point_diff_per_game": -3.2
+    },
+    {
+      "team": "DAL",
+      "games": 10,
+      "wins": 4,
+      "losses": 6,
+      "points_for": 286,
+      "points_against": 282,
+      "point_diff": 4,
+      "win_pct": 0.4,
+      "point_diff_per_game": 0.4
+    },
+    {
+      "team": "DEN",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 198,
+      "points_against": 186,
+      "point_diff": 12,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 1.3333333333333333
+    },
+    {
+      "team": "DET",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 257,
+      "points_against": 199,
+      "point_diff": 58,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 6.444444444444445
+    },
+    {
+      "team": "GB",
+      "games": 10,
+      "wins": 6,
+      "losses": 4,
+      "points_for": 226,
+      "points_against": 221,
+      "point_diff": 5,
+      "win_pct": 0.6,
+      "point_diff_per_game": 0.5
+    },
+    {
+      "team": "HOU",
+      "games": 9,
+      "wins": 3,
+      "losses": 6,
+      "points_for": 233,
+      "points_against": 219,
+      "point_diff": 14,
+      "win_pct": 0.3333333333333333,
+      "point_diff_per_game": 1.5555555555555556
+    },
+    {
+      "team": "IND",
+      "games": 10,
+      "wins": 3,
+      "losses": 7,
+      "points_for": 208,
+      "points_against": 271,
+      "point_diff": -63,
+      "win_pct": 0.3,
+      "point_diff_per_game": -6.3
+    },
+    {
+      "team": "JAX",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 269,
+      "points_against": 144,
+      "point_diff": 125,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 13.88888888888889
+    },
+    {
+      "team": "KC",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 237,
+      "points_against": 156,
+      "point_diff": 81,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 9.0
+    },
+    {
+      "team": "LA",
+      "games": 10,
+      "wins": 6,
+      "losses": 4,
+      "points_for": 248,
+      "points_against": 187,
+      "point_diff": 61,
+      "win_pct": 0.6,
+      "point_diff_per_game": 6.1
+    },
+    {
+      "team": "LAC",
+      "games": 9,
+      "wins": 1,
+      "losses": 8,
+      "points_for": 144,
+      "points_against": 239,
+      "point_diff": -95,
+      "win_pct": 0.1111111111111111,
+      "point_diff_per_game": -10.555555555555555
+    },
+    {
+      "team": "LV",
+      "games": 10,
+      "wins": 4,
+      "losses": 6,
+      "points_for": 251,
+      "points_against": 289,
+      "point_diff": -38,
+      "win_pct": 0.4,
+      "point_diff_per_game": -3.8
+    },
+    {
+      "team": "MIA",
+      "games": 9,
+      "wins": 1,
+      "losses": 8,
+      "points_for": 148,
+      "points_against": 224,
+      "point_diff": -76,
+      "win_pct": 0.1111111111111111,
+      "point_diff_per_game": -8.444444444444445
+    },
+    {
+      "team": "MIN",
+      "games": 9,
+      "wins": 7,
+      "losses": 2,
+      "points_for": 176,
+      "points_against": 126,
+      "point_diff": 50,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 5.555555555555555
+    },
+    {
+      "team": "NE",
+      "games": 10,
+      "wins": 5,
+      "losses": 5,
+      "points_for": 221,
+      "points_against": 242,
+      "point_diff": -21,
+      "win_pct": 0.5,
+      "point_diff_per_game": -2.1
+    },
+    {
+      "team": "NO",
+      "games": 9,
+      "wins": 3,
+      "losses": 6,
+      "points_for": 202,
+      "points_against": 236,
+      "point_diff": -34,
+      "win_pct": 0.3333333333333333,
+      "point_diff_per_game": -3.7777777777777777
+    },
+    {
+      "team": "NYG",
+      "games": 8,
+      "wins": 5,
+      "losses": 3,
+      "points_for": 176,
+      "points_against": 169,
+      "point_diff": 7,
+      "win_pct": 0.625,
+      "point_diff_per_game": 0.875
+    },
+    {
+      "team": "NYJ",
+      "games": 10,
+      "wins": 2,
+      "losses": 8,
+      "points_for": 194,
+      "points_against": 254,
+      "point_diff": -60,
+      "win_pct": 0.2,
+      "point_diff_per_game": -6.0
+    },
+    {
+      "team": "PHI",
+      "games": 9,
+      "wins": 2,
+      "losses": 7,
+      "points_for": 148,
+      "points_against": 221,
+      "point_diff": -73,
+      "win_pct": 0.2222222222222222,
+      "point_diff_per_game": -8.11111111111111
+    },
+    {
+      "team": "PIT",
+      "games": 9,
+      "wins": 6,
+      "losses": 3,
+      "points_for": 198,
+      "points_against": 182,
+      "point_diff": 16,
+      "win_pct": 0.6666666666666666,
+      "point_diff_per_game": 1.7777777777777777
+    },
+    {
+      "team": "SEA",
+      "games": 10,
+      "wins": 6,
+      "losses": 4,
+      "points_for": 223,
+      "points_against": 175,
+      "point_diff": 48,
+      "win_pct": 0.6,
+      "point_diff_per_game": 4.8
+    },
+    {
+      "team": "SF",
+      "games": 9,
+      "wins": 8,
+      "losses": 1,
+      "points_for": 281,
+      "points_against": 196,
+      "point_diff": 85,
+      "win_pct": 0.8888888888888888,
+      "point_diff_per_game": 9.444444444444445
+    },
+    {
+      "team": "TB",
+      "games": 9,
+      "wins": 3,
+      "losses": 6,
+      "points_for": 202,
+      "points_against": 178,
+      "point_diff": 24,
+      "win_pct": 0.3333333333333333,
+      "point_diff_per_game": 2.6666666666666665
+    },
+    {
+      "team": "TEN",
+      "games": 9,
+      "wins": 1,
+      "losses": 8,
+      "points_for": 167,
+      "points_against": 239,
+      "point_diff": -72,
+      "win_pct": 0.1111111111111111,
+      "point_diff_per_game": -8.0
+    },
+    {
+      "team": "WAS",
+      "games": 8,
+      "wins": 3,
+      "losses": 5,
+      "points_for": 169,
+      "points_against": 196,
+      "point_diff": -27,
+      "win_pct": 0.375,
+      "point_diff_per_game": -3.375
+    }
+  ]
+}

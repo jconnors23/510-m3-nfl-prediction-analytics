@@ -1,6 +1,7 @@
 """Tests for the cleaning step (src/data/clean.py).
 
-They use a few made-up games, so nothing is downloaded and no real data file is read.
+They use a few made-up games held in memory, so nothing is downloaded, no real data file is
+read, and no file is written. Each game breaks at most one cleaning rule, so a failure names the rule.
 """
 
 import pandas as pd
@@ -64,6 +65,7 @@ def test_drops_tie_playoff_and_out_of_window_season():
         ]
     )
 
+    # The week cap only applies to the last season (2026), so none of these four games is cut by it.
     cleaned, counts = clean_games(raw, start_season=2020, end_season=2026, test_through_week=10)
 
     # Only the normal game is left.
@@ -137,6 +139,7 @@ def test_week_cut_drops_unplayed_games_and_ties():
         ]
     )
 
+    # If the blank-score check ran before the week cut, the unplayed game would raise here.
     cleaned, counts = clean_games(raw, start_season=2020, end_season=2026, test_through_week=10)
 
     assert cleaned["game_id"].tolist() == ["played"]

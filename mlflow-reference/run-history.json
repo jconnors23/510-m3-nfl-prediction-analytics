@@ -1,0 +1,41 @@
+[
+  {
+    "folder": "latest-run",
+    "git_commit": "4f295754e5f5a4d9e35cebce75c105303049afd8",
+    "run_id": "895489043ede480eaed98217de2cc93b",
+    "run_name": "LogisticRegression-v1.0",
+    "start_time": "2026-11-22T22:08:38Z",
+    "status": "FINISHED",
+    "test_accuracy": 0.590604,
+    "test_log_loss": 0.681518,
+    "train_accuracy": 0.612397,
+    "validation_accuracy": 0.630996,
+    "validation_log_loss": 0.64507
+  },
+  {
+    "folder": "previous-runs/2026-11-22T21-40-33Z_0086979f",
+    "git_commit": "4f295754e5f5a4d9e35cebce75c105303049afd8",
+    "run_id": "0086979f064d4bc891264c03ec076803",
+    "run_name": "LogisticRegression-v1.0",
+    "start_time": "2026-11-22T21:40:33Z",
+    "status": "FINISHED",
+    "test_accuracy": 0.590604,
+    "test_log_loss": 0.681518,
+    "train_accuracy": 0.612397,
+    "validation_accuracy": 0.630996,
+    "validation_log_loss": 0.64507
+  },
+  {
+    "folder": "previous-runs/2026-11-21T17-36-45Z_7762443f",
+    "git_commit": "273c8b2350920e5e880aba386c3d0c7b96481c05",
+    "run_id": "7762443ffc194476be1c908654a609a9",
+    "run_name": "LogisticRegression-v1.0",
+    "start_time": "2026-11-21T17:36:45Z",
+    "status": "FINISHED",
+    "test_accuracy": 0.590604,
+    "test_log_loss": 0.681518,
+    "train_accuracy": 0.612397,
+    "validation_accuracy": 0.630996,
+    "validation_log_loss": 0.64507
+  }
+]

@@ -1,3 +1,5 @@
+// Build, dev server, and test settings for the web app.
+
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
@@ -7,14 +9,18 @@ const apiTarget = process.env.API_PROXY_TARGET ?? "http://127.0.0.1:8000";
 
 export default defineConfig({
   plugins: [react()],
+  // Assets load from the site root, which matches the CloudFront origin.
   base: "/",
   server: {
     // CORS on the live API allows only http://localhost:5173, so Vite must stop and not move to
     // another port when 5173 is taken.
     port: 5173,
     strictPort: true,
-    proxy: { "/predict": apiTarget, "/health": apiTarget },
+    // In development the page calls its own address and Vite forwards these paths to the API, so
+    // the browser makes no cross-origin request.
+    proxy: { "/predict": apiTarget, "/health": apiTarget, "/feedback": apiTarget },
   },
   build: { outDir: "dist" },
+  // The tests only run plain functions, so they need no browser environment.
   test: { environment: "node", include: ["src/**/*.test.{ts,tsx}"] },
 });

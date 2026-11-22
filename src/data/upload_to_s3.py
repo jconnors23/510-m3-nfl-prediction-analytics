@@ -1,4 +1,7 @@
-"""Step 3: send the cleaned games table to S3."""
+"""Step 3: send the cleaned games table to S3.
+
+The upload counts as done only when S3 reports an object of the same size as the local file.
+"""
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError

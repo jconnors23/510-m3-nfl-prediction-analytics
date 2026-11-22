@@ -13,17 +13,32 @@ This guide shows how to train the model on your own computer, what each output f
 - **The downloaded table** `data/from-s3/nfl_matchups_2020_2026.csv`. A fresh checkout already has it. If it is missing, run `python -m src.data.download_from_s3` (this needs AWS credentials).
 - **No AWS account for training.** Training reads the local copy of the table and writes only to your machine.
 
-## How Do I Run It Locally?
+## How Do I Do a Training Run?
+
+One command does a whole training run: `make train`, from the project folder. It needs no AWS account and no internet connection.
 
 ```mermaid
-flowchart LR
-    A["data/from-s3/<br/>nfl_matchups_2020_2026.csv"] --> B["python -m src.model.features<br/>(check the inputs)"]
-    A --> C["python -m src.model.train"]
-    C --> D["models/model.joblib"]
-    C --> E["results/run-summary.json"]
-    C --> F["mlflow.db and mlartifacts/"]
-    F --> G["mlflow ui"]
+flowchart TB
+    A["data/from-s3/<br/>nfl_matchups_2020_2026.csv"] --> C["make train<br/>(python -m src.model.train)"]
+    S["config/config.yaml"] --> C
+    C --> D["models/model.joblib<br/>the model the API loads"]
+    C --> E["results/run-summary.json<br/>committed"]
+    C --> F["mlflow.db and mlartifacts/<br/>local only"]
+    F --> X["export to mlflow-reference/"]
+    X --> L["latest-run/<br/>the new run (committed)"]
+    X --> P["previous-runs/<br/>the run it replaced (committed)"]
+    X --> H["run-history.md<br/>one row per run (committed)"]
 ```
+
+What one run does, in order:
+
+1. **Fits the model** on the 2020 to 2024 games, and scores the training, validation, and test groups.
+2. **Saves the model** to `models/model.joblib`, the file the API loads.
+3. **Writes `results/run-summary.json`,** a short readable record of the settings, data fingerprint, scores, and learned weights.
+4. **Logs the run to MLflow** in the local `mlflow.db` and `mlartifacts/`: 15 parameters, 8 metrics, 3 files, and an MLflow-format copy of the model.
+5. **Updates `mlflow-reference/`.** The last run moves into `previous-runs/`, the new run is written to `latest-run/`, and `run-history.md` gains a row. This is the committed log of every training run. See [`mlflow-reference/README.md`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/mlflow-reference/README.md).
+
+The steps below run it, read the results, and say what to commit.
 
 ### Step 1: Check the Inputs (Optional)
 
@@ -47,10 +62,10 @@ It writes no file.
 ### Step 2: Train the Model
 
 ```bash
-python -m src.model.train
+make train
 ```
 
-It fits the model on the 2020 to 2024 games, scores all three groups, records the run in MLflow, and saves the model. It prints eight lines:
+`make train` runs `python -m src.model.train`, with MLflow's unrelated hint line turned off. It takes a few seconds and prints nine lines:
 
 ```text
 training: 820 of 1339 correct (61.24%), always-home 53.32%
@@ -61,11 +76,23 @@ test log loss 0.6815
 saved: models/model.joblib
 summary: results/run-summary.json
 MLflow run: LogisticRegression-v1.0
+saved: mlflow-reference/latest-run
 ```
 
-Running it again with the same settings and data prints the same eight lines. Each run adds a new run to `mlflow.db` and rewrites `models/model.joblib` and `results/run-summary.json`.
+- **The first three lines are the scores.** Each shows correct picks out of games, and the always-pick-home baseline to beat. The validation score (63.10%) is the one used to judge the model, because the model never trained on those games.
+- **The same settings and data give the same scores.** Running `make train` again prints the same nine lines, and `results/run-summary.json` stays byte for byte the same.
+- **Every run is still a new MLflow run.** It gets a new run id and time, so `mlflow-reference/` changes on every run, even when the scores do not.
 
-### Step 3: Read What the Run Recorded
+### Step 3: Read the Run History
+
+Open `mlflow-reference/run-history.md`. It lists every training run, newest first: its start time, run id, git commit, validation and test accuracy, validation log loss, and a link to its folder. A run's folder holds its settings (`params.json`), its scores (`metrics.json`), its id and commit (`run.json`), the config it used, and its confusion-matrix picture.
+
+- **To compare two runs,** read their rows, or open each run's `params.json` and `metrics.json`. A different `data_sha256` in `params.json` means the run used different data.
+- **The history is built from the committed folders,** so it reads the same in any copy of the repository, with no MLflow install.
+- **Runs from before the history began** are added once with `python -m src.model.export_mlflow --backfill`. Running it again adds nothing.
+- **To rewrite `latest-run/` without training,** run `python -m src.model.export_mlflow`. Running it on the same run changes nothing in `previous-runs/`.
+
+### Step 4: Read What the Run Recorded
 
 - **`results/run-summary.json`** is a small readable record of the latest run: the settings, the data fingerprint, the scores, and the learned weights. It is committed to git. See [What Is the Run Summary File?](./implementation-part-2.md#what-is-the-run-summary-file).
 - **The MLflow screen** shows every run, with its 15 settings, 8 scores, 3 files, and the logged model:
@@ -74,24 +101,22 @@ Running it again with the same settings and data prints the same eight lines. Ea
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
-Open the address it prints (`http://127.0.0.1:5000` unless you change the port). The default port is 5000, and `--port 5001` uses another one. MLflow may print a hint line about tracing code, and `MLFLOW_DISABLE_AGENT_HINT=1` silences it. Press `Ctrl+C` to stop the screen.
+Open the address it prints. The default port is 5000. On macOS, Control Center often holds port 5000, so add `--port 5001` and open `http://127.0.0.1:5001`. MLflow may print a hint line about tracing code, and `MLFLOW_DISABLE_AGENT_HINT=1` silences it. Press `Ctrl+C` to stop the screen. The screen lists every run in your local `mlflow.db`, which can include runs that were never committed.
 
-- **The files** are explained in [What Is Each File Type?](#what-is-each-file-type), next.
+- **The files** are explained in [What Is Each File Type?](#what-is-each-file-type), below.
+
+### Step 5: Commit the Run
+
+A training run changes these committed files. Commit them together, so the code, the result, and the log of the run stay in step:
+
+- `results/run-summary.json`, which changes only when the settings, the data, or the scores change.
+- Everything under `mlflow-reference/`: the new `latest-run/`, the run it moved into `previous-runs/`, and both history files.
+
+`models/`, `mlflow.db`, and `mlartifacts/` are ignored, so `git status` never lists them. If the model changed, also rebuild the web app's data with `python -m src.profiles` and `python -m src.season`, and redeploy the API, as the step list in [How Do I Add or Change an Input?](#how-do-i-add-or-change-an-input) says.
 
 ## What Does a Training Run Create?
 
-One training run reads the cleaned table and the settings file, and writes five kinds of output. They look similar but hold different things, and only one is committed to git.
-
-```mermaid
-flowchart TB
-    A["data/from-s3/<br/>nfl_matchups_2020_2026.csv"] --> B["python -m src.model.train"]
-    C["config/config.yaml"] --> B
-    B --> D["models/model.joblib<br/>the trained model"]
-    B --> E["mlflow.db<br/>run settings and scores"]
-    B --> F["mlartifacts/<br/>files saved with each run"]
-    B --> G["results/run-summary.json<br/>readable summary"]
-    F --> H["Copy of model.joblib,<br/>plot, config copy,<br/>MLflow-format model"]
-```
+The diagram in [How Do I Do a Training Run?](#how-do-i-do-a-training-run) shows every output. They look similar but hold different things. Three are committed to git: `results/run-summary.json`, `config/config.yaml` (the input), and `mlflow-reference/`.
 
 ### What Is Each File Type?
 
@@ -102,6 +127,7 @@ flowchart TB
 | `mlartifacts/` | Folder of ordinary files | The files each run saved: a copy of `model.joblib`, the confusion-matrix image, a copy of `config.yaml`, and the MLflow-format model | MLflow and its web page, or a person opening the folder | No | No. Each rerun adds a new subfolder. |
 | `results/run-summary.json` | Plain JSON text | The settings, data fingerprint, scores, and learned weights of the latest run | A person, or git when comparing runs | Yes | Yes, byte for byte, when data, settings, and packages match |
 | `config/config.yaml` | Plain YAML text | Every setting | The code, and a person | Yes | Not an output. It is the input. |
+| `mlflow-reference/` | Folder of JSON, YAML, Markdown, and PNG files | A readable log of every training run: the newest in `latest-run/`, earlier ones in `previous-runs/`, and `run-history.md` listing them all | A person, with no MLflow install | Yes | No. Each run adds a folder and a history row. |
 
 ### Reading the Differences
 
@@ -109,6 +135,7 @@ flowchart TB
 - **`mlflow.db` is the logbook.** It records what each run used and scored, and it points to the run's files. It holds numbers and text only. If you delete it, the model and files stay, but MLflow can no longer list the runs.
 - **`mlartifacts/` is the shelf of files.** The logbook (`mlflow.db`) says which run a file belongs to, and `mlartifacts/` holds the file. The two are only useful together, so keep or delete them as a pair.
 - **`run-summary.json` is the committed receipt.** It repeats the key facts of the latest run in a form git can compare line by line. The database and the shelf cannot be compared that way, because they are binary or hold run ids and times.
+- **`mlflow-reference/` is the committed logbook.** It is a readable copy of what the logbook and the shelf hold for every run, with no absolute paths and no user name, so the MLflow logging can be read in any copy of the repository.
 
 ### What Is Inside `mlartifacts/`?
 
@@ -129,6 +156,7 @@ mlartifacts/
 - **`joblib` and `skops` are two ways to write a model to disk.** joblib is the general way and works on any Python object. skops is the format MLflow's scikit-learn support uses.
 - **Where the settings go.** `config/config.yaml` is the input. The copy under `mlartifacts/` is a snapshot of what was used for that run.
 - **Why they are not committed.** The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See [Decisions](../decisions.md).
+- **What is committed in their place.** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference) holds a readable copy of every run: its settings, scores, plot, and the logged model's text files, with no absolute paths. See [Step 3: Read the Run History](#step-3-read-the-run-history).
 - **Terms.** The [Glossary](../glossary.md) defines artifact, artifact store, logged model, and SQLite.
 
 ## How Do I Reproduce the Result From a Clean Checkout?
@@ -170,9 +198,9 @@ flowchart TB
     python -m pytest
     ```
 
-    Expected on a clean checkout: **59 passed and 2 skipped**. The two skipped tests use the saved model, which a clean checkout does not have yet. After training, the same command gives **61 passed**.
+    Expected on a clean checkout: **86 passed and 2 skipped**. The two skipped tests use the saved model, which a clean checkout does not have yet. After training, the same command gives **88 passed**.
 
-3. **Train** with `python -m src.model.train`. It prints the eight lines shown in [Step 2: Train the Model](#step-2-train-the-model).
+3. **Train** with `make train`. It prints the nine lines shown in [Step 2: Train the Model](#step-2-train-the-model).
 4. **Confirm nothing changed.** Training overwrites `results/run-summary.json`. If the rebuild matches, git shows no change to that file.
 
     ```bash
@@ -268,6 +296,7 @@ An input is one column the model sees. The names are shared with the API, so a c
 ### What Is Kept in Git After a Retrain?
 
 - **Committed:** `results/run-summary.json`. It is stable, so git shows a change only when the settings, data, or scores really changed.
+- **Committed:** `mlflow-reference/latest-run/`, the readable copy of the newest MLflow run. Training rewrites it, so git shows a change on every retrain, because the run id and times are new.
 - **Not committed:** `models/`, `mlflow.db`, and `mlartifacts/`. One command rebuilds all three.
 
 ## How Does the Model Reach AWS?

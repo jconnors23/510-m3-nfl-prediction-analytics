@@ -65,7 +65,7 @@ The build commands in the Deployment Guide's [Build the Zip](./deployment-guide.
 python -m pytest
 ```
 
-Expected: **61 passed** with no warnings: 3 from Phase 1, 27 from Phase 2, 17 from Phase 3, 6 from Phase 4, and 8 from Phase 5. Without `models/model.joblib`, 59 pass and 2 are skipped.
+Expected: **88 passed** with no warnings: 3 from Phase 1, 27 from Phase 2, 17 from Phase 3, 6 from Phase 4, and 35 from Phase 5. Without `models/model.joblib`, 86 pass and 2 are skipped.
 
 ### How Do I Change a Package Version?
 

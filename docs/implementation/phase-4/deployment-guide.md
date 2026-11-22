@@ -433,7 +433,7 @@ CORS is set on the API Gateway, not in the app. The command replaces the whole s
 aws apigatewayv2 update-api --api-id <api-id> --cors-configuration file://build/cors.json --region us-east-1
 ```
 
-The `<api-id>` is the part of the public address before `.execute-api`. The list now allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/implementation.md#the-preflight).
+The `<api-id>` is the part of the public address before `.execute-api`. The list now allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/implementation-part-1.md#the-preflight).
 
 ## Remove Everything
 

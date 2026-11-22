@@ -97,7 +97,7 @@ Nothing is hard-coded in the scripts. To change a path, the bucket, or the seaso
 python -m pytest tests/test_clean.py tests/test_upload.py
 ```
 
-Expected: **3 passed**. The tests use made-up data and a stand-in S3 client, so they need no internet and no AWS account. The whole project's tests run with `python -m pytest` (61 passed).
+Expected: **3 passed**. The tests use made-up data and a stand-in S3 client, so they need no internet and no AWS account. The whole project's tests run with `make pytest` (88 passed).
 
 ### How Do I Change Which Games Are Used?
 

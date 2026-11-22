@@ -1,0 +1,42 @@
+[
+  {
+    "copied": true,
+    "path": "0086979f064d4bc891264c03ec076803/artifacts/config/config.yaml",
+    "size": 4184
+  },
+  {
+    "copied": false,
+    "path": "0086979f064d4bc891264c03ec076803/artifacts/model/model.joblib",
+    "size": 1902
+  },
+  {
+    "copied": true,
+    "path": "0086979f064d4bc891264c03ec076803/artifacts/plots/confusion_matrix_validation.png",
+    "size": 31022
+  },
+  {
+    "copied": true,
+    "path": "models/m-b08dc261bd3a4b38bd500ab4e0fa3aa4/artifacts/MLmodel",
+    "size": 710
+  },
+  {
+    "copied": true,
+    "path": "models/m-b08dc261bd3a4b38bd500ab4e0fa3aa4/artifacts/conda.yaml",
+    "size": 241
+  },
+  {
+    "copied": false,
+    "path": "models/m-b08dc261bd3a4b38bd500ab4e0fa3aa4/artifacts/model.skops",
+    "size": 25098
+  },
+  {
+    "copied": true,
+    "path": "models/m-b08dc261bd3a4b38bd500ab4e0fa3aa4/artifacts/python_env.yaml",
+    "size": 105
+  },
+  {
+    "copied": true,
+    "path": "models/m-b08dc261bd3a4b38bd500ab4e0fa3aa4/artifacts/requirements.txt",
+    "size": 117
+  }
+]

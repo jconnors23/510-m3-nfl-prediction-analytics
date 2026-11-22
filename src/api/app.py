@@ -19,8 +19,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-# Note: nothing in this file may import pandas, or anything from src/model/ (features.py imports
-# pandas). The Lambda zip in Phase 4 only fits under its size limit without pandas.
+# This file must not import pandas, or anything from src/model/, because features.py imports
+# pandas. The Lambda zip only fits under its size limit without pandas.
 from src.api.schemas import HealthResponse, PredictRequest, PredictResponse
 from src.config import load_config, resolve_path
 

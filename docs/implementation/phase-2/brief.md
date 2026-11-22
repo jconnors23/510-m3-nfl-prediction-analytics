@@ -36,7 +36,7 @@ Phase 2 turns the cleaned games into two inputs per game, trains the model, and 
 - **Settings:** new `split`, `model`, and `tracking` blocks in `config/config.yaml`, including `tracking.summary_path`.
 - **Code:** `src/model/features.py`, `src/model/train.py`, and `src/model/evaluate.py`, next to the Phase 1 folder `src/data/`, with tests in `tests/`. Packages `matplotlib` and `joblib` are pinned in `requirements.txt`.
 - **Committed:** `results/run-summary.json`.
-- **Local only, not committed:** `mlflow.db`, the `mlartifacts/` folder, and `models/model.joblib`.
+- **Local only, not committed:** `mlflow.db`, the `mlartifacts/` folder, and `models/model.joblib`. A readable log of every run is committed in [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference), added in Phase 5.
 
 ## Where to Read More
 

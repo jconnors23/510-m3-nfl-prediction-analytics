@@ -54,8 +54,8 @@ def split_seasons(config: dict) -> tuple[int, int, int, int]:
     start_season, test_season, _test_week = season_window(config)
     train_end_season = int(config["split"]["train_end_season"])
     validation_season = int(config["split"]["validation_season"])
-    # A later season inside training would let the model learn from games played
-    # after the seasons it is scored on.
+    # The seasons must run in order: training, then validation, then test. Any other order
+    # would let the model learn from games played after the games it is scored on.
     if start_season > train_end_season:
         raise ValueError(
             f"first training season {start_season} is after last training season {train_end_season}"

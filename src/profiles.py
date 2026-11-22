@@ -1,7 +1,8 @@
 """Write each team's standing after the last counted week, for the frontend to read.
 
-The browser subtracts one team's numbers from the other's, so the values in the file stay
-unrounded. Rounding here would make the request sent to the API differ from the model.
+The browser subtracts one team's stored numbers from the other's and sends the result to the
+API, so no number is rounded here. Rounding would make the request differ from the model's
+inputs. This file also holds TEAM_NAMES, which src/season.py reuses.
 """
 
 import json
@@ -50,7 +51,9 @@ TEAM_NAMES = {
 
 def build_profiles(config: dict) -> dict:
     """Build the profiles document from the downloaded games and the run summary."""
+    # Only the standings use the games. The scores shown with the model come from the summary.
     games = load_games(config)
+    # Every code in the downloaded table, so a team with no games yet still gets a row.
     teams = sorted(set(games["home_team"]) | set(games["away_team"]))
     # A code with no name, or a name with no code, would show the wrong label on the page.
     if set(teams) != set(TEAM_NAMES):
@@ -61,8 +64,11 @@ def build_profiles(config: dict) -> dict:
             f"Teams with no name: {missing}. Names with no team: {extra}."
         )
     _start_season, end_season, last_week = season_window(config)
-    # Week last_week + 1 means "before the week after the last counted week", so week 10 is included.
+    # standings_before_week uses only games from earlier weeks, so asking for week last_week + 1
+    # includes the last counted week (week 10).
     standings = standings_before_week(games, end_season, last_week + 1, teams).set_index("team")
+    # The run summary supplies the model version and validation scores shown on the page. Stop
+    # with a clear message if training has not been run yet.
     summary_setting = config["tracking"]["summary_path"]
     summary_path = resolve_path(summary_setting)
     if not summary_path.is_file():
@@ -99,6 +105,8 @@ def build_profiles(config: dict) -> dict:
 
 def profiles_text(document: dict) -> str:
     """The document as text, with one trailing newline and no non-finite numbers."""
+    # allow_nan=False makes a NaN or infinity raise an error, because the browser cannot parse
+    # either one from JSON.
     return json.dumps(document, indent=2, allow_nan=False) + "\n"
 
 

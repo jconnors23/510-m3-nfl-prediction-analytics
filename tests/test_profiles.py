@@ -1,4 +1,10 @@
-"""Tests for the team profiles file the frontend reads."""
+"""Tests for the team profiles file the frontend reads.
+
+Most tests read the downloaded games table and the saved run summary on disk, and they are
+skipped when the table is missing. Each expected number is recounted from the games table
+with plain sums, not by the code under test. The two tests that write use pytest's temporary
+folder, so the committed profiles file is never changed.
+"""
 
 import json
 from pathlib import Path
@@ -11,12 +17,16 @@ from src.config import resolve_path
 from src.profiles import TEAM_NAMES, build_profiles, write_profiles
 
 GAMES = Path(__file__).resolve().parents[1] / "data" / "from-s3" / "nfl_matchups_2020_2026.csv"
+# The profiles file that is committed for the frontend to import.
 PROFILES = Path(__file__).resolve().parents[1] / "frontend" / "src" / "data" / "team-profiles.json"
+# The games table is downloaded from S3 and is not committed, so a fresh checkout skips these tests.
 needs_games = pytest.mark.skipif(not GAMES.is_file(), reason="the downloaded games table is not on disk")
 
 
 def _team_counts(games: pd.DataFrame, team: str) -> tuple[int, int, int, int]:
     """Games, wins, points scored, and points allowed for one team, as whole numbers."""
+    # A second, independent count of the same facts the code under test reports. Keeping it
+    # separate means a mistake in build_profiles cannot also be copied into the expected value.
     home = games.loc[games["home_team"] == team]
     away = games.loc[games["away_team"] == team]
     played = len(home) + len(away)
@@ -41,12 +51,15 @@ def test_team_names_match_the_teams_in_the_data():
 def test_profiles_equal_the_standings_before_week_11():
     """Each profile equals a direct count of 2026 games through week 10."""
     games = pd.read_csv(GAMES)
+    # The profiles describe every team as of the end of week 10, which is the table's last week.
     counted = games.loc[(games["season"] == 2026) & (games["week"] <= 10)]
     document = build_profiles(load_config())
     for team in document["teams"]:
         played, wins, scored, allowed = _team_counts(counted, team["team"])
         assert team["games"] == played
         assert team["wins"] == wins
+        # Exact equality on purpose. The browser reads these numbers and Python must write the
+        # same floating-point values as a direct division, so approximately equal is not enough.
         assert team["win_pct"] == wins / played
         assert team["point_diff_per_game"] == (scored - allowed) / played
 
@@ -75,6 +88,7 @@ def test_file_layout_and_key_order():
 
 def test_model_block_comes_from_the_run_summary():
     """The model block is the run summary's validation scores, unrounded."""
+    # This test reads the saved run summary, not the games table, so it is not skipped without the table.
     config = load_config()
     summary = json.loads(resolve_path(config["tracking"]["summary_path"]).read_text(encoding="utf-8"))
     validation = summary["scores"]["validation"]
@@ -93,6 +107,7 @@ def test_no_blank_or_non_finite_value():
     """Every number is finite, and the win count fits inside the games played."""
     import math
 
+    # A blank or infinite value would be written into the JSON file and break the frontend page.
     document = build_profiles(load_config())
     for team in document["teams"]:
         assert math.isfinite(team["games"])
@@ -107,19 +122,23 @@ def test_no_blank_or_non_finite_value():
 def test_the_same_input_writes_the_same_bytes(tmp_path):
     """Writing the file twice produces the same text as the committed profiles file."""
     config = load_config()
+    # Write into the temporary folder, so the committed profiles file is not overwritten.
     config["frontend"] = {"profiles_path": str(tmp_path / "team-profiles.json")}
     document = build_profiles(config)
     first = write_profiles(config, document).read_text(encoding="utf-8")
     second = write_profiles(config, document).read_text(encoding="utf-8")
     assert first == second
+    # Exactly one newline at the end, so editors and diffs show no stray blank line.
     assert first.endswith("\n")
     assert not first.endswith("\n\n")
+    # The committed file must be what the current code and data produce, so it cannot go stale.
     assert first == PROFILES.read_text(encoding="utf-8")
 
 
 def test_missing_table_stops_with_a_clear_message(tmp_path):
     """A missing games table stops with the path that was configured."""
     config = load_config()
+    # Point the table path at a file that does not exist, in a folder that is empty.
     config["data"]["from_s3_path"] = str(tmp_path / "missing.csv")
     with pytest.raises(ValueError, match="No downloaded table at"):
         build_profiles(config)
@@ -128,6 +147,7 @@ def test_missing_table_stops_with_a_clear_message(tmp_path):
 def test_failed_write_keeps_the_old_file(tmp_path, monkeypatch):
     """A failed swap leaves the previous file and removes the partial file."""
     destination = tmp_path / "team-profiles.json"
+    # An existing file stands for the last good profiles file, which must survive a failed write.
     destination.write_text("old\n", encoding="utf-8")
     config = load_config()
     config["frontend"] = {"profiles_path": str(destination)}
@@ -139,6 +159,7 @@ def test_failed_write_keeps_the_old_file(tmp_path, monkeypatch):
     # write_profiles looks up os.replace when it runs, so the stand-in has to sit on that module.
     monkeypatch.setattr("src.profiles.os.replace", fail_replace)
     with pytest.raises(OSError, match="replace failed"):
+        # A small document is enough, because the write fails at the swap, not at the content.
         write_profiles(config, {"as_of": {"season": 2026, "through_week": 10}})
     assert destination.read_text(encoding="utf-8") == "old\n"
     assert not destination.with_name(destination.name + ".partial").exists()

@@ -1,7 +1,12 @@
+// Matchup math for the picker. It builds the exact request the model receives and turns the API's
+// answer into display text. Nothing here rounds a value before it is sent.
+
 import type { PredictRequest, PredictResponse, TeamProfile } from "./types.ts";
 
 // The page sends this object unchanged, so the subtraction here is the subtraction the model sees.
+// The browser only subtracts. It never rounds, so the request equals the model's inputs exactly.
 export function buildPredictRequest(home: TeamProfile, away: TeamProfile): PredictRequest {
+  // A team cannot play itself, so this is a bad pick and not a valid matchup.
   if (home.team === away.team) {
     throw new Error("The home and away teams must be different.");
   }
@@ -9,9 +14,11 @@ export function buildPredictRequest(home: TeamProfile, away: TeamProfile): Predi
     win_pct_differential: home.win_pct - away.win_pct,
     point_diff_per_game_differential: home.point_diff_per_game - away.point_diff_per_game,
   };
+  // Stop a NaN or infinity here, because JSON.stringify would turn it into null.
   if (!Number.isFinite(request.win_pct_differential) || !Number.isFinite(request.point_diff_per_game_differential)) {
     throw new Error("The matchup has a value that is not a number.");
   }
+  // The API rejects values outside these bounds, so refuse them before the call.
   if (
     request.win_pct_differential < -1 ||
     request.win_pct_differential > 1 ||
@@ -25,6 +32,8 @@ export function buildPredictRequest(home: TeamProfile, away: TeamProfile): Predi
 
 // The bar and the percentages share these two integers, so they cannot drift apart.
 export function chanceTenths(homeProbability: number): { home: number; away: number } {
+  // Hundredths of a percent first, then tenths. The away share is the remainder, so the two
+  // always add to exactly 100.0%.
   const units = Math.round(homeProbability * 10000);
   const home = Math.round(units / 10);
   const away = 1000 - home;
@@ -40,7 +49,8 @@ export function formatChances(homeProbability: number): { home: string; away: st
   };
 }
 
-// A visitor reads the record under the picker, with the margin at one decimal.
+// A visitor reads the record under the picker, with the margin at one decimal. A margin that
+// rounds to zero has no sign, so the page never shows "-0.0".
 export function describeRecord(team: TeamProfile): string {
   const losses = team.games - team.wins;
   const rounded = Math.round(team.point_diff_per_game * 10) / 10;

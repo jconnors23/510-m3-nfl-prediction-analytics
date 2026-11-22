@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Deployment Guide
 
-This guide holds every AWS command for the Phase 5 web app: the commands that put it online, in order, the commands that let GitHub Actions redeploy it, the commands to redeploy by hand, and the commands that remove it. How the hosting works, and why, is on the [Implementation](./implementation.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
+This guide holds every AWS command for the Phase 5 web app: the commands that put it online, in order, the commands that let GitHub Actions redeploy it, the commands to redeploy by hand, and the commands that remove it. How the hosting works, and why, is on the [Implementation](./implementation-part-1.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
 
 ## How Do the Sections Fit Together?
 
@@ -18,13 +18,16 @@ flowchart TB
     E --> F["Upload and Check<br/>files, invalidation, served bytes"]
     F --> G["Add the CloudFront Address<br/>to the API's CORS List"]
     G --> J["Let GitHub Actions Deploy<br/>sign-in provider, role, secret"]
-    J -.-> H["Redeploy After a Change<br/>(the workflow, or by hand)"]
-    J -.-> I["Remove Everything<br/>(written, not run)"]
+    J --> K["Add the Feedback Route<br/>table, role, function, route, limit<br/>(Part 2)"]
+    K -.-> H["Redeploy After a Change<br/>(the workflow, or by hand)"]
+    K -.-> L["Read the Feedback"]
+    K -.-> I["Remove Everything<br/>(written, not run)"]
 ```
 
 - **The order avoids a circle.** The bucket policy needs the distribution's id, and the distribution needs the bucket. So the bucket and the access control come first, then the distribution, then the policy.
 - **CORS comes after the distribution,** because the CloudFront address only exists once the distribution is created.
 - **The deploy role comes after that,** because its permissions name the bucket and the distribution.
+- **The feedback route comes last.** Part 2 added it to the existing API. It needs nothing from the hosting, and it does not touch the prediction function.
 
 ## Before the First Command
 
@@ -46,7 +49,7 @@ What must be true first:
 
 ## Check the Account
 
-1. Run both test suites. The Python tests give **61 passed**. From `frontend/`, the app tests give **35 passed**.
+1. Run both test suites with `make pytest` and `make webtest`. The Python tests give **78 passed**. The app tests give **56 passed**, or **54 passed and 2 skipped** without the expected files in `build/`.
 
 ```bash
 python -m pytest -q
@@ -400,7 +403,7 @@ curl -sS -D - -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/pre
 
 ## Let GitHub Actions Deploy
 
-These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on the [Implementation](./implementation.md#how-does-a-change-reach-the-live-page) page. Write the two policy files with the real account number, under `build/`, which git ignores.
+These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on the [Implementation](./implementation-part-1.md#how-does-a-change-reach-the-live-page) page. Write the two policy files with the real account number, under `build/`, which git ignores.
 
 29. Confirm there is no GitHub sign-in provider and no role with this name yet. The second command should fail with `NoSuchEntity`.
 
@@ -497,6 +500,165 @@ gh secret set AWS_WEB_APP_DEPLOY_ROLE_ARN --repo jconnors23/510-m3-nfl-predictio
 
 36. Merge `.github/workflows/deploy-web-app.yml` into `main`. The merge changes the workflow file, so it starts the first run. Watch it in the Actions tab. The summary lists the deployed files and says whether the served bytes matched. It is written even when a step fails, with `not checked` for a step that did not run.
 
+## Add the Feedback Route
+
+These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [Implementation Part 2](./implementation-part-2.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
+
+37. Confirm nothing exists yet. The first three commands should fail with "not found", and the last should list only `POST /predict` and `GET /health`.
+
+```bash
+aws dynamodb describe-table --table-name 510-m3-nfl-feedback --region us-east-1
+```
+
+```bash
+aws lambda get-function --function-name 510-m3-nfl-feedback-api --region us-east-1
+```
+
+```bash
+aws iam get-role --role-name 510-m3-nfl-feedback-api-role --region us-east-1
+```
+
+```bash
+aws apigatewayv2 get-routes --api-id 9awodatqc5 --query 'Items[].RouteKey' --region us-east-1
+```
+
+38. Create the table, keyed by `feedback_id` and billed per request, then wait until it is ready.
+
+```bash
+aws dynamodb create-table --table-name 510-m3-nfl-feedback --attribute-definitions AttributeName=feedback_id,AttributeType=S --key-schema AttributeName=feedback_id,KeyType=HASH --billing-mode PAY_PER_REQUEST --tags Key=project,Value=510-m3 --region us-east-1
+```
+
+```bash
+aws dynamodb wait table-exists --table-name 510-m3-nfl-feedback --region us-east-1
+```
+
+39. Write the function's trust policy (only Lambda can use the role) and its one permission (write one item to this table), with the real account number.
+
+```bash
+cat > build/feedback-trust.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Effect": "Allow", "Principal": { "Service": "lambda.amazonaws.com" }, "Action": "sts:AssumeRole" }
+  ]
+}
+EOF
+```
+
+```bash
+cat > build/feedback-write.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SaveFeedback",
+      "Effect": "Allow",
+      "Action": "dynamodb:PutItem",
+      "Resource": "arn:aws:dynamodb:us-east-1:<account-id>:table/510-m3-nfl-feedback"
+    }
+  ]
+}
+EOF
+```
+
+40. Create the role, let it write logs, and attach the one permission.
+
+```bash
+aws iam create-role --role-name 510-m3-nfl-feedback-api-role --assume-role-policy-document file://build/feedback-trust.json --description "The feedback function writes one item to its table" --tags Key=project,Value=510-m3 --region us-east-1
+```
+
+```bash
+aws iam attach-role-policy --role-name 510-m3-nfl-feedback-api-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole --region us-east-1
+```
+
+```bash
+aws iam put-role-policy --role-name 510-m3-nfl-feedback-api-role --policy-name 510-m3-nfl-feedback-write --policy-document file://build/feedback-write.json --region us-east-1
+```
+
+41. Build the zip. It holds only `src/api/feedback_handler.py`, at that path, because the function uses the `boto3` that Lambda already provides.
+
+```bash
+rm -f build/510-m3-nfl-feedback-api.zip
+```
+
+```bash
+zip build/510-m3-nfl-feedback-api.zip src/api/feedback_handler.py
+```
+
+42. Create the function, then wait until it is active. If it fails because the new role cannot be used yet, wait a few seconds and run it again.
+
+```bash
+aws lambda create-function --function-name 510-m3-nfl-feedback-api --runtime python3.13 --architectures arm64 --handler src.api.feedback_handler.handler --role arn:aws:iam::<account-id>:role/510-m3-nfl-feedback-api-role --zip-file fileb://build/510-m3-nfl-feedback-api.zip --memory-size 256 --timeout 5 --environment "Variables={FEEDBACK_TABLE=510-m3-nfl-feedback}" --tags project=510-m3 --region us-east-1
+```
+
+```bash
+aws lambda wait function-active-v2 --function-name 510-m3-nfl-feedback-api --region us-east-1
+```
+
+43. Connect the route. Create the integration and note its id, create the route, and let only this route call the function.
+
+```bash
+aws apigatewayv2 create-integration --api-id 9awodatqc5 --integration-type AWS_PROXY --integration-uri arn:aws:lambda:us-east-1:<account-id>:function:510-m3-nfl-feedback-api --payload-format-version 2.0 --query IntegrationId --output text --region us-east-1
+```
+
+```bash
+aws apigatewayv2 create-route --api-id 9awodatqc5 --route-key "POST /feedback" --target integrations/<integration-id> --region us-east-1
+```
+
+```bash
+aws lambda add-permission --function-name 510-m3-nfl-feedback-api --statement-id 510-m3-nfl-feedback-http-api --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:us-east-1:<account-id>:9awodatqc5/*/POST/feedback" --region us-east-1
+```
+
+44. Limit that route only, to 1 request a second with bursts of 5, then read the stage back. Only `POST /feedback` should have a limit.
+
+```bash
+aws apigatewayv2 update-stage --api-id 9awodatqc5 --stage-name '$default' --route-settings '{"POST /feedback":{"ThrottlingBurstLimit":5,"ThrottlingRateLimit":1}}' --region us-east-1
+```
+
+```bash
+aws apigatewayv2 get-stage --api-id 9awodatqc5 --stage-name '$default' --query RouteSettings --region us-east-1
+```
+
+45. Check the route. A 5-character message should return 422 with "The message must be 10 to 1,000 characters." The existing CORS setting already allows `POST` with `content-type` from the CloudFront address, so nothing changes there.
+
+```bash
+curl -sS -w '\nHTTP %{http_code}\n' -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/feedback -H "Content-Type: application/json" -d '{"category":"general","rating":null,"message":"short","website":""}'
+```
+
+46. After the first call, tag the function's log group and keep its logs for 14 days.
+
+```bash
+aws logs tag-resource --resource-arn arn:aws:logs:us-east-1:<account-id>:log-group:/aws/lambda/510-m3-nfl-feedback-api --tags project=510-m3 --region us-east-1
+```
+
+```bash
+aws logs put-retention-policy --log-group-name /aws/lambda/510-m3-nfl-feedback-api --retention-in-days 14 --region us-east-1
+```
+
+47. Confirm the prediction function did not change. Its `CodeSha256` should still be `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=`.
+
+```bash
+aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --query CodeSha256 --output text --region us-east-1
+```
+
+## Read the Feedback
+
+The feedback is read with the AWS command line. There is no page for it. The first command counts the items. The second lists every item with its time, category, rating, and message.
+
+```bash
+aws dynamodb scan --table-name 510-m3-nfl-feedback --select COUNT --query Count --region us-east-1
+```
+
+```bash
+aws dynamodb scan --table-name 510-m3-nfl-feedback --query 'Items[].{When:submitted_at.S,Category:category.S,Rating:rating.N,Message:message.S}' --output table --region us-east-1
+```
+
+To change the feedback function's code, rebuild the zip with step 41, then update the function. Its `CodeSha256` changes, and the prediction function's does not.
+
+```bash
+aws lambda update-function-code --function-name 510-m3-nfl-feedback-api --zip-file fileb://build/510-m3-nfl-feedback-api.zip --region us-east-1
+```
+
 ## Redeploy After a Change
 
 **The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below are the same thing by hand, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are.
@@ -541,7 +703,45 @@ aws cloudfront wait invalidation-completed --distribution-id <distribution-id> -
 
 These commands were written and not run. They remove only this project's deploy role, bucket, distribution, and access control, and put the API's CORS list back to the local origin. The other project's distribution `E14C2E7GBRK0V1` is never touched.
 
-**First, remove the deploy role,** so no workflow run can upload while the rest is taken down. Then delete the secret `AWS_WEB_APP_DEPLOY_ROLE_ARN` in GitHub. Delete the GitHub sign-in provider only if nothing else in the account uses it. The last command shows its address.
+**To remove only the feedback route,** delete these in order. They leave the prediction routes and the hosting in place.
+
+```bash
+aws apigatewayv2 delete-route --api-id 9awodatqc5 --route-id <route-id> --region us-east-1
+```
+
+```bash
+aws apigatewayv2 delete-integration --api-id 9awodatqc5 --integration-id <integration-id> --region us-east-1
+```
+
+```bash
+aws apigatewayv2 update-stage --api-id 9awodatqc5 --stage-name '$default' --route-settings '{}' --region us-east-1
+```
+
+```bash
+aws lambda delete-function --function-name 510-m3-nfl-feedback-api --region us-east-1
+```
+
+```bash
+aws logs delete-log-group --log-group-name /aws/lambda/510-m3-nfl-feedback-api --region us-east-1
+```
+
+```bash
+aws iam delete-role-policy --role-name 510-m3-nfl-feedback-api-role --policy-name 510-m3-nfl-feedback-write --region us-east-1
+```
+
+```bash
+aws iam detach-role-policy --role-name 510-m3-nfl-feedback-api-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole --region us-east-1
+```
+
+```bash
+aws iam delete-role --role-name 510-m3-nfl-feedback-api-role --region us-east-1
+```
+
+```bash
+aws dynamodb delete-table --table-name 510-m3-nfl-feedback --region us-east-1
+```
+
+**To remove everything, start with the feedback route above, then remove the deploy role,** so no workflow run can upload while the rest is taken down. Then delete the secret `AWS_WEB_APP_DEPLOY_ROLE_ARN` in GitHub. Delete the GitHub sign-in provider only if nothing else in the account uses it. The last command shows its address.
 
 ```bash
 aws iam delete-role-policy --role-name 510-m3-nfl-web-app-deploy-role --policy-name 510-m3-nfl-web-app-deploy --region us-east-1

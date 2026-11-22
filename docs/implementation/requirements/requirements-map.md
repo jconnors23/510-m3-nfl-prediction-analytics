@@ -74,7 +74,8 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **A readable record outside MLflow:** `results/run-summary.json`, written by `write_run_summary` in `src/model/train.py`. It holds the settings, the data fingerprint, the scores, and the learned weights, and it is committed to git.
 - **Where to find the recorded runs:**
     - **In the repository:** `results/run-summary.json` shows the latest run's settings, scores, and learned weights without MLflow.
-    - **Run record:** `mlflow.db` in the project folder. **Run files:** `mlartifacts/`. Both are created by training and are not committed.
+    - **Run record:** `mlflow.db` in the project folder. **Run files:** `mlartifacts/`. Both are created by training and are not committed, because they store absolute paths on one computer.
+    - **In the repository:** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference), written by `python -m src.model.export_mlflow`, which training calls. It is a log of every training run: each run's id, git commit, 15 parameters, 8 metrics, config copy and plot, and the logged model's text files, with `run-history.md` listing every run and pictures of the MLflow screen.
     - **To browse them:** run `mlflow ui --backend-store-uri sqlite:///mlflow.db` and open the address it prints.
     - **The saved model file:** `models/model.joblib`, also not committed.
 
@@ -97,7 +98,7 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Docs:** [Phase 4 Implementation](../phase-4/implementation.md)
 - **Configure CORS on API Gateway so the browser-based front-end can call /predict.**
     - **Where:** set on the gateway, not in the app. It allows two origins, the live page `https://d1nubiunzfwm0q.cloudfront.net` and the local dev server `http://localhost:5173`, with the methods `POST`, `GET`, and `OPTIONS`, and the header `content-type`. Other origins get no CORS headers.
-    - **Docs:** [Step 8: Set CORS on the Gateway](../phase-4/implementation.md#step-8-set-cors-on-the-gateway) and [The Preflight](../phase-5/implementation.md#the-preflight)
+    - **Docs:** [Step 8: Set CORS on the Gateway](../phase-4/implementation.md#step-8-set-cors-on-the-gateway) and [The Preflight](../phase-5/implementation-part-1.md#the-preflight)
 - **After deployment, /predict must be publicly reachable and must return a valid response to an HTTP request with test data.**
     - **Public address:** `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`. `POST /predict` with the inputs -0.5 and -18.0 returns `{"prediction": 0, "predicted_label": "away win", "home_win_probability": 0.3296, "model_version": "v1.0"}`.
     - **Checked on every game:** all 1,759 games sent through the public address gave the same pick and probability as the local model.
@@ -110,13 +111,13 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md)
 - **Collect user input, send it to the deployed API, and display the prediction in a readable form.**
     - **Where:** `frontend/src/App.tsx` (two team lists, the Predict button, the result, and the failure messages), `frontend/src/matchup.ts` (the two inputs and the chances), and `frontend/src/api.ts` (the `fetch` call to `POST /predict`). The standings come from `frontend/src/data/team-profiles.json`, written by `python -m src.profiles`.
-    - **Checked:** 35 app tests, and all 992 ordered pairs of teams sent to the live API, with every pick and probability equal to the local model.
+    - **Checked:** 62 app tests, all 992 ordered pairs of teams, and all 272 games of the 2026 season sent to the live API, with every pick and probability equal to the local model.
     - **Interactive and readable:** each team's record under its list, a bar split between the two chances, a light and a dark theme, and text and graphics that pass the WCAG contrast minimums in both.
-    - **Docs:** [Phase 5 Implementation](../phase-5/implementation.md)
+    - **Docs:** [Phase 5 Implementation](../phase-5/implementation-part-1.md)
 - **Host the built files in a private S3 bucket served over HTTPS through CloudFront.**
     - **Where:** the bucket `510-m3-nfl-web-app` and the CloudFront distribution at `https://d1nubiunzfwm0q.cloudfront.net`, with the origin access control `510-m3-nfl-web-app-oac`, all in `us-east-1`. The served files are byte for byte the tested build, and direct requests to the bucket get status 403.
     - **Redeployed by:** `.github/workflows/deploy-web-app.yml`, on a change under `frontend/` on `main`.
-    - **Docs:** [How Is the Page Hosted?](../phase-5/implementation.md#how-is-the-page-hosted), [How Does a Change Reach the Live Page?](../phase-5/implementation.md#how-does-a-change-reach-the-live-page), and the [Phase 5 Deployment Guide](../phase-5/deployment-guide.md)
+    - **Docs:** [How Is the Page Hosted?](../phase-5/implementation-part-1.md#how-is-the-page-hosted), [How Does a Change Reach the Live Page?](../phase-5/implementation-part-1.md#how-does-a-change-reach-the-live-page), and the [Phase 5 Deployment Guide](../phase-5/deployment-guide.md)
 - **Link the live front-end URL in the README.** Not done yet. It comes in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme).
 
 ## 9. Repository Contents
@@ -129,7 +130,7 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Front-end:** `frontend/` (the web app) and `src/profiles.py` (the team profiles file it reads).
 - **`config.yaml` for pipeline configuration.** `config/config.yaml`.
 - **A dependency file: `requirements.txt` or `environment.yaml`.** `requirements.txt`, with every package pinned to an exact version.
-- **MLflow or Weights & Biases logging wired into the pipeline.** `log_run` is called by `main` in `src/model/train.py`, so `python -m src.model.train` logs a run by itself.
+- **MLflow or Weights & Biases logging wired into the pipeline.** `log_run` is called by `main` in `src/model/train.py`, so `python -m src.model.train` logs a run by itself, and then writes the readable copy in [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference).
 - **A clear project structure and a readable commit history.**
     - **Layout:** `src/data/` (Phase 1 steps), `src/model/` (Phase 2 code), `src/api/` (Phases 3 and 4 code), `src/profiles.py` and `frontend/` (Phase 5), `results/` (the committed run summary), `.github/workflows/` (the docs site publishing workflow and the web app deploy workflow), `src/config.py` (reads the settings), `tests/` (one test file per code file), `config/` (settings), and `docs/` (these pages).
     - **Tests:** `pytest` runs all of `tests/`. They use made-up data and a stand-in S3 client, so they need no internet and no AWS account.

@@ -8,7 +8,7 @@ hide:
 This project predicts the winner of an NFL game before kickoff. A user picks a home team and an away team in a web app, and the app shows a predicted winner and a win probability. **Try it at [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net).**
 
 !!! warning "Unofficial Coursework Project"
-    **This project is not affiliated with or endorsed by the National Football League.** Team names are used only to identify the teams. The predictions are for learning only and are not betting advice.
+    **This project is not affiliated with or endorsed by the National Football League.** Team names are used only to identify the teams. The predictions are for reference only.
 
 ## What Is the Idea?
 
@@ -17,7 +17,7 @@ Teams that win more often, and outscore opponents by more, tend to win later gam
 - **Win percentage difference:** the home team's win percentage minus the away team's.
 - **Point margin difference:** the home team's average points scored minus points allowed per game, minus the away team's.
 
-A logistic regression turns those two numbers into a home win probability. The numbers start over every season. The project does not use play-by-play data, injuries, weather, or betting lines. It is a small, complete example of a machine learning system, from data storage to a public web app.
+A logistic regression turns those two numbers into a home win probability. The numbers start over every season. The project does not use play-by-play data, injuries, weather, or anything else beyond those two numbers. It is a small, complete example of a machine learning system, from data storage to a public web app.
 
 The data is the [nflverse](https://github.com/nflverse/nfldata/blob/master/data/games.csv) game results file, limited to regular-season games from 2020 through week 10 of 2026.
 
@@ -73,7 +73,7 @@ Each phase ends with something that runs. Git commits and pull requests are done
 - Host the built files in a private S3 bucket, served over HTTPS through CloudFront, at **[https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)**.
 - Check that all 992 home-and-away pairs of teams get the same answers from the live API as from the local model.
 - Give the page a light and a dark theme, bundled fonts, and bold disclaimers. A GitHub Actions workflow redeploys it whenever the app changes on `main`.
-- See the [implementation page](./implementation/phase-5/implementation.md) for the contracts and the hosting, the [Development Guide](./implementation/phase-5/development-guide.md) to run and change the app, and the [Deployment Guide](./implementation/phase-5/deployment-guide.md) for the AWS commands.
+- See the [implementation page](./implementation/phase-5/implementation-part-1.md) for the contracts and the hosting, the [Development Guide](./implementation/phase-5/development-guide.md) to run and change the app, and the [Deployment Guide](./implementation/phase-5/deployment-guide.md) for the AWS commands.
 
 **[Remaining Phases](./implementation/remaining-phases.md)** (planned)
 

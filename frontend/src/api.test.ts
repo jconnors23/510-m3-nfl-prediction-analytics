@@ -1,3 +1,6 @@
+// Tests predict() and isPredictResponse() in api.ts. fetch is replaced with a fake through vi.stubGlobal, so no
+// network is used, and the request is built from the real committed team-profiles.json. Each test that fakes fetch
+// removes the fake at its end so the next test starts with the real global.
 import { expect, it, vi } from "vitest";
 
 import { isPredictResponse, predict } from "./api.ts";
@@ -7,6 +10,7 @@ import rawProfiles from "./data/team-profiles.json";
 import type { TeamProfile, TeamProfiles } from "./types.ts";
 
 const profiles = rawProfiles as TeamProfiles;
+// A made-up address. The fake fetch never contacts it.
 const options = { baseUrl: "https://api.example.test", timeoutMs: 15000 };
 
 function byCode(code: string): TeamProfile {
@@ -18,8 +22,11 @@ function byCode(code: string): TeamProfile {
 }
 
 const neTen = buildPredictRequest(byCode("NE"), byCode("TEN"));
+// The exact request text for home NE, away TEN. It is compared as text because the body the API receives must be
+// byte for byte what was checked.
 const neTenBody = '{"win_pct_differential":0.3888888888888889,"point_diff_per_game_differential":5.9}';
 
+// Fake API answers in the shape the real API returns, used as the bodies of fake responses.
 const answers: Record<string, PredictResponse> = {
   sfMia: {
     prediction: 1,
@@ -41,10 +48,13 @@ const answers: Record<string, PredictResponse> = {
   },
 };
 
+// Builds a fake HTTP response with the given status and body text.
 function jsonResponse(status: number, body: string): Response {
   return new Response(body, { status });
 }
 
+// The fake fetch records every call so the URL, method, headers, and body can be checked. credentials and mode
+// must not be set, so the browser keeps its defaults for a call to another site.
 it("sends exactly the contract request", async () => {
   const calls: Array<{ url: string; init: RequestInit }> = [];
   vi.stubGlobal("fetch", (url: string, init: RequestInit) => {
@@ -68,6 +78,7 @@ it("returns ok for a valid answer", async () => {
   vi.unstubAllGlobals();
 });
 
+// A 422 lists its problems in a detail array, and only the first message is shown to the visitor.
 it("returns http-error with the first message for a 422", async () => {
   const body = JSON.stringify({
     detail: [
@@ -88,6 +99,7 @@ it("returns http-error with the first message for a 422", async () => {
   vi.unstubAllGlobals();
 });
 
+// The gateway puts its text in a message field instead of detail, and predict() must read that too.
 it("returns http-error for a 404 from the gateway", async () => {
   vi.stubGlobal("fetch", () => Promise.resolve(jsonResponse(404, JSON.stringify({ message: "Not Found" }))));
   await expect(predict(neTen, options)).resolves.toEqual({
@@ -102,6 +114,8 @@ it("returns unreachable when fetch rejects or the caller cancels", async () => {
   vi.stubGlobal("fetch", () => Promise.reject(new TypeError("failed")));
   await expect(predict(neTen, options)).resolves.toEqual({ kind: "unreachable" });
 
+  // The caller's signal is aborted before the call. The second fake fetch rejects the way a real fetch does when its
+  // signal is already aborted, and never answers otherwise.
   const controller = new AbortController();
   controller.abort();
   vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
@@ -114,6 +128,8 @@ it("returns unreachable when fetch rejects or the caller cancels", async () => {
   vi.unstubAllGlobals();
 });
 
+// The fake fetch never answers and rejects only when its signal aborts. With a 20 ms limit, the timer in predict()
+// is what aborts it, so the result must be timeout and not unreachable.
 it("returns timeout when the timer cancels the call", async () => {
   vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
     return new Promise((_resolve, reject) => {
@@ -128,6 +144,8 @@ it("returns timeout when the timer cancels the call", async () => {
   vi.unstubAllGlobals();
 });
 
+// Each body is a 200 the page cannot use: a missing prediction, a prediction of 2, a probability above 1,
+// a label that does not match the prediction, and text that is not JSON.
 it("returns unexpected-body for answers that break the contract", async () => {
   const bodies = [
     JSON.stringify({ predicted_label: "home win", home_win_probability: 0.5, model_version: "v1.0" }),

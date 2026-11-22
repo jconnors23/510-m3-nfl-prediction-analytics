@@ -1,0 +1,69 @@
+# Every setting for the pipeline lives in this file. To change a run, edit a value here
+# and leave the code alone.
+
+# Phase 1: where the game data comes from, where each copy of it is saved, and where it
+# is stored in the cloud.
+data:
+  # The public games file from nflverse, one row per NFL game since 1999.
+  source_url: https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv
+  # Step 1 saves the downloaded file here, unchanged.
+  raw_path: data/raw/games.csv
+  # Step 2 saves the cleaned table here (regular-season games that had a winner, 7 columns).
+  processed_path: data/processed/nfl_matchups_2020_2026.csv
+  # Step 4 saves the copy downloaded back from S3 here. Every later step reads this copy.
+  from_s3_path: data/from-s3/nfl_matchups_2020_2026.csv
+  # The private Amazon S3 bucket (created by hand) and the file name inside it (its key).
+  s3_bucket: 510-m3-nfl-dataset
+  s3_key: data/processed/nfl_matchups_2020_2026.csv
+  aws_region: us-east-1
+
+# Which games are used. The data covers the 2020 regular season through week 10 of 2026.
+# Week 10 is the last week of 2026 in which every game has a final score. Later weeks have
+# blank scores, so cleaning drops them before it checks for blank scores.
+window:
+  start_season: 2020
+  end_season: 2026
+  test_through_week: 10
+
+# How the games are split by season. Training starts at window.start_season (2020) and stops
+# at train_end_season. The validation season is the finished season after it, and its score is
+# the one to report. The test season is window.end_season, so that year is not written here
+# a second time. The model is fit on the training seasons only.
+split:
+  train_end_season: 2024
+  validation_season: 2025
+
+# The model and how it is saved.
+model:
+  # A label for this trained model. It is saved inside the model file and in the MLflow run.
+  version: v1.0
+  # A starting number for any random choice, so a rerun gives the same result. The solver
+  # below does not use randomness, so two fits match either way. The seed is kept so a random
+  # step added later stays repeatable.
+  random_seed: 42
+  # Where the trained model is saved.
+  output_path: models/model.joblib
+  # Logistic regression: the model gives each input a weight, adds them up, and turns the
+  # total into a chance (0 to 1) that the home team wins.
+  logistic_regression:
+    # How strongly the weights are held close to zero, to stop the model from memorizing the
+    # training games. A smaller number holds them tighter. 1.0 is the usual starting point.
+    C: 1.0
+    # The method that finds the best weights. "lbfgs" repeatedly nudges the weights to lower
+    # the model's errors until they stop improving. It suits a small table like this one.
+    solver: lbfgs
+    # The most nudges the solver may make before it gives up. The solver finishes in about 6
+    # here, so 1000 leaves a wide safety margin.
+    max_iter: 1000
+
+# MLflow, the tool that records every training run so runs can be compared later.
+tracking:
+  # The name that groups every run of this project.
+  experiment_name: nfl-pregame-winner-v1
+  # The database file where MLflow keeps each run's settings and scores.
+  database_path: mlflow.db
+  # The folder where MLflow keeps each run's files (the model, the plot, a copy of this file).
+  artifact_folder: mlartifacts
+  # A small readable summary of the latest run (settings, data fingerprint, scores, and the
+  # learned weights). It is committed to git. MLflow keeps the full history of runs.
+  summary_path: results/run-summary.json

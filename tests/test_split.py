@@ -1,6 +1,7 @@
 """Tests for the season split.
 
-The rows and settings are made up, except the one test that reads config.yaml. Nothing calls AWS.
+The rows and settings are made up and held in memory, except the one test that reads
+config/config.yaml. Nothing calls AWS or the network, and no file is written.
 """
 
 import pandas as pd
@@ -12,6 +13,7 @@ from src.model.features import split_games
 
 def _settings() -> dict:
     """A four-season window: train 2022-2023, validate 2024, test 2025."""
+    # Only the keys that split_seasons reads. The test season is the window's last season.
     return {
         "window": {"start_season": 2022, "end_season": 2025, "test_through_week": 10},
         "split": {"train_end_season": 2023, "validation_season": 2024},
@@ -70,4 +72,6 @@ def test_validation_must_follow_the_last_training_season():
 
 def test_real_settings_return_the_four_seasons():
     """The settings file yields training 2020-2024, validation 2025, and test 2026."""
+    # This is the only test that reads the real config/config.yaml. It fails if the split
+    # changes there, so the change has to be made on purpose along with the docs.
     assert split_seasons(load_config()) == (2020, 2024, 2025, 2026)

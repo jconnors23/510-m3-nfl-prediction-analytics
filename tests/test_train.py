@@ -1,6 +1,8 @@
 """Tests for fitting, saving, and recording a run.
 
-The games are random but fixed, and every file goes under the test's temporary folder.
+The games are random but made from a fixed seed, so every run sees the same table. Every file,
+including the MLflow database and its artifact folder, goes under the test's temporary folder,
+so no test writes into the project or needs a network.
 """
 
 import json
@@ -73,6 +75,8 @@ ARTIFACT_NAMES = {
 @pytest.fixture(autouse=True)
 def _restore_tracking_address():
     """log_run points MLflow at a temporary database, so put the earlier address back after each test."""
+    # MLflow keeps its tracking address in a global setting. Without this reset, a later test
+    # (or a later file) would log into the previous test's deleted folder.
     before = mlflow.get_tracking_uri()
     yield
     mlflow.set_tracking_uri(before)
@@ -112,6 +116,8 @@ def _settings(tmp_path: Path) -> dict:
             "database_path": str(tmp_path / "mlflow.db"),
             "artifact_folder": str(tmp_path / "mlartifacts"),
             "summary_path": str(tmp_path / "results" / "run-summary.json"),
+            # The readable MLflow copy goes under tmp_path, so a test never writes into the project's reference folder.
+            "reference_folder": str(tmp_path / "mlflow-reference"),
         },
     }
 
@@ -179,6 +185,8 @@ def test_scaler_uses_training_rows_only(tmp_path):
     games = _games()
     training = games.iloc[:40].copy()
     validation = games.iloc[40:].copy()
+    # Shifting the validation inputs moves their average far from the training average, so a
+    # scaler fitted on both tables would give a clearly different mean.
     validation[INPUT_COLUMNS] = validation[INPUT_COLUMNS] + 5
     pipeline = fit_pipeline(settings, training)
     learned = pipeline.named_steps["standardscaler"].mean_
@@ -194,6 +202,7 @@ def test_same_settings_give_the_same_probabilities(tmp_path):
     training = _games()
     first = fit_pipeline(settings, training)
     second = fit_pipeline(settings, training)
+    # allclose ignores differences far below anything that could change a displayed probability.
     assert np.allclose(
         first.predict_proba(training[INPUT_COLUMNS]),
         second.predict_proba(training[INPUT_COLUMNS]),
@@ -219,6 +228,7 @@ def test_saved_file_round_trip(tmp_path):
         loaded["pipeline"].predict_proba(training[INPUT_COLUMNS]),
         pipeline.predict_proba(training[INPUT_COLUMNS]),
     )
+    # The file is written under a .partial name and then swapped in, so no .partial file may remain.
     assert not path.with_name(path.name + ".partial").exists()
     assert path.parent.is_dir()
 
@@ -230,6 +240,7 @@ def test_failed_save_keeps_the_old_file(tmp_path):
     path.parent.mkdir(parents=True)
     path.write_bytes(b"already saved")
     pipeline = fit_pipeline(settings, _games())
+    # Make the write fail partway. The patch is on the name train.py uses, so only this call fails.
     with patch("src.model.train.joblib.dump", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
             save_model(pipeline, settings, 2020, 2024)
@@ -241,6 +252,7 @@ def test_file_fingerprint(tmp_path):
     """The fingerprint of the bytes abc is the known SHA-256, and one changed byte differs."""
     path = tmp_path / "sample.txt"
     path.write_bytes(b"abc")
+    # The long value is the published SHA-256 test value for the text abc.
     assert file_fingerprint(path) == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
     path.write_bytes(b"abd")
     assert file_fingerprint(path) != "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
@@ -260,10 +272,13 @@ def test_mlflow_logs_the_run(tmp_path):
     run_id = runs.iloc[0]["run_id"]
     client = MlflowClient()
     recorded = client.get_run(run_id)
+    # Sets are compared, so a missing or an extra name fails the test.
     assert set(recorded.data.params) == PARAMETER_NAMES
     assert recorded.data.params["scikit_learn_version"] == sklearn.__version__
     assert recorded.data.params["data_sha256"] == file_fingerprint(data_path)
     assert set(recorded.data.metrics) == METRIC_NAMES
+    # Neither of these scores is recorded on purpose. Training log loss is not a fair check,
+    # and the project does not report a ROC AUC.
     assert "validation_roc_auc" not in recorded.data.metrics
     assert "train_log_loss" not in recorded.data.metrics
     assert _artifact_paths(run_id) == ARTIFACT_NAMES
@@ -279,6 +294,7 @@ def test_second_run_joins_the_same_experiment(tmp_path):
     _write_data_file(settings)
     files = _run_files(tmp_path)
     pipeline = fit_pipeline(settings, _games())
+    # The same files are reused, because only the number of runs is under test.
     log_run(settings, _scores(), files, pipeline)
     log_run(settings, _scores(), files, pipeline)
     experiment = mlflow.get_experiment_by_name(settings["tracking"]["experiment_name"])
@@ -325,6 +341,7 @@ def test_run_summary_contents(tmp_path):
     assert loaded["scikit_learn_version"] == sklearn.__version__
     assert loaded["data_sha256"] == file_fingerprint(data_path)
     estimator = pipeline.named_steps["logisticregression"]
+    # The summary stores the weights rounded to 6 decimals, so the expected values are rounded the same way.
     assert loaded["learned"]["weights"] == [round(float(value), 6) for value in estimator.coef_[0]]
     assert loaded["learned"]["intercept"] == round(float(estimator.intercept_[0]), 6)
     assert "log_loss" not in loaded["scores"]["training"]
@@ -340,6 +357,7 @@ def test_run_summary_is_identical_on_a_rerun(tmp_path):
     pipeline = fit_pipeline(settings, games)
     scores = _summary_scores(pipeline, games)
     first = write_run_summary(settings, scores, pipeline)
+    # Comparing bytes, not parsed JSON, catches any change in key order or spacing.
     first_bytes = first.read_bytes()
     second = write_run_summary(settings, scores, pipeline)
     assert second.read_bytes() == first_bytes
@@ -357,6 +375,7 @@ def test_mlflow_format_model_is_logged(tmp_path):
     logged = MlflowClient().search_logged_models(experiment_ids=[experiment.experiment_id])
     assert len(logged) == 1
     assert logged[0].name == "pipeline-mlflow-format"
+    # Loading by the models:/ address proves the stored model is readable by MLflow, not only present.
     reloaded = mlflow.sklearn.load_model(f"models:/{logged[0].model_id}")
     assert np.allclose(
         reloaded.predict_proba(games[INPUT_COLUMNS]),

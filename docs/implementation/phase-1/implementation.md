@@ -82,7 +82,7 @@ The raw file has 46 columns. Cleaning keeps 7 and drops 39.
 - **Used to filter, then dropped:** `game_type`. It holds `REG` (7,239 games), `WC` (120), `DIV` (108), `CON` (54), and `SB` (27).
 - **Dropped, because season and week already say when a game was played:** `gameday`, `weekday`, and `gametime`.
 - **Dropped, because the kept scores already hold them:** `result` (home minus away score), `total` (the two scores added), and `overtime`.
-- **Dropped as outside team results:** venue columns (`location`, `roof`, `surface`, `temp`, `wind`, `stadium_id`, `stadium`), betting lines (moneylines, spread, total line, and odds), and people (quarterbacks, coaches, referee).
+- **Dropped as outside team results:** venue columns (`location`, `roof`, `surface`, `temp`, `wind`, `stadium_id`, `stadium`), eight pre-game market columns (columns 25 to 32 of the raw file), and people (quarterbacks, coaches, referee).
 - **Dropped for now:** `away_rest`, `home_rest`, and `div_game`. Rest days are not a model input in this project.
 - **Dropped as identifiers from other data sources:** `old_game_id`, `gsis`, `nfl_detail_id`, `pfr`, `pff`, `espn`, and `ftn`.
 
