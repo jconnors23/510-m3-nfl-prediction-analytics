@@ -85,10 +85,10 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Docs:** [How Does the Service Work?](../phase-3/implementation.md#how-does-the-service-work)
 - **Expose a /predict endpoint that accepts JSON input and returns a prediction as JSON.**
     - **Where:** `POST /predict` in `src/api/app.py`, with the request and response shapes in `src/api/schemas.py`. The request holds `win_pct_differential` and `point_diff_per_game_differential`. The response holds `prediction`, `predicted_label`, `home_win_probability`, and `model_version`.
-    - **Docs:** [What Is in the Response?](../phase-3/implementation.md#what-is-in-the-response)
+    - **Docs:** [What Is in the Response?](../phase-3/development-guide.md#what-is-in-the-response)
 - **The endpoint must be testable locally (for example with curl or Postman).**
     - **How:** start it with `python -m uvicorn src.api.app:app --port 8000`, then send requests with `curl` or open the test page at `/docs`. 17 tests in `tests/test_api.py` cover both routes, the input checks, and the start-up checks.
-    - **Docs:** [How Do I Run It Locally?](../phase-3/implementation.md#how-do-i-run-it-locally)
+    - **Docs:** [How Do I Run It Locally?](../phase-3/development-guide.md#how-do-i-run-it-locally)
 
 ## 7. Cloud Deployment
 
@@ -96,12 +96,28 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Where:** the Lambda function `510-m3-nfl-predict-api` (entry point `src/api/lambda_handler.py`, packages listed in `requirements-serve.txt`) behind the HTTP API `510-m3-nfl-predict-http-api`, both in `us-east-1`. The commands are on [Deployment Guide](../phase-4/deployment-guide.md).
     - **Docs:** [Phase 4 Implementation](../phase-4/implementation.md)
 - **Configure CORS on API Gateway so the browser-based front-end can call /predict.**
-    - **Where:** set on the gateway, not in the app. It allows the origin `http://localhost:5173` for now, the methods `POST`, `GET`, and `OPTIONS`, and the header `content-type`. The CloudFront address is added in Phase 5.
-    - **Docs:** [Step 8: Set CORS on the Gateway](../phase-4/implementation.md#step-8-set-cors-on-the-gateway)
+    - **Where:** set on the gateway, not in the app. It allows two origins, the live page `https://d1nubiunzfwm0q.cloudfront.net` and the local dev server `http://localhost:5173`, with the methods `POST`, `GET`, and `OPTIONS`, and the header `content-type`. Other origins get no CORS headers.
+    - **Docs:** [Step 8: Set CORS on the Gateway](../phase-4/implementation.md#step-8-set-cors-on-the-gateway) and [The Preflight](../phase-5/implementation.md#the-preflight)
 - **After deployment, /predict must be publicly reachable and must return a valid response to an HTTP request with test data.**
     - **Public address:** `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`. `POST /predict` with the inputs -0.5 and -18.0 returns `{"prediction": 0, "predicted_label": "away win", "home_win_probability": 0.3296, "model_version": "v1.0"}`.
     - **Checked on every game:** all 1,759 games sent through the public address gave the same pick and probability as the local model.
     - **Docs:** [Step 9: Check the Public Address](../phase-4/implementation.md#step-9-check-the-public-address) and [Step 10](../phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model)
+
+## 8. Front-End
+
+- **Build a lightweight interface with Vite, using the dev server for local work and `vite build` for the published files.**
+    - **Where:** the React and TypeScript app in `frontend/`. `npm run dev` starts the dev server on port 5173, and `npm run build` runs the type check and `vite build` into `frontend/dist/`.
+    - **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md)
+- **Collect user input, send it to the deployed API, and display the prediction in a readable form.**
+    - **Where:** `frontend/src/App.tsx` (two team lists, the Predict button, the result, and the failure messages), `frontend/src/matchup.ts` (the two inputs and the chances), and `frontend/src/api.ts` (the `fetch` call to `POST /predict`). The standings come from `frontend/src/data/team-profiles.json`, written by `python -m src.profiles`.
+    - **Checked:** 35 app tests, and all 992 ordered pairs of teams sent to the live API, with every pick and probability equal to the local model.
+    - **Interactive and readable:** each team's record under its list, a bar split between the two chances, a light and a dark theme, and text and graphics that pass the WCAG contrast minimums in both.
+    - **Docs:** [Phase 5 Implementation](../phase-5/implementation.md)
+- **Host the built files in a private S3 bucket served over HTTPS through CloudFront.**
+    - **Where:** the bucket `510-m3-nfl-web-app` and the CloudFront distribution at `https://d1nubiunzfwm0q.cloudfront.net`, with the origin access control `510-m3-nfl-web-app-oac`, all in `us-east-1`. The served files are byte for byte the tested build, and direct requests to the bucket get status 403.
+    - **Redeployed by:** `.github/workflows/deploy-web-app.yml`, on a change under `frontend/` on `main`.
+    - **Docs:** [How Is the Page Hosted?](../phase-5/implementation.md#how-is-the-page-hosted), [How Does a Change Reach the Live Page?](../phase-5/implementation.md#how-does-a-change-reach-the-live-page), and the [Phase 5 Deployment Guide](../phase-5/deployment-guide.md)
+- **Link the live front-end URL in the README.** Not done yet. It comes in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme).
 
 ## 9. Repository Contents
 
@@ -109,12 +125,13 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Preprocessing:** `src/data/` (`fetch_raw.py`, `clean.py`, `upload_to_s3.py`, `download_from_s3.py`) and `src/model/features.py`.
     - **Training:** `src/model/train.py` and `src/model/evaluate.py`.
     - **Serving:** `src/api/app.py` and `src/api/schemas.py`.
-    - **Deployment:** `src/api/lambda_handler.py`, `requirements-serve.txt`, and the written commands on [Deployment Guide](../phase-4/deployment-guide.md).
+    - **Deployment:** `src/api/lambda_handler.py`, `requirements-serve.txt`, and the written commands on the [Phase 4 Deployment Guide](../phase-4/deployment-guide.md) and the [Phase 5 Deployment Guide](../phase-5/deployment-guide.md).
+    - **Front-end:** `frontend/` (the web app) and `src/profiles.py` (the team profiles file it reads).
 - **`config.yaml` for pipeline configuration.** `config/config.yaml`.
 - **A dependency file: `requirements.txt` or `environment.yaml`.** `requirements.txt`, with every package pinned to an exact version.
 - **MLflow or Weights & Biases logging wired into the pipeline.** `log_run` is called by `main` in `src/model/train.py`, so `python -m src.model.train` logs a run by itself.
 - **A clear project structure and a readable commit history.**
-    - **Layout:** `src/data/` (Phase 1 steps), `src/model/` (Phase 2 code), `src/api/` (Phases 3 and 4 code), `results/` (the committed run summary), `.github/workflows/` (the docs site publishing workflow), `src/config.py` (reads the settings), `tests/` (one test file per code file), `config/` (settings), and `docs/` (these pages).
+    - **Layout:** `src/data/` (Phase 1 steps), `src/model/` (Phase 2 code), `src/api/` (Phases 3 and 4 code), `src/profiles.py` and `frontend/` (Phase 5), `results/` (the committed run summary), `.github/workflows/` (the docs site publishing workflow and the web app deploy workflow), `src/config.py` (reads the settings), `tests/` (one test file per code file), `config/` (settings), and `docs/` (these pages).
     - **Tests:** `pytest` runs all of `tests/`. They use made-up data and a stand-in S3 client, so they need no internet and no AWS account.
 - **Work done on branches merged through pull requests, with at least one pull request on record.**
     - **Where:** pull requests #1 (`phase_one`), #2 (`phase-two`), and #3 (`phase-three`) are merged into `main`, and show in `git log` and on the GitHub repository's Pull requests tab. Phase 4 is on the branch `phase-four`.

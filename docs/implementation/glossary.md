@@ -113,12 +113,25 @@ Built. See the [Phase 4 Brief](./phase-4/brief.md) and the [Phase 4 Implementati
 
 ## Phase 5: Web App and Hosting
 
-Planned. See [Remaining Phases](./remaining-phases.md#phase-5-web-app-and-hosting).
+Built. See the [Phase 5 Brief](./phase-5/brief.md).
 
-**Docs:** [Vite](https://vite.dev/guide/), [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html), [CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).
+**Docs:** [Vite](https://vite.dev/guide/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/docs/), [npm](https://docs.npmjs.com/), [Vitest](https://vitest.dev/), [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html), [CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).
 
 - **Vite:** the tool that runs the web app on a laptop during development and builds the files that are published.
+- **React and TypeScript:** React is a JavaScript library that builds a page from small pieces and redraws them when the data changes. TypeScript is JavaScript with types, so a wrong field name in the API's answer is caught when the app is built and not when someone uses it.
+- **npm and the lock file:** npm installs the app's JavaScript packages. `package-lock.json` records the exact version of every package, and `npm ci` installs exactly those versions, the way the pinned versions in `requirements.txt` do for Python.
+- **Vitest:** the test runner that works with Vite. It does for the web app's code what pytest does for the Python code.
+- **`VITE_` variables:** Vite copies only the variables whose names start with `VITE_` into the browser code, and writes their values into the built files, so nothing secret belongs in them. See [Env Variables and Modes](https://vite.dev/guide/env-and-mode).
+- **Dev server proxy:** while developing, the Vite server can forward some requests (here `/predict` and `/health`) to another address (here the local API). The browser talks only to the dev server. See [server options](https://vite.dev/config/server-options).
 - **CloudFront:** serves the built web app's files over HTTPS from a private S3 bucket.
+- **Origin access control:** the setting that lets CloudFront, and only CloudFront, read a private S3 bucket. See [restricting access to an S3 origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html).
+- **Default root object:** the file CloudFront returns when the address has no path. Here it is `index.html`. See [specifying a default root object](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DefaultRootObject.html).
+- **Invalidation:** tells CloudFront to drop its saved copy of a file, so the next visitor gets the new one. See [invalidating files](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html).
+- **OpenID Connect (OIDC) for GitHub Actions:** a way for a workflow run to sign in to AWS without a stored key. GitHub gives the run a signed token that names the repository and branch, and AWS trades it for a role's short-lived credentials if the role trusts that repository and branch. See [configuring OpenID Connect in AWS](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services).
+- **IAM role:** a set of AWS permissions that something takes on for a short time, in place of a permanent user and key. Here, `510-m3-nfl-web-app-deploy-role` lets the deploy workflow upload the web app and invalidate its distribution.
+- **Repository secret:** a value saved in the GitHub repository's settings that a workflow can read but that does not appear in the code or the run logs. Here, `AWS_WEB_APP_DEPLOY_ROLE_ARN` holds the deploy role's address.
+- **Fontsource:** npm packages of open-source fonts. Vite copies the font files into the build, so the page loads them from its own address. See [Fontsource](https://fontsource.org/).
+- **Contrast ratio:** how far apart two colors are in brightness, from 1 to 1 (the same) to 21 to 1 (black on white). The accessibility guideline WCAG asks for at least 4.5 to 1 for body text and 3 to 1 for graphics. See [understanding contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
 
 ## Phase 6: Docker
 
@@ -140,7 +153,7 @@ Planned. See [Remaining Phases](./remaining-phases.md#phase-7-documentation-and-
 - **Material for MkDocs:** the theme that gives the site its layout, navigation, and diagram support.
 - **Mermaid:** a text format for diagrams, written inside a code block in a page and drawn by the site.
 - **GitHub Pages:** a GitHub feature that serves a built site from a repository. `mkdocs gh-deploy` builds the docs and pushes the result to a branch named `gh-pages`, and Pages serves that branch. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
-- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. See the [documentation](https://docs.github.com/en/actions).
+- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). See the [documentation](https://docs.github.com/en/actions).
 - **README:** the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.
 
 ## Phase 8: Review
@@ -159,7 +172,7 @@ Planned. See [Remaining Phases](./remaining-phases.md#phase-8-review). This phas
 
 **Docs:** [pytest](https://docs.pytest.org/en/stable/), [`venv`](https://docs.python.org/3/library/venv.html), [`hashlib`](https://docs.python.org/3/library/hashlib.html), [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation).
 
-- **Reproducibility:** getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See [Reproducing the Pipeline End to End](./phase-2/reproduce-end-to-end.md).
+- **Reproducibility:** getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See [How Do I Reproduce the Result From a Clean Checkout?](./phase-2/development-guide.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
 - **Pinned version:** an exact version in `requirements.txt`, such as `scikit-learn==1.9.1`, so every install is identical. A saved model may fail to load under another scikit-learn version.
 - **Virtual environment:** a private folder of Python packages for one project, so projects do not interfere.
 - **`config.yaml`:** the one file holding every adjustable setting. YAML is a text format of indented `name: value` lines.

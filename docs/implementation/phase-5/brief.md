@@ -1,0 +1,128 @@
+---
+hide:
+  - toc
+---
+
+# Phase 5 Brief: Web App and Hosting
+
+**Status: Built and hosted.** The page is live at **[https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)**.
+
+**Needs first:** Phase 4, whose output is the public API at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`, and Node.js with npm (Node 22.12 or later, or 24; this computer has 24.17.0 and npm 11.13.0).
+
+Phase 5 builds the part a person uses and puts it on the internet. A visitor picks a home team and an away team in a small web app. The app looks up the two teams' standings, turns them into the model's two inputs, sends them to the live API, and shows the predicted winner and each team's chance of winning. The app's files sit in a private Amazon S3 bucket and are served over HTTPS through CloudFront. The README link to the page comes in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme).
+
+## How Do the Pieces Fit Together?
+
+```mermaid
+flowchart TB
+    subgraph Local["On this computer"]
+        A["data/from-s3/<br/>nfl_matchups_2020_2026.csv"] --> B["python -m src.profiles"]
+        B --> C["frontend/src/data/<br/>team-profiles.json<br/>(committed)"]
+        C --> D["npm run build<br/>frontend/dist/"]
+    end
+    subgraph AWS["On AWS (us-east-1)"]
+        E[("Private S3 bucket<br/>510-m3-nfl-web-app")] -->|"origin access control"| F["CloudFront<br/>d1nubiunzfwm0q.cloudfront.net"]
+    end
+    D -->|"aws s3 cp"| E
+    F -->|"page and scripts"| G["Visitor's browser"]
+    G -->|"POST /predict<br/>(CORS allows the CloudFront address)"| H["API Gateway and Lambda<br/>(Phase 4, unchanged)"]
+    H -->|"prediction and probability"| G
+```
+
+- **The standings ship inside the app.** They are a single snapshot, so the browser makes one call to the API per prediction and no other request to anything but CloudFront.
+- **The API code is unchanged.** It still takes the two numbers and returns the answer. The only change to Phase 4's AWS resources is that the CloudFront address was added to the API's CORS list.
+
+## What Happens When Someone Picks Two Teams?
+
+```mermaid
+sequenceDiagram
+    participant U as Visitor
+    participant W as Web app
+    participant A as API (Phase 4)
+    U->>W: choose home team and away team
+    W->>W: look up both profiles in the app
+    W->>W: subtract: home minus away, for win percentage and for point margin per game
+    W->>A: POST /predict with the two numbers
+    A->>W: prediction, label, home win probability
+    W->>U: winner, both teams' chances, and the two numbers used
+```
+
+## What Does the Page Show?
+
+- **A header band** with the title, the standings date ("Standings through 2026 week 10"), and a "Dark theme" button.
+- **A bold disclaimer banner** under the header: "**Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Predictions are for learning only and are not betting advice."
+- **Two drop-down lists,** "Home team" and "Away team", each with the 32 teams by full name. Under each, once a team is chosen, its record and margin, such as "5-5 record, -2.1 points per game". If the same team is in both, the page says "Choose two different teams." and sends nothing.
+- **One button,** "Predict".
+- **The result:** the predicted winner by full name, taken from the API's `prediction` field, a bar split between the two teams' chances, and each team's chance as a percentage with one decimal. When both show 50.0%, the page adds "too close to call".
+- **How the model saw this game:** the two numbers sent, written out in words.
+- **What the model does not know:** the standings date, that the model uses only these two numbers (no injuries, weather, or betting lines), that home teams get a small edge, and the model's validation score from the profiles file.
+- **A readable message for each failure,** such as "Could not reach the API." or "The API had a problem (status 500)."
+- **A footer** that repeats the disclaimer in bold, with the model version and the standings date.
+- **A light and a dark theme.** The page starts in the visitor's system setting, and the button switches between the two. Both are built from white, black, purple, orange, gold, silver, and amber.
+- **No outside requests.** The fonts (Oswald for headlines, Inter for text) are bundled into the build and served from CloudFront. No logos, analytics, cookies, local storage, or outside scripts.
+
+The exact wording, the display rule, and the failure messages are on the [Implementation](./implementation.md#how-is-the-answer-shown) page.
+
+## Where Do the Two Inputs Come From?
+
+A browser cannot read the games table, so `python -m src.profiles` writes a small committed file, `frontend/src/data/team-profiles.json`, with each team's win percentage and point margin per game after 2026 week 10. These are the values `standings_before_week` gives for a week 11 game. The browser subtracts the away team's values from the home team's. The file keeps every digit, so the browser's subtraction gives exactly the numbers Python would. This was checked for all 992 ordered pairs of teams. The file's fields and the arithmetic are on the [Implementation](./implementation.md#who-works-out-each-number) page.
+
+## Steps in Order
+
+- [x] **Step 1. Build the team profiles file** with `src/profiles.py` and `tests/test_profiles.py`, and a `frontend` block in `config/config.yaml`.
+- [x] **Step 2. Create the Vite app in `frontend/`** with React and TypeScript, and commit the lock file.
+- [x] **Step 3. Write the matchup logic** as small pure functions, tested with Vitest.
+- [x] **Step 4. Build the page,** with a loading message, readable errors, labelled controls, and a layout that fits a phone.
+- [x] **Step 5. Run it locally** against the local API through the dev server's proxy.
+- [x] **Step 6. Check every matchup** (all 992 ordered pairs) against the live API and the local model.
+- [x] **Step 7. Build the site** with the live API address, into `frontend/dist/`.
+- [x] **Step 8. Create the hosting:** a private bucket, an origin access control, a CloudFront distribution, and a bucket policy that lets only that distribution read the bucket.
+- [x] **Step 9. Upload the build and check the CloudFront address,** including that the bucket cannot be read directly.
+- [x] **Step 10. Add the CloudFront address to the API's CORS list.** The developer still needs to check the page in a browser.
+- [x] **Step 11. Write the hosting steps down** in the [Deployment Guide](./deployment-guide.md), with the commands that remove everything.
+- [x] **Step 12. Style the page:** the header, disclaimer, records, probability bar, footer, the two themes, and the bundled fonts. Redeploy, and check the served files again.
+- [x] **Step 13. Deploy from GitHub.** The workflow `.github/workflows/deploy-web-app.yml` redeploys the page when a change under `frontend/` reaches `main`, through an AWS role that needs no stored key. It has not run yet, because the workflow is not on `main`.
+
+## Results
+
+- **Python tests:** **61 passed** for the whole project, 8 of them new for the profiles file.
+- **App tests:** **35 passed**, across 6 test files.
+- **Every matchup:** all **992** ordered pairs sent to the live API came back with status 200, and every pick and every probability (rounded to 4 places) equals the local model. The local model picks the home team in 601 and the away team in 391, with home win chances from 26.72% to 78.60%.
+- **Hosting:** the files CloudFront serves are byte for byte the files the tests passed on. A request straight to the bucket gets status 403.
+- **Worked example:** home New England Patriots, away Tennessee Titans gives the Patriots **63.8%** and the Titans **36.2%**.
+
+## Decisions Made
+
+- **React with TypeScript,** not plain TypeScript, because React makes the page's state easier to read and test.
+- **One standings snapshot after 2026 week 10,** not a week picker.
+- **The model's scores are copied into the profiles file** from `results/run-summary.json`, so the page never shows a number typed by hand.
+- **The folder is `frontend/`.** It was built as `web/` and renamed.
+- **The bucket name `510-m3-nfl-web-app` was free** and is used as proposed.
+- **TypeScript 7.0.2** works with the Vite template, so the template's older version was not needed.
+- **The fonts are bundled, not loaded from a font service,** so the page still makes no outside request.
+- **The theme choice is not saved.** A reload goes back to the system setting, because the app uses no cookies and no local storage.
+- **GitHub deploys with a short-lived AWS sign-in,** not a stored access key. See [How Does a Change Reach the Live Page?](./implementation.md#how-does-a-change-reach-the-live-page).
+
+## What Was Created
+
+- **Code:** `src/profiles.py`, `tests/test_profiles.py`, and the app in `frontend/`.
+- **Committed data:** `frontend/src/data/team-profiles.json`.
+- **Settings:** a `frontend` block in `config/config.yaml`.
+- **On AWS (`us-east-1`):** the bucket `510-m3-nfl-web-app`, the origin access control `510-m3-nfl-web-app-oac`, a CloudFront distribution tagged `510-m3-nfl-web-app`, a bucket policy, a second origin in the API's CORS list, the GitHub sign-in provider for AWS, and the deploy role `510-m3-nfl-web-app-deploy-role`.
+- **Workflow:** `.github/workflows/deploy-web-app.yml`, and the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`, which holds the role's address.
+- **Docs:** this brief, the [Implementation](./implementation.md) page, the [Development Guide](./development-guide.md), and the [Deployment Guide](./deployment-guide.md).
+- **Not committed:** `frontend/dist/` and `frontend/node_modules/`, which are rebuilt by `npm ci` and `npm run build`.
+
+## What Is Not in This Phase
+
+- Docker, in [Phase 6](../remaining-phases.md#phase-6-docker).
+- The README and its link to the live page, in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme), and the review, in [Phase 8](../remaining-phases.md#phase-8-review).
+- A custom domain, protection rules, analytics, and a week picker.
+
+## Where to Read More
+
+- [Phase 5 Implementation](./implementation.md) holds the exact contracts, how the page is hosted, and what was checked.
+- [Phase 5 Development Guide](./development-guide.md) shows how to run, test, and change the app on your own computer.
+- [Phase 5 Deployment Guide](./deployment-guide.md) lists every AWS command, for the first deployment, a redeploy, and removal.
+- [Phase 3 Development Guide](../phase-3/development-guide.md#how-do-i-ask-for-a-prediction) explains the two numbers, the request, and the response fields.
+- [Decisions](../decisions.md#deployment-and-front-end) lists the hosting and front-end choices and why.

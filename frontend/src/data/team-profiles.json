@@ -1,0 +1,271 @@
+{
+  "as_of": {
+    "season": 2026,
+    "through_week": 10
+  },
+  "model": {
+    "version": "v1.0",
+    "validation_games": 271,
+    "validation_correct": 171,
+    "validation_accuracy": 0.630996,
+    "validation_baseline": 0.538745
+  },
+  "teams": [
+    {
+      "team": "ARI",
+      "name": "Arizona Cardinals",
+      "games": 10,
+      "wins": 3,
+      "win_pct": 0.3,
+      "point_diff_per_game": -10.5
+    },
+    {
+      "team": "ATL",
+      "name": "Atlanta Falcons",
+      "games": 10,
+      "wins": 3,
+      "win_pct": 0.3,
+      "point_diff_per_game": -5.7
+    },
+    {
+      "team": "BAL",
+      "name": "Baltimore Ravens",
+      "games": 10,
+      "wins": 4,
+      "win_pct": 0.4,
+      "point_diff_per_game": -5.0
+    },
+    {
+      "team": "BUF",
+      "name": "Buffalo Bills",
+      "games": 9,
+      "wins": 8,
+      "win_pct": 0.8888888888888888,
+      "point_diff_per_game": 9.777777777777779
+    },
+    {
+      "team": "CAR",
+      "name": "Carolina Panthers",
+      "games": 9,
+      "wins": 4,
+      "win_pct": 0.4444444444444444,
+      "point_diff_per_game": -1.8888888888888888
+    },
+    {
+      "team": "CHI",
+      "name": "Chicago Bears",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 6.333333333333333
+    },
+    {
+      "team": "CIN",
+      "name": "Cincinnati Bengals",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 9.444444444444445
+    },
+    {
+      "team": "CLE",
+      "name": "Cleveland Browns",
+      "games": 10,
+      "wins": 6,
+      "win_pct": 0.6,
+      "point_diff_per_game": -3.2
+    },
+    {
+      "team": "DAL",
+      "name": "Dallas Cowboys",
+      "games": 10,
+      "wins": 4,
+      "win_pct": 0.4,
+      "point_diff_per_game": 0.4
+    },
+    {
+      "team": "DEN",
+      "name": "Denver Broncos",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 1.3333333333333333
+    },
+    {
+      "team": "DET",
+      "name": "Detroit Lions",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 6.444444444444445
+    },
+    {
+      "team": "GB",
+      "name": "Green Bay Packers",
+      "games": 10,
+      "wins": 6,
+      "win_pct": 0.6,
+      "point_diff_per_game": 0.5
+    },
+    {
+      "team": "HOU",
+      "name": "Houston Texans",
+      "games": 9,
+      "wins": 3,
+      "win_pct": 0.3333333333333333,
+      "point_diff_per_game": 1.5555555555555556
+    },
+    {
+      "team": "IND",
+      "name": "Indianapolis Colts",
+      "games": 10,
+      "wins": 3,
+      "win_pct": 0.3,
+      "point_diff_per_game": -6.3
+    },
+    {
+      "team": "JAX",
+      "name": "Jacksonville Jaguars",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 13.88888888888889
+    },
+    {
+      "team": "KC",
+      "name": "Kansas City Chiefs",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 9.0
+    },
+    {
+      "team": "LA",
+      "name": "Los Angeles Rams",
+      "games": 10,
+      "wins": 6,
+      "win_pct": 0.6,
+      "point_diff_per_game": 6.1
+    },
+    {
+      "team": "LAC",
+      "name": "Los Angeles Chargers",
+      "games": 9,
+      "wins": 1,
+      "win_pct": 0.1111111111111111,
+      "point_diff_per_game": -10.555555555555555
+    },
+    {
+      "team": "LV",
+      "name": "Las Vegas Raiders",
+      "games": 10,
+      "wins": 4,
+      "win_pct": 0.4,
+      "point_diff_per_game": -3.8
+    },
+    {
+      "team": "MIA",
+      "name": "Miami Dolphins",
+      "games": 9,
+      "wins": 1,
+      "win_pct": 0.1111111111111111,
+      "point_diff_per_game": -8.444444444444445
+    },
+    {
+      "team": "MIN",
+      "name": "Minnesota Vikings",
+      "games": 9,
+      "wins": 7,
+      "win_pct": 0.7777777777777778,
+      "point_diff_per_game": 5.555555555555555
+    },
+    {
+      "team": "NE",
+      "name": "New England Patriots",
+      "games": 10,
+      "wins": 5,
+      "win_pct": 0.5,
+      "point_diff_per_game": -2.1
+    },
+    {
+      "team": "NO",
+      "name": "New Orleans Saints",
+      "games": 9,
+      "wins": 3,
+      "win_pct": 0.3333333333333333,
+      "point_diff_per_game": -3.7777777777777777
+    },
+    {
+      "team": "NYG",
+      "name": "New York Giants",
+      "games": 8,
+      "wins": 5,
+      "win_pct": 0.625,
+      "point_diff_per_game": 0.875
+    },
+    {
+      "team": "NYJ",
+      "name": "New York Jets",
+      "games": 10,
+      "wins": 2,
+      "win_pct": 0.2,
+      "point_diff_per_game": -6.0
+    },
+    {
+      "team": "PHI",
+      "name": "Philadelphia Eagles",
+      "games": 9,
+      "wins": 2,
+      "win_pct": 0.2222222222222222,
+      "point_diff_per_game": -8.11111111111111
+    },
+    {
+      "team": "PIT",
+      "name": "Pittsburgh Steelers",
+      "games": 9,
+      "wins": 6,
+      "win_pct": 0.6666666666666666,
+      "point_diff_per_game": 1.7777777777777777
+    },
+    {
+      "team": "SEA",
+      "name": "Seattle Seahawks",
+      "games": 10,
+      "wins": 6,
+      "win_pct": 0.6,
+      "point_diff_per_game": 4.8
+    },
+    {
+      "team": "SF",
+      "name": "San Francisco 49ers",
+      "games": 9,
+      "wins": 8,
+      "win_pct": 0.8888888888888888,
+      "point_diff_per_game": 9.444444444444445
+    },
+    {
+      "team": "TB",
+      "name": "Tampa Bay Buccaneers",
+      "games": 9,
+      "wins": 3,
+      "win_pct": 0.3333333333333333,
+      "point_diff_per_game": 2.6666666666666665
+    },
+    {
+      "team": "TEN",
+      "name": "Tennessee Titans",
+      "games": 9,
+      "wins": 1,
+      "win_pct": 0.1111111111111111,
+      "point_diff_per_game": -8.0
+    },
+    {
+      "team": "WAS",
+      "name": "Washington Commanders",
+      "games": 8,
+      "wins": 3,
+      "win_pct": 0.375,
+      "point_diff_per_game": -3.375
+    }
+  ]
+}

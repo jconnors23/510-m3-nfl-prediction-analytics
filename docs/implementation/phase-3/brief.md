@@ -6,11 +6,12 @@ hide:
 # Phase 3 Brief: Local Prediction API
 
 **Status: Built and tested.** All 7 steps are done, and `pytest` passes 47 tests (30 from earlier phases and 17 new).
+
 **Needs first:** Phase 2, which is built. Its output is the saved model `models/model.joblib`. If that file is missing, run `python -m src.model.train` first.
 
 Phase 3 wraps the trained model in a small web service that runs on your own computer. A person (or a program) sends the two model inputs as JSON, and the service returns the predicted winner and the home win probability as JSON. Nothing in this phase touches AWS or Docker. Those come later, starting with [Phase 4](../phase-4/brief.md).
 
-To run it, activate the virtual environment and start the service. The [Implementation](./implementation.md#how-do-i-run-it-locally) page has the full run guide, with `curl` examples and the real output of each.
+To run it, activate the virtual environment and start the service. The [Development Guide](./development-guide.md#how-do-i-run-it-locally) has the full run guide, with `curl` examples and the real output of each.
 
 ```bash
 python -m uvicorn src.api.app:app --port 8000
@@ -90,10 +91,11 @@ flowchart LR
 
 - Docker, in [Phase 6](../remaining-phases.md#phase-6-docker).
 - AWS Lambda, API Gateway, and CORS, in [Phase 4](../phase-4/brief.md).
-- The web app, in [Phase 5](../remaining-phases.md#phase-5-web-app-and-hosting).
+- The web app, in [Phase 5](../phase-5/brief.md).
 
 ## Where to Read More
 
-- [Phase 3 Implementation](./implementation.md) explains each step in detail: start-up, the request and response, the routes, the error cases, the tests, and the `curl` commands.
+- [Phase 3 Implementation](./implementation.md) explains each step in detail: start-up, the request and response, the routes, the input checks, and the tests.
+- [Development Guide](./development-guide.md) shows how to run the service, send it requests with `curl`, read the errors, and change it.
 - [Phase 2 Implementation, Part 2](../phase-2/implementation-part-2.md) explains what is inside `models/model.joblib` and how the model scores a game.
 - [Decisions](../decisions.md#the-api) lists the API choices already made.

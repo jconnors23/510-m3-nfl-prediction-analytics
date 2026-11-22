@@ -1,13 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Football on a dark background">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5b21b6"/>
-      <stop offset="1" stop-color="#1d4ed8"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="12" fill="url(#bg)"/>
-  <path d="M8 18h48M8 32h48M8 46h48" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
-  <ellipse cx="32" cy="32" rx="22" ry="12" transform="rotate(-30 32 32)" fill="#ff7a1a" stroke="#ffffff" stroke-width="2.5"/>
-  <path d="M22.5 38.5l19-13" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M27 32.5l-2.4 1.6M31 29.6l-2.4 1.6M35 26.7l-2.4 1.6M39 23.8l-2.4 1.6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Football on a purple field">
+  <rect width="64" height="64" rx="12" fill="#3b1a78"/>
+  <path d="M16 8v48M32 8v48M48 8v48" stroke="#d97706" stroke-opacity="0.45" stroke-width="2"/>
+  <rect y="58" width="64" height="6" fill="#d97706"/>
+  <ellipse cx="32" cy="31" rx="22" ry="12" transform="rotate(-30 32 31)" fill="#8b4513" stroke="#ffffff" stroke-width="2.5"/>
+  <path d="M22.5 37.5l19-13" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M27 31.5l-2.4 1.6M31 28.6l-2.4 1.6M35 25.7l-2.4 1.6M39 22.8l-2.4 1.6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
 </svg>

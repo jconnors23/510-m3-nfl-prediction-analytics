@@ -5,7 +5,7 @@ hide:
 
 # Phase 4 Deployment Guide
 
-This guide lists, in order, every command that built and deployed the Phase 4 API, and the commands that remove it again. Each step is explained in the [Phase 4 Implementation](./implementation.md).
+This guide holds every AWS command for the Phase 4 API: the commands that built and deployed it, in order, the commands to redeploy it or change its settings, and the commands that remove it. Each step is explained in the [Phase 4 Implementation](./implementation.md). To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
 
 ## How Do the Sections Fit Together?
 
@@ -22,6 +22,8 @@ flowchart TB
     end
     A --> B
     F --> G["Check the Deployed Model<br/>Against the Local Model"]
+    G -.-> R["Redeploy After a Change<br/>(later changes)"]
+    G -.-> S["Change a Setting<br/>or the CORS List"]
     G -.-> H["Remove Everything<br/>(written, not run)"]
 ```
 
@@ -29,6 +31,7 @@ flowchart TB
 - **Check the Account** confirms the right account and that no resource with a name from this guide exists yet.
 - **Create the Role**, **Stage the Zip and Create the Function**, and **Create the HTTP API** create the AWS resources, in that order, because each needs the one before it.
 - **Check the Deployed Model Against the Local Model** proves the function runs the zip built here and gives the same answers as the local model.
+- **Redeploy After a Change**, **Change a Setting Without New Code**, and **Change the CORS List** are for later changes to the running deployment.
 - **Remove Everything** deletes what this guide created. The commands are written and are not run as part of the deployment.
 
 Run these from the project folder, in order. Resource names stay as written. `<account-id>`, `<api-id>`, and `<integration-id>` stand in for values that differ between accounts.
@@ -251,7 +254,7 @@ aws apigatewayv2 create-stage --api-id <api-id> --stage-name '$default' --auto-d
 aws lambda add-permission --function-name 510-m3-nfl-predict-api --statement-id 510-m3-nfl-predict-http-api --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn arn:aws:execute-api:us-east-1:<account-id>:<api-id>/*/* --region us-east-1
 ```
 
-18. Set CORS. Write the file, then apply it. The only origin is `http://localhost:5173`.
+18. Set CORS. Write the file, then apply it. At this step the only origin is `http://localhost:5173`. Phase 5 later adds the CloudFront address, with the commands in its [Deployment Guide](../phase-5/deployment-guide.md#add-the-cloudfront-address-to-the-apis-cors-list).
 
 ```bash
 cat > build/cors.json <<'EOF'
@@ -347,6 +350,90 @@ aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --r
 ```
 
 The script `build/parity_check.py` is kept on the developer's machine and is not committed. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. The parity run sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
+
+## Redeploy After a Change
+
+```mermaid
+flowchart TB
+    A["Change the code, or retrain the model"] --> B["Run the tests"]
+    B --> C["Build the zip"]
+    C --> D["Copy the zip into the data bucket<br/>(deploy/ prefix)"]
+    D --> E["Update the function's code"]
+    E --> F["Wait until the update finishes"]
+    F --> G["Invoke the three test events"]
+    G --> H["Delete the staged zip"]
+    H --> I["Compare the zip's hash with CodeSha256,<br/>check the public address,<br/>and check every game"]
+```
+
+The zip is over the console's 50 MB direct-upload limit, so it is staged in S3 first, as it was for the first deployment. These commands reuse the names and options of the first deployment. **`update-function-code` has not been run in this project yet,** because the first deployment used `create-function` with the same S3 object. Its parameters (`--s3-bucket` and `--s3-key`) were checked against the AWS CLI's parameter list.
+
+1. Run the tests, then build the zip with [Build the Zip](#build-the-zip).
+2. Copy the zip into the bucket:
+
+```bash
+aws s3 cp build/510-m3-nfl-predict-api.zip s3://510-m3-nfl-dataset/deploy/510-m3-nfl-predict-api.zip --region us-east-1
+```
+
+3. Point the function at it:
+
+```bash
+aws lambda update-function-code --function-name 510-m3-nfl-predict-api --s3-bucket 510-m3-nfl-dataset --s3-key deploy/510-m3-nfl-predict-api.zip --region us-east-1
+```
+
+4. Wait until the update finishes:
+
+```bash
+aws lambda wait function-updated --function-name 510-m3-nfl-predict-api --region us-east-1
+```
+
+5. Invoke the worked example, the health event, and the bad-body event, with the commands in step 14 of [Stage the Zip and Create the Function](#stage-the-zip-and-create-the-function).
+6. Delete the staged zip, and confirm the prefix is empty:
+
+```bash
+aws s3 rm s3://510-m3-nfl-dataset/deploy/510-m3-nfl-predict-api.zip --region us-east-1
+```
+
+```bash
+aws s3api list-objects-v2 --bucket 510-m3-nfl-dataset --prefix deploy/ --region us-east-1
+```
+
+7. Confirm Lambda runs the file you built. These two commands must print the same value:
+
+```bash
+aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --region us-east-1 --query CodeSha256 --output text
+```
+
+```bash
+openssl dgst -sha256 -binary build/510-m3-nfl-predict-api.zip | base64
+```
+
+8. Check the public address and every game, with the commands in [Check the Deployed Model Against the Local Model](#check-the-deployed-model-against-the-local-model). Accuracy is the only priority for this deployment, so repeat this check whenever the model, the packages, or the API code change.
+
+## Change a Setting Without New Code
+
+The function's memory, timeout, and environment variable are settings, not code. Change one with `update-function-configuration`, then wait for the update to finish. For example, to set the memory:
+
+```bash
+aws lambda update-function-configuration --function-name 510-m3-nfl-predict-api --memory-size 1769 --region us-east-1
+```
+
+```bash
+aws lambda wait function-updated --function-name 510-m3-nfl-predict-api --region us-east-1
+```
+
+- **Current values:** 1769 MB of memory, a 10-second timeout, and the one environment variable `JOBLIB_MULTIPROCESSING=0`. See [Step 5](./implementation.md#step-5-create-the-role-and-the-function).
+- **`--environment` replaces every variable.** If you pass it, pass all of them together, for example `--environment "Variables={JOBLIB_MULTIPROCESSING=0}"`. Leave it out when you change only the memory.
+- **Memory sets how much CPU the function gets, not what code it runs,** and it is not a priority here. Whatever you change, repeat the every-game check at the end of [Redeploy After a Change](#redeploy-after-a-change).
+
+## Change the CORS List
+
+CORS is set on the API Gateway, not in the app. The command replaces the whole setting, so `build/cors.json` must list every allowed origin:
+
+```bash
+aws apigatewayv2 update-api --api-id <api-id> --cors-configuration file://build/cors.json --region us-east-1
+```
+
+The `<api-id>` is the part of the public address before `.execute-api`. The list now allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/implementation.md#the-preflight).
 
 ## Remove Everything
 

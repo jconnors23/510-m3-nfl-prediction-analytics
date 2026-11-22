@@ -6,6 +6,7 @@ hide:
 # Phase 2 Brief: Features, Training, and Tracking
 
 **Status: Built and tested.** All 7 steps are done, and `pytest` passes 30 tests.
+
 **Needs first:** Phase 1, which is built. Its output is the downloaded table `data/from-s3/nfl_matchups_2020_2026.csv`.
 
 Phase 2 turns the cleaned games into two inputs per game, trains the model, and keeps a record of every run. It fits a logistic regression on the 2020 to 2024 games, scores it on the 2025 season and on the 2026 test games, and saves the settings, scores, and files of each run in MLflow.
@@ -41,3 +42,4 @@ Phase 2 turns the cleaned games into two inputs per game, trains the model, and 
 
 - [Implementation Part 1](./implementation-part-1.md) explains Steps 1 to 3: feature engineering, the split by season, and the new settings.
 - [Implementation Part 2](./implementation-part-2.md) explains Steps 4 to 7: fitting the model, scoring it, recording the run in MLflow, and saving the model.
+- [Development Guide](./development-guide.md) shows how to train, what each output file holds, how to rebuild from a clean checkout and check the result, and how to change the settings, the split, or the inputs.

@@ -5,7 +5,10 @@ hide:
 
 # Overview
 
-This project predicts the winner of an NFL game before kickoff. A user picks a home team and an away team in a web app, and the app shows a predicted winner and a win probability.
+This project predicts the winner of an NFL game before kickoff. A user picks a home team and an away team in a web app, and the app shows a predicted winner and a win probability. **Try it at [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net).**
+
+!!! warning "Unofficial Coursework Project"
+    **This project is not affiliated with or endorsed by the National Football League.** Team names are used only to identify the teams. The predictions are for learning only and are not betting advice.
 
 ## What Is the Idea?
 
@@ -21,7 +24,7 @@ The data is the [nflverse](https://github.com/nflverse/nfldata/blob/master/data/
 ## How Do the Pieces Fit Together?
 
 ```mermaid
-flowchart LR
+flowchart TB
     A[Download game results] --> B[Clean and store in S3]
     B --> C[Build the two inputs<br/>and split by season]
     C --> D[Train, score, and<br/>track with MLflow]
@@ -43,27 +46,37 @@ Each phase ends with something that runs. Git commits and pull requests are done
 - Clean it: regular season only, 2020 to 2026 week 10, no ties.
 - Upload the cleaned table to a private S3 bucket.
 - Download it back from S3, so later steps start from the cloud copy.
+- Run and change it with the [Development Guide](./implementation/phase-1/development-guide.md).
 
 **[Phase 2: Features, Training, and Tracking](./implementation/phase-2/brief.md)** (built)
 
 - Build the two inputs and split games by season: train 2020 to 2024, validate 2025, test 2026.
 - Train the model and score it against the always-pick-home baseline.
 - Record every run in MLflow and save the trained model.
+- Train and change it with the [Development Guide](./implementation/phase-2/development-guide.md).
 
 **[Phase 3: Local Prediction API](./implementation/phase-3/brief.md)** (built)
 
 - Serve the model on your own computer with a FastAPI `/predict` route and a `/health` route.
 - Reject bad input with a clear error, and test with `curl`.
+- Run and change it with the [Development Guide](./implementation/phase-3/development-guide.md).
 
 **[Phase 4: AWS Deployment](./implementation/phase-4/brief.md)** (built)
 
 - Deploy the API to AWS Lambda behind API Gateway, with a public address.
 - Check that all 1,759 games get the same answers from the deployed model as from the local one.
-- See the [implementation page](./implementation/phase-4/implementation.md) for the steps and the Lambda package size, and [Deployment Guide](./implementation/phase-4/deployment-guide.md) for the commands.
+- See the [implementation page](./implementation/phase-4/implementation.md) for the steps and the Lambda package size, and [Deployment Guide](./implementation/phase-4/deployment-guide.md) for the commands. To test it without AWS or change its code, use the [Development Guide](./implementation/phase-4/development-guide.md).
+
+**[Phase 5: Web App and Hosting](./implementation/phase-5/brief.md)** (built)
+
+- Pick a home team and an away team in a small Vite web app that calls the live API and shows the predicted winner and each team's chance of winning.
+- Host the built files in a private S3 bucket, served over HTTPS through CloudFront, at **[https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)**.
+- Check that all 992 home-and-away pairs of teams get the same answers from the live API as from the local model.
+- Give the page a light and a dark theme, bundled fonts, and bold disclaimers. A GitHub Actions workflow redeploys it whenever the app changes on `main`.
+- See the [implementation page](./implementation/phase-5/implementation.md) for the contracts and the hosting, the [Development Guide](./implementation/phase-5/development-guide.md) to run and change the app, and the [Deployment Guide](./implementation/phase-5/deployment-guide.md) for the AWS commands.
 
 **[Remaining Phases](./implementation/remaining-phases.md)** (planned)
 
-- **Phase 5:** build the Vite web app and host it on S3 and CloudFront.
 - **Phase 6:** package the project in Docker.
 - **Phase 7:** write the README and finish the documentation.
 - **Phase 8:** review the finished project against the requirements.

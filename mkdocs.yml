@@ -9,13 +9,26 @@ copyright: NFL Prediction Analytics is a coursework project in sports analytics 
 
 theme:
   name: material
-  # One light scheme with sky blue as the main color, fixed for every reader.
-  # The exact colors are defined in stylesheets/extra.css (the "custom"
-  # values below point there).
+  # A light and a dark scheme in the web app's colors (white, black, purple,
+  # orange, gold, silver, and amber). The site starts in the reader's system
+  # setting, and the toggle in the header switches between the two. The exact
+  # colors and the Oswald headline font are in stylesheets/extra.css (the
+  # "custom" values below point there).
   palette:
-    scheme: default
-    primary: custom
-    accent: custom
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to the dark theme
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to the light theme
   font:
     text: Inter
     code: JetBrains Mono
@@ -59,18 +72,26 @@ nav:
       - "Phase 1: Data Pipeline":
           - Brief: implementation/phase-1/brief.md
           - Implementation: implementation/phase-1/implementation.md
+          - Development Guide: implementation/phase-1/development-guide.md
       - "Phase 2: Features, Training, and Tracking":
           - Brief: implementation/phase-2/brief.md
           - Implementation Part 1: implementation/phase-2/implementation-part-1.md
           - Implementation Part 2: implementation/phase-2/implementation-part-2.md
-          - Reproducing End to End: implementation/phase-2/reproduce-end-to-end.md
+          - Development Guide: implementation/phase-2/development-guide.md
       - "Phase 3: Local Prediction API":
           - Brief: implementation/phase-3/brief.md
           - Implementation: implementation/phase-3/implementation.md
+          - Development Guide: implementation/phase-3/development-guide.md
       - "Phase 4: AWS Deployment":
           - Brief: implementation/phase-4/brief.md
           - Implementation: implementation/phase-4/implementation.md
+          - Development Guide: implementation/phase-4/development-guide.md
           - Deployment Guide: implementation/phase-4/deployment-guide.md
+      - "Phase 5: Web App and Hosting":
+          - Brief: implementation/phase-5/brief.md
+          - Implementation: implementation/phase-5/implementation.md
+          - Development Guide: implementation/phase-5/development-guide.md
+          - Deployment Guide: implementation/phase-5/deployment-guide.md
       - "Remaining Phases (Planned)": implementation/remaining-phases.md
       - Decisions: implementation/decisions.md
       - Glossary: implementation/glossary.md

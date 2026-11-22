@@ -6,9 +6,10 @@ hide:
 # Phase 4 Brief: AWS Deployment
 
 **Status: Built and tested.** All 11 steps are done, and `pytest` passes 53 tests. The API is live at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
+
 **Needs first:** Phase 3, which is built, and a trained model at `models/model.joblib`. Also an AWS account, AWS CLI version 2, and credentials on the machine, as listed in the [run environment](../phase-1/implementation.md#what-is-the-run-environment).
 
-Phase 4 puts the Phase 3 API on the internet. The same FastAPI app runs inside an AWS Lambda function, and an API Gateway address in front of it gives the world a public URL for `POST /predict` and `GET /health`. The worked example sent to that URL returns the same answer as the local service (0.3296), and all 1,759 games give the same answers as the local model. The web app that calls it comes in [Phase 5](../remaining-phases.md#phase-5-web-app-and-hosting).
+Phase 4 puts the Phase 3 API on the internet. The same FastAPI app runs inside an AWS Lambda function, and an API Gateway address in front of it gives the world a public URL for `POST /predict` and `GET /health`. The worked example sent to that URL returns the same answer as the local service (0.3296), and all 1,759 games give the same answers as the local model. The web app that calls it comes in [Phase 5](../phase-5/brief.md).
 
 ## How Do the Pieces Fit Together?
 
@@ -36,7 +37,7 @@ flowchart LR
 - [x] **Step 5. Create the function.** Python 3.13, `arm64`, 1769 MB, a 10-second timeout, one environment variable, and a role that can only write logs.
 - [x] **Step 6. Test the function in AWS** with the same made-up event as Step 2.
 - [x] **Step 7. Create the API Gateway HTTP API** with the routes `POST /predict` and `GET /health`, both pointing at the function.
-- [x] **Step 8. Set CORS on the gateway.** It allows the local web app address. The CloudFront address is added once it exists (Phase 5).
+- [x] **Step 8. Set CORS on the gateway.** It allows the local web app address. The CloudFront address was added in Phase 5.
 - [x] **Step 9. Check the public address** with `curl` and the worked example. It returns the same 0.3296 as the local API.
 - [x] **Step 10. Check the deployed model against the local model.** All 1,759 games give the same pick and the same probability, and the accuracy equals the run summary.
 - [x] **Step 11. Write the deployment steps down,** so they can be repeated by hand. See [Deployment Guide](./deployment-guide.md).
@@ -67,13 +68,6 @@ flowchart TB
     D --> E
 ```
 
-## What Could Go Wrong?
-
-- **A package that imports on a Mac can fail on Lambda,** because the packages were downloaded for Linux. Steps 6, 9, and 10 are the proof, and the function ran with no import error.
-- **The package has about 30.9 MB of room.** A new large dependency, or a version bump, can push it over. Re-measure after changing a pin.
-- **A public API can be called by anyone.** For now there is no request limit and no firewall in front of it. That is acceptable for this project, and protection can be added later if it is needed.
-- **CORS can block the browser.** A wrong origin fails in the browser and not in `curl`, so the origin is checked again in Phase 5.
-
 ## Choices Made Along the Way
 
 - **Where the zip was staged.** A temporary `deploy/` key in the private data bucket, deleted once the function existed.
@@ -91,13 +85,13 @@ flowchart TB
 
 ## What Is Not in This Phase
 
-- The web app and its hosting, in [Phase 5](../remaining-phases.md#phase-5-web-app-and-hosting).
+- The web app and its hosting, in [Phase 5](../phase-5/brief.md).
 - Docker, in [Phase 6](../remaining-phases.md#phase-6-docker). The README and the review come after it, in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme) and [Phase 8](../remaining-phases.md#phase-8-review).
 
 ## Where to Read More
 
-- [Phase 4 Implementation](./implementation.md) explains each step in detail, including the size measurement, the install command, and the limits (Step 3).
-- [Phase 4 Implementation](./implementation.md#what-is-mangum) explains Mangum with a request diagram.
+- [Phase 4 Implementation](./implementation.md) explains each step in detail, including the size measurement (Step 3) and [What Is Mangum?](./implementation.md#what-is-mangum).
+- [Development Guide](./development-guide.md) shows how to test the entry point with no AWS account and change it. The [Deployment Guide](./deployment-guide.md) holds every AWS command, including the redeploy.
 - [Deployment Guide](./deployment-guide.md) lists every command, in order, including the commands that remove the deployment.
 - [Phase 3 Implementation](../phase-3/implementation.md) describes the app and the start-up checks that run on Lambda.
 - [Decisions](../decisions.md#deployment-and-front-end) lists the deployment choices and why.
