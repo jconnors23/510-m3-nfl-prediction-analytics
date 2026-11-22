@@ -29,6 +29,8 @@ flowchart LR
     E --> F[Deploy on AWS Lambda<br/>behind API Gateway]
     F --> G[Web app on CloudFront]
     G --> H[Package in Docker]
+    H --> I[Write the README<br/>and finish the docs]
+    I --> J[Review against<br/>the requirements]
 ```
 
 ## What Are the Phases and Steps?
@@ -53,15 +55,22 @@ Each phase ends with something that runs. Git commits and pull requests are done
 - Serve the model on your own computer with a FastAPI `/predict` route and a `/health` route.
 - Reject bad input with a clear error, and test with `curl`.
 
+**[Phase 4: AWS Deployment](./implementation/phase-4/brief.md)** (built)
+
+- Deploy the API to AWS Lambda behind API Gateway, with a public address.
+- Check that all 1,759 games get the same answers from the deployed model as from the local one.
+- See the [implementation page](./implementation/phase-4/implementation.md) for the steps and the Lambda package size, and [Deployment Guide](./implementation/phase-4/deployment-guide.md) for the commands.
+
 **[Remaining Phases](./implementation/remaining-phases.md)** (planned)
 
-- **Phase 4:** deploy the API to AWS Lambda behind API Gateway.
 - **Phase 5:** build the Vite web app and host it on S3 and CloudFront.
-- **Phase 6:** package the project in Docker, write the README, and run a final check.
+- **Phase 6:** package the project in Docker.
+- **Phase 7:** write the README and finish the documentation.
+- **Phase 8:** review the finished project against the requirements.
 
 ## Where Is Everything Else?
 
-- [Requirements Map](./implementation/requirements-map.md): where each finished requirement lives in the repository (files, functions, settings, and commands).
+- [Requirements Map](./implementation/requirements/requirements-map.md): where each finished requirement lives in the repository (files, functions, settings, and commands).
 - [Decisions](./implementation/decisions.md): choices made, why, and the open decisions waiting on the developer.
 - [Glossary](./implementation/glossary.md): plain-language meaning of the terms used here.
-- [Initial Requirements](./initial-requirements/index.md): the assignment brief and the project requirements.
+- [Assignment Brief](./implementation/requirements/assignment-brief.md) and [Project Requirements](./implementation/requirements/project-requirements.md): the original brief and the checkable requirements, kept unchanged.

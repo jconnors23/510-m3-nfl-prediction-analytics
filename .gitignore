@@ -2,7 +2,6 @@
 local/
 local-docs/
 specs/
-mkdocs.yml
 .cursor/
 .kiro/
 

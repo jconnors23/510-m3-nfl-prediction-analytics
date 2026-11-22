@@ -1,0 +1,56 @@
+# Builds the documentation site and publishes it to GitHub Pages.
+# It runs when a change to the docs or the site settings reaches the main branch,
+# and it can also be started by hand from the repository's Actions tab.
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/deploy-docs.yml"
+  workflow_dispatch:
+
+# mkdocs gh-deploy pushes the built site to the gh-pages branch, so the job needs
+# permission to write to the repository.
+permissions:
+  contents: write
+
+# Two deploys at the same time would push to the same branch. A newer run waits
+# for the one already running to finish.
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # MkDocs and the Material theme are only for the docs, so they are not in
+      # requirements.txt. These exact versions are the ones used to write the docs,
+      # so the site is built the same way here.
+      - name: Install MkDocs and the Material theme
+        run: pip install mkdocs==1.6.1 mkdocs-material==9.7.7 pymdown-extensions==12.0.1
+
+      # A strict build stops on a broken link or section link, so a bad page
+      # never reaches the published site.
+      - name: Build the site in strict mode
+        run: mkdocs build --strict
+
+      # gh-deploy makes a commit on the gh-pages branch, and a commit needs an author.
+      - name: Set the commit author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Publish to GitHub Pages
+        run: mkdocs gh-deploy --force

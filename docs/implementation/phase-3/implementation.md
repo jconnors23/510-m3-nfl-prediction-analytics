@@ -277,7 +277,7 @@ The same page lists `GET /health`, and shows the field descriptions and the allo
 
 A FastAPI app is only a Python object. It does not listen for requests by itself, so something has to run it. [`uvicorn`](https://uvicorn.dev/) is that program (a web server). It opens a port on your computer, receives each HTTP request, passes it to the app, and sends the app's answer back to the caller. The two talk through [ASGI](https://asgi.readthedocs.io/en/latest/), the standard interface between Python web servers and web apps. See the [Glossary](../glossary.md#phase-3-local-prediction-api) for the short definition, and the [uvicorn documentation](https://uvicorn.dev/) for its options.
 
-- **Only for the laptop.** `uvicorn` runs the service in Phase 3. On AWS Lambda there is no port to listen on, so it is not used there and is left out of the Lambda zip. Mangum takes its place. See [What Is Mangum?](../remaining-phases.md#what-is-mangum).
+- **Only for the laptop.** `uvicorn` runs the service in Phase 3. On AWS Lambda there is no port to listen on, so it is not used there and is left out of the Lambda zip. Mangum takes its place. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
 - **It is not part of the API's logic.** The routes, the input checks, and the model call are all in the FastAPI app. Swapping `uvicorn` for another server would not change an answer.
 
 | Part of the command | What it means |
@@ -351,7 +351,7 @@ sequenceDiagram
 - **Where the path comes from:** `model.output_path` in `config/config.yaml`, turned into a full path with `resolve_path` from `src/config.py`. That function finds the project folder from the code's own location, so the same path works from any folder, and in the Lambda zip in Phase 4.
 - **What is in the file:** a dictionary with `pipeline`, `feature_names`, `model_version`, `scikit_learn_version`, `train_start_season`, and `train_end_season`. See [Step 7 of Phase 2](../phase-2/implementation-part-2.md#what-is-saved).
 - **Where the model lives:** in the app's start-up step (FastAPI's `lifespan`), stored on `app.state`. The routes read it from there. Importing `src/api/app.py` builds the app but does not read the file.
-- **Why start-up and not import time:** the tests build the app without a real model file, and Lambda (in Phase 4) runs the start-up step once per cold start through Mangum. See [What Is Mangum?](../remaining-phases.md#what-is-mangum).
+- **Why start-up and not import time:** the tests build the app without a real model file, and Lambda (in Phase 4) reuses the same `load_model` function. Mangum would run this start-up step on every request by default, so Phase 4 turns that off and calls `load_model` itself, once, on the first call. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
 - **Checks, in this order:** the file exists, it loads, it holds the four keys the API needs (`pipeline`, `feature_names`, `model_version`, `scikit_learn_version`), the scikit-learn version matches, and the saved input names match the request fields.
 
 If any check fails, the service refuses to start, and `uvicorn` prints a traceback that ends with one of these messages (the `RuntimeError` line):
@@ -439,7 +439,7 @@ def predict(request: PredictRequest) -> PredictResponse:
 
 The API uses [NumPy](https://numpy.org/doc/stable/) only. It does not use [pandas](https://pandas.pydata.org/docs/), although training and cleaning do. The two numbers go to the model as a NumPy array and not as a pandas table (a DataFrame).
 
-- **The Lambda zip fits only without `pandas`.** It is 231.3 MB without it and 278.4 MB with it, against a 250 MB limit. See the [Package Size Check](../phase-4/package-size-check.md).
+- **The Lambda zip fits only without `pandas`.** It is 231.3 MB without it and 278.4 MB with it, against a 250 MB limit. See the [Phase 4 Implementation, Step 3](../phase-4/implementation.md#step-3-measure-the-package-size).
 - **`src/model/features.py` imports `pandas` at the top,** so no file in `src/api/` may import from it. The input names come from the model file instead.
 - **One warning is expected.** The scaler was fitted on a table with column names, so a plain array makes scikit-learn warn that "X does not have valid feature names". The probability is the same. The route silences this one warning and no others.
 - **The answer is unchanged.** With only NumPy installed, the inputs -0.5 and -18.0 give 0.3296, matching [Part 2](../phase-2/implementation-part-2.md#what-is-a-worked-example).
@@ -532,5 +532,5 @@ Expected: **47 passed**, with no warnings, in about 11 seconds. Without `models/
 
 - **The same `app` object** is wrapped by Mangum in Phase 4, so the local tests cover the code that runs on Lambda.
 - **The no-pandas rule** keeps the Lambda zip under its size limit.
-- **The start-up step** runs once per cold start on Lambda, so the model loads once and is reused.
+- **The `load_model` function** is reused on Lambda. Mangum runs the app's start-up step on every request by default, so Phase 4 turns that off and loads the model once, on the first call, instead.
 - **The folder layout** (`src/`, `config/`, `models/`) must stay the same inside the zip, so `resolve_path` finds the same files.
