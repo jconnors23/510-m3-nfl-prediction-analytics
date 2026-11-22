@@ -83,15 +83,13 @@ The repository README must include:
 
 ## Acceptance Checklist
 
-| # | Requirement | Done when |
-| :--- | :--- | :--- |
-| 1 | Problem and dataset | Public dataset chosen; task, target, and metric named. |
-| 2 | Cloud storage | Cleaned data uploaded to Amazon S3; download script pulls it from the bucket. |
-| 3 | Pipeline | Ingestion → preprocessing → split → train → evaluate, all driven by `config.yaml`. |
-| 4 | Tracking | Runs, parameters, metrics, and artifacts logged to MLflow or W&B. |
-| 5 | Docker | Image builds and runs locally with training and serving entry points. |
-| 6 | API | `/predict` returns a prediction from JSON input, verified locally. |
-| 7 | Deployment | API runs on AWS Lambda behind API Gateway; `/predict` is publicly reachable, answers test requests, and allows the front-end's origin through CORS. |
-| 8 | Front-end | Vite app served from S3 through CloudFront calls the live API and shows predictions. |
-| 9 | Repository | All required files present; branch-and-PR workflow with at least one PR. |
-| 10 | README | Overview, dataset, model, cloud services, setup/usage, and both live links. |
+1. **Problem and dataset.** Done when: Public dataset chosen; task, target, and metric named.
+2. **Cloud storage.** Done when: Cleaned data uploaded to Amazon S3; download script pulls it from the bucket.
+3. **Pipeline.** Done when: Ingestion → preprocessing → split → train → evaluate, all driven by `config.yaml`.
+4. **Tracking.** Done when: Runs, parameters, metrics, and artifacts logged to MLflow or W&B.
+5. **Docker.** Done when: Image builds and runs locally with training and serving entry points.
+6. **API.** Done when: `/predict` returns a prediction from JSON input, verified locally.
+7. **Deployment.** Done when: API runs on AWS Lambda behind API Gateway; `/predict` is publicly reachable, answers test requests, and allows the front-end's origin through CORS.
+8. **Front-end.** Done when: Vite app served from S3 through CloudFront calls the live API and shows predictions.
+9. **Repository.** Done when: All required files present; branch-and-PR workflow with at least one PR.
+10. **README.** Done when: Overview, dataset, model, cloud services, setup/usage, and both live links.

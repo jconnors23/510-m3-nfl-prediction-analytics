@@ -73,7 +73,7 @@ The key decisions behind the project, in the order they were made. Each one stat
 - **The model is stored twice in each run, on purpose.** The plain `model.joblib` is the working copy the API loads, and it carries the input names, version, and training seasons. The MLflow-format copy lets MLflow's own screen and loader open the model. MLflow's format alone was not enough: in MLflow 3 it is not in the run's file list, and it does not carry those facts.
 - **Every run records the scikit-learn version and a fingerprint of the data file,** so a run can be traced to the exact library and data it used.
 - **Settings live in one file, `config/config.yaml`,** and package versions are pinned. Changing a run means editing the file, not the code.
-- Details: [Phase 2 Part 2](./phase-2/implementation-part-2.md#step-6-record-the-run-in-mlflow) and [Reproducing the Pipeline End to End](./phase-2/reproduce-end-to-end.md).
+- Details: [Phase 2 Part 2](./phase-2/implementation-part-2.md#step-6-record-the-run-in-mlflow) and [How Do I Reproduce the Result From a Clean Checkout?](./phase-2/development-guide.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
 
 ## The API
 
@@ -87,18 +87,30 @@ The key decisions behind the project, in the order they were made. Each one stat
 
 ## Deployment and Front-End
 
-Phase 4 (AWS) is built, with its [brief](./phase-4/brief.md) and [implementation page](./phase-4/implementation.md). Phases 5 and 6 are planned, in [Remaining Phases](./remaining-phases.md).
+Phase 4 (AWS) is built, with its [brief](./phase-4/brief.md) and [implementation page](./phase-4/implementation.md). Phase 5 (web app and hosting) is built, with its [brief](./phase-5/brief.md) and [implementation page](./phase-5/implementation.md). Phase 6 is planned, in [Remaining Phases](./remaining-phases.md).
 
 - **AWS only:** S3, Lambda behind an API Gateway HTTP API, and CloudFront, all in `us-east-1`, where the data bucket already is. Turned down: Google Cloud and Azure.
 - **The same FastAPI app runs locally and in Lambda, using Mangum.** Turned down: a separate hand-written Lambda function, which would repeat the input checks and the model call in a second place. See [What Is Mangum?](./phase-4/implementation.md#what-is-mangum).
 - **Lambda runs from a zip file.** A container image in a private ECR repository is the fallback, used only if the zip goes over Lambda's size limit. The measured size fits.
 - **Docker comes after the API, AWS, and the web app (Phase 6),** with one Dockerfile and two targets, `train` and `serve`. Nothing before it needs an image. The README and the review (Phases 7 and 8) come after it, because they describe and check the finished project. Turned down: building Docker in Phase 3, which would put a packaging step ahead of the web app without unblocking anything.
+- **One Dockerfile, not two.** The `train` and `serve` targets live in one file, so the install steps, the Python version, and the package pins are written once. Turned down: two Dockerfiles, which would repeat the install steps and let the two drift apart.
 - **The deployed model is checked on every game.** All 1,759 games were sent through the public API and compared with the local model: every pick and every probability matched, and the accuracy from the deployed answers equals the run summary. The zip's hash equals the hash Lambda stores for the function, so Lambda runs the file built here. See [Step 10](./phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
 - **Accuracy is the only priority for the deployment.** Latency and cost are not concerns for this project. The Lambda function's memory is 1769 MB, and it may be changed if that helps, but it is not a priority.
-- **CORS is set on the gateway only,** with the CloudFront address and the local Vite address allowed. The CloudFront address is added once the distribution exists.
+- **CORS is set on the gateway only,** with two origins allowed: the CloudFront address `https://d1nubiunzfwm0q.cloudfront.net` and the local Vite address `http://localhost:5173`.
+- **The browser does the subtraction, and the API is unchanged.** The page ships each team's standings in a committed file and sends the API the same two numbers as before. Turned down: an API that takes two team names, which would change the deployed function and its zip, and need the Phase 4 checks to be run again. See [Who Works Out Each Number?](./phase-5/implementation.md#who-works-out-each-number).
+- **GitHub Actions redeploys the web app with a short-lived AWS sign-in.** The workflow `deploy-web-app.yml` runs on a change under `frontend/` on `main`, and signs in to AWS through GitHub's OpenID Connect provider, as a role that only `main` of this repository can use. The role can only upload files to the web app bucket and invalidate its distribution. Turned down: an IAM user's access key saved as a GitHub secret, which never expires and would work from any branch or fork that got hold of it. See [How Does a Change Reach the Live Page?](./phase-5/implementation.md#how-does-a-change-reach-the-live-page).
+- **The web app's fonts are bundled into the build,** from the `@fontsource-variable` npm packages, and served from CloudFront. Turned down: loading them from Google Fonts, which would be the page's only outside request. The docs site does load Oswald from Google Fonts, because it has no such rule.
+- **The web app and the docs site share two themes,** light and dark, built from white, black, purple, orange, gold, silver, and amber, with every text pair at least 4.5 to 1 contrast. Both start in the reader's system setting, and both have a toggle. The web app does not save the choice, because it uses no local storage. The docs site's theme (Material) does save it.
+- **The web app has its own private bucket,** `510-m3-nfl-web-app`, read only by its CloudFront distribution. Turned down: putting the site in the data bucket, which would mix public page files with the private data and change that bucket's settings.
 - **The API is public, with no key, no request limit, and no firewall for now.** A key in a browser app would be visible to every visitor, so it would not protect the API. Protection can be added later if it is needed.
-- **The front-end is a Vite app,** and the published site is the built static files in a private S3 bucket behind CloudFront. Turned down: Streamlit, and S3's own website hosting (it serves only HTTP and needs a public bucket).
-- **The web app reads one snapshot of the standings,** taken after 2026 week 10.
+- **The front-end is a small Vite web app, hosted as static files on CloudFront.** The page runs in the visitor's browser, calls the live API with `fetch`, and shows the answer. The built files sit in a private S3 bucket behind CloudFront, and the Vite development server is for local work only. The other options that were considered:
+    - **Streamlit and Gradio** run a Python server of their own. That is a second server to deploy and keep running, and it could load the model itself and skip the live API. A static page can only get its answer from the API, so the API stays the one place the model runs.
+    - **Streamlit Community Cloud, Hugging Face Spaces, and Vercel** are free and quick to set up. Each would put the front-end with a second provider, apart from the data, the API, and the logs. CloudFront keeps everything in one AWS account, at the cost of more setup: a bucket, an access control, a distribution, and a CORS entry.
+    - **S3's own website hosting** serves only HTTP and needs a public bucket. A private bucket behind CloudFront gives HTTPS and keeps the bucket closed.
+- **The web app reads one snapshot of the standings,** taken after 2026 week 10, which is the same standing the model would use for a week 11 game.
+- **The browser works out the two inputs.** The page subtracts two teams' values from a committed file of standings (home minus away). The API keeps taking the two numbers, so everything checked in Phase 4 stays valid. Turned down: an API that takes team names, which would change the deployed API and the Lambda zip, and need a new round of checks.
+- **The profiles file keeps every digit,** so the browser's subtraction gives exactly the number Python gives, and the deployed model sees the same inputs the local model does.
+- **The site gets its own private bucket,** separate from the data bucket, so the data bucket's settings are not touched.
 - **The AWS deployment is a set of written steps,** with no workflow file for it. Only the docs site is published by a workflow.
 
 ## Design Manifest
@@ -128,4 +140,4 @@ flowchart TB
 
 ## Open Decisions
 
-Each shows the proposed answer first. The Phase 5 and 6 choices (one Dockerfile or two, one standings snapshot, Vite template) are in [Remaining Phases](./remaining-phases.md#open-decisions).
+Each shows the proposed answer first. The Phase 5 questions are settled, and the answers are in its [brief](./phase-5/brief.md#decisions-made).

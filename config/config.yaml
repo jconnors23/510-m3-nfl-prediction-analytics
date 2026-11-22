@@ -67,3 +67,8 @@ tracking:
   # A small readable summary of the latest run (settings, data fingerprint, scores, and the
   # learned weights). It is committed to git. MLflow keeps the full history of runs.
   summary_path: results/run-summary.json
+
+# Phase 5: where the frontend's team profiles file is written. The season and the last week
+# counted come from the window settings above, so they are not written here a second time.
+frontend:
+  profiles_path: frontend/src/data/team-profiles.json

@@ -5,7 +5,7 @@ hide:
 
 # Phase 4 Implementation: AWS Deployment
 
-This page explains how the Phase 4 deployment works, one step at a time, with the real results. It also holds the measurement made before anything was built: the size of the Lambda package (Step 3). For the short version, see the [Brief](./brief.md). The commands, in order, are on [Deployment Guide](./deployment-guide.md).
+This page explains how the Phase 4 deployment works, one step at a time, with the real results. It also holds the measurement made before anything was built: the size of the Lambda package (Step 3). For the short version, see the [Brief](./brief.md). The commands, in order, are on [Deployment Guide](./deployment-guide.md). The Deployment Guide also holds the redeploy steps. To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
 
 **Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. The full test suite passes with 53 tests (the 47 from earlier phases and 6 new ones) and no warnings. The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 
@@ -58,13 +58,11 @@ flowchart TB
 
 One Lambda function and one API Gateway HTTP API, both in `us-east-1`. Every new name follows the pattern of the existing data bucket, `510-m3-nfl-dataset`: all lowercase, words joined by hyphens, starting `510-m3-nfl-`, then what the thing is.
 
-| Resource | Name |
-| :--- | :--- |
-| Lambda function | `510-m3-nfl-predict-api` |
-| Function role | `510-m3-nfl-predict-api-role` |
-| API Gateway HTTP API | `510-m3-nfl-predict-http-api` (id `9awodatqc5`) |
-| Staged zip (a temporary key in the existing bucket, deleted once the function was created) | `deploy/510-m3-nfl-predict-api.zip` |
-| Local zip file (not committed) | `build/510-m3-nfl-predict-api.zip` |
+- **Lambda function:** `510-m3-nfl-predict-api`.
+- **Function role:** `510-m3-nfl-predict-api-role`.
+- **API Gateway HTTP API:** `510-m3-nfl-predict-http-api` (id `9awodatqc5`).
+- **Staged zip (a temporary key in the existing bucket, deleted once the function was created):** `deploy/510-m3-nfl-predict-api.zip`.
+- **Local zip file (not committed):** `build/510-m3-nfl-predict-api.zip`.
 
 Each AWS resource that supports tags is tagged `project=510-m3`. The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 
@@ -90,13 +88,11 @@ Steps 1 to 4 run on this computer and call no AWS service. Steps 5 to 11 use AWS
 
 ## Which Files Were Added?
 
-| File | What it holds |
-| :--- | :--- |
-| `src/api/lambda_handler.py` | The Lambda entry point (Step 1). |
-| `tests/test_lambda_handler.py` | Six tests for the entry point (Step 2). |
-| `requirements-serve.txt` | The short, pinned package list for the Lambda zip (Step 4). |
-| `pytest.ini` | One new line that hides a warning raised inside Mangum (see Step 2). |
-| `build/` (not committed) | The installed packages, the zip, and the test events. `build/` is already ignored by git. |
+- **`src/api/lambda_handler.py`:** The Lambda entry point (Step 1).
+- **`tests/test_lambda_handler.py`:** Six tests for the entry point (Step 2).
+- **`requirements-serve.txt`:** The short, pinned package list for the Lambda zip (Step 4).
+- **`pytest.ini`:** One new line that hides a warning raised inside Mangum (see Step 2).
+- **`build/` (not committed):** The installed packages, the zip, and the test events. `build/` is already ignored by git.
 
 - **No existing application file changed.** `src/api/app.py`, `src/config.py`, `config/config.yaml`, and `requirements.txt` are as they were.
 - **No new setting** in `config/config.yaml`. The Lambda settings live in [Deployment Guide](./deployment-guide.md).
@@ -145,14 +141,12 @@ def handler(event, context):
 
 The tests call the entry point with a made-up event in the shape API Gateway sends for an HTTP API (payload format version 2.0). A made-up model in a temporary folder stands in for the real one, except in the last test.
 
-| # | Test | What it checks |
-| :--- | :--- | :--- |
-| 1 | `test_handler_serves_a_predict_event` | A `POST /predict` event returns `statusCode` 200 and the four response fields, with the made-up model's version. |
-| 2 | `test_handler_serves_a_health_event` | A `GET /health` event returns 200 and `status` `ok`. |
-| 3 | `test_handler_rejects_a_bad_body` | A body with only `win_pct_differential` of 1.5 returns 422 and names both fields. |
-| 4 | `test_model_is_loaded_once_across_invocations` | Three calls to `handler` read the model once. |
-| 5 | `test_lambda_handler_does_not_import_pandas` | The file's imports are read as text, and none is `pandas`, `mlflow`, `matplotlib`, or from `src/model/`. |
-| 6 | `test_real_handler_worked_example` | With the real model (skipped if `models/model.joblib` is missing), the inputs -0.5 and -18.0 return 0.3296. |
+1. `test_handler_serves_a_predict_event`: A `POST /predict` event returns `statusCode` 200 and the four response fields, with the made-up model's version.
+2. `test_handler_serves_a_health_event`: A `GET /health` event returns 200 and `status` `ok`.
+3. `test_handler_rejects_a_bad_body`: A body with only `win_pct_differential` of 1.5 returns 422 and names both fields.
+4. `test_model_is_loaded_once_across_invocations`: Three calls to `handler` read the model once.
+5. `test_lambda_handler_does_not_import_pandas`: The file's imports are read as text, and none is `pandas`, `mlflow`, `matplotlib`, or from `src/model/`.
+6. `test_real_handler_worked_example`: With the real model (skipped if `models/model.joblib` is missing), the inputs -0.5 and -18.0 return 0.3296.
 
 - **Result:** 53 tests pass (47 from earlier phases and 6 new). Without `models/model.joblib`, 51 pass and 2 are skipped.
 - **One warning is hidden.** Mangum's adapter asks `asyncio` for the current event loop in a way Python 3.12 and later deprecate, which printed a `DeprecationWarning` from inside Mangum. `pytest.ini` hides that one warning, as it already does for one MLflow warning. Every other warning is still shown, and the run now has none.
@@ -172,11 +166,9 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 
 ### What Limits Apply?
 
-| Limit | Value | What it means here |
-| :--- | :--- | :--- |
-| Unzipped package, including layers | 250 MB (262,144,000 bytes) | The hard limit for a zip deployment. The measurement below is compared with this. |
-| Zip uploaded directly in the AWS console | About 50 MB | A zip over this is uploaded through S3 or the AWS command-line tool instead. |
-| Container image | 10 GB | The fall-back if the zip does not fit. |
+- **Unzipped package, including layers:** 250 MB (262,144,000 bytes). The hard limit for a zip deployment. The measurement below is compared with this.
+- **Zip uploaded directly in the AWS console:** About 50 MB. A zip over this is uploaded through S3 or the AWS command-line tool instead.
+- **Container image:** 10 GB. The fall-back if the zip does not fit.
 
 Sources: [AWS Lambda layers documentation](https://docs.aws.amazon.com/lambda/latest/dg/adding-layers.html) for the 250 MB limit, and [an AWS re:Post answer](https://repost.aws/questions/QUyXgEPlUQSPuqPJkpnGaDVw/cannot-run-my-lambda-due-to-the-hard-coded-memory-limit) for the byte count. The 50 MB console limit is approximate. The limits can change, so check the current AWS page before relying on the numbers.
 
@@ -196,12 +188,10 @@ The packages were installed into a build folder with a command that picks the La
 pip install --target build/lambda --implementation cp --python-version 3.13 --platform manylinux_2_28_aarch64 --platform manylinux2014_aarch64 --only-binary=:all: --no-compile scikit-learn==1.9.1 numpy==2.5.4 joblib==1.6.0 PyYAML==6.0.3 fastapi==0.162.2 pydantic==2.14.3 mangum==0.22.0
 ```
 
-| Part of the command | What it does |
-| :--- | :--- |
-| `--platform manylinux_2_28_aarch64` and `manylinux2014_aarch64` | Download packages built for Linux on an `arm64` chip, which is what the Lambda function will use. |
-| `--python-version 3.13` and `--implementation cp` | Match the Python 3.13 runtime. |
-| `--only-binary=:all:` | Use ready-built packages only. Nothing is compiled on the Mac, which could not produce Linux files. |
-| `--no-compile` | Skip the cached `.pyc` files, which the zip does not need. |
+- **`--platform manylinux_2_28_aarch64` and `manylinux2014_aarch64`:** Download packages built for Linux on an `arm64` chip, which is what the Lambda function will use.
+- **`--python-version 3.13` and `--implementation cp`:** Match the Python 3.13 runtime.
+- **`--only-binary=:all:`:** Use ready-built packages only. Nothing is compiled on the Mac, which could not produce Linux files.
+- **`--no-compile`:** Skip the cached `.pyc` files, which the zip does not need.
 
 - **Included:** `scikit-learn`, `numpy`, `joblib`, `PyYAML`, `fastapi`, `pydantic`, `mangum`, and the packages they pull in (among them `scipy` and `narwhals`). `scipy` resolved to 1.18.1.
 - **Project files added:** `src/`, `config/`, and `models/model.joblib`.
@@ -229,6 +219,7 @@ The largest folders in the package without `pandas`:
 | `narwhals` | 2.1 MB | A small helper package that `scikit-learn` depends on |
 
 - **`pandas` alone adds 46.0 MB,** which is what pushes the package over the limit.
+- **Room left:** the built zip is about 30.9 MB (12% of the limit) under 262,144,000 bytes. That is room for small additions and not for `pandas`.
 - **The zipped file is 63.2 MB,** which is over the console's direct-upload limit of about 50 MB. Upload it through S3 or the AWS command-line tool.
 - **Result for the plan:** the zip route works, so ECR and a container image are not needed for Lambda. The [fall-back](./brief.md#what-if-the-zip-is-too-large) stays unused unless the package grows past the limit.
 
@@ -241,13 +232,6 @@ The API must run without `pandas`. Three facts about the current code shape this
 - **One warning is expected.** The scaler was fitted on a table with column names, so a plain array makes scikit-learn print "X does not have valid feature names". The probability is the same. The API silences this one warning.
 
 These points are recorded in the [Phase 3 Brief](../phase-3/brief.md).
-
-### What Was Not Known at the Time?
-
-- **Whether it runs on AWS.** The packages were downloaded for Linux but not run there when this was measured. Steps 6, 9, and 10 are the proof, and the function ran with no import error.
-- **Unpinned `scipy`.** `requirements.txt` does not pin `scipy`, which `scikit-learn` brings in. The serving list in Step 4 pins it at 1.18.1, the version measured here.
-- **Growth.** The function code adds almost nothing, but a version bump of any large package changes the total. Re-measure after changing a pin.
-- **Margin.** The built zip is 231,252,596 bytes unzipped, about 30.9 MB (12% of the limit) under 262,144,000 bytes. That leaves room for small additions and not for `pandas`.
 
 ### How Is the Measurement Repeated?
 
@@ -297,15 +281,13 @@ find build/lambda -type f -exec cat {} + | wc -c
 - **The zip is staged in S3.** At 63.2 MB it is over the console's direct-upload limit, so it was copied to `deploy/510-m3-nfl-predict-api.zip` in the data bucket, the function was created from it, and the staged copy was deleted. The bucket holds no `deploy/` object now.
 - **Function settings:**
 
-| Setting | Value |
-| :--- | :--- |
-| Runtime | `python3.13` |
-| Architecture | `arm64` |
-| Handler | `src.api.lambda_handler.handler` |
-| Memory | 1769 MB |
-| Timeout | 10 seconds |
-| Environment variable | `JOBLIB_MULTIPROCESSING` = `0` (the only one) |
-| VPC, layers, reserved concurrency | none |
+- **Runtime:** `python3.13`.
+- **Architecture:** `arm64`.
+- **Handler:** `src.api.lambda_handler.handler`.
+- **Memory:** 1769 MB.
+- **Timeout:** 10 seconds.
+- **Environment variable:** `JOBLIB_MULTIPROCESSING` = `0` (the only one).
+- **VPC, layers, reserved concurrency:** none.
 
 - **The environment variable.** The function's first log printed "joblib will operate in serial mode", because Lambda has no multiprocessing directory. Setting `JOBLIB_MULTIPROCESSING=0` makes joblib skip that check. The function never uses multiprocessing, and the line is gone from every later log.
 - **Log retention.** The log group `/aws/lambda/510-m3-nfl-predict-api` keeps logs for 14 days, and is tagged `project=510-m3`.
@@ -355,7 +337,7 @@ Lambda gives a function CPU in proportion to its memory. The function runs at 17
 
     **If skipped:** The web app would work in `curl` and fail in the browser.
 
-- **Allowed origin:** `http://localhost:5173`, the default address of the Vite development server, and nothing else. The CloudFront address is added in Phase 5 once it exists.
+- **Allowed origin:** `http://localhost:5173`, the default address of the Vite development server, and nothing else at the end of Phase 4. Phase 5 added the CloudFront address, `https://d1nubiunzfwm0q.cloudfront.net`. See [The Preflight](../phase-5/implementation.md#the-preflight).
 - **Allowed methods:** `POST`, `GET`, and `OPTIONS`. **Allowed headers:** `content-type`. **Max age:** 300 seconds.
 - **Checks:**
     - A preflight request from `http://localhost:5173` returned status 204 with `access-control-allow-origin: http://localhost:5173`.
@@ -388,12 +370,10 @@ curl -sS -w '\nHTTP %{http_code}\n' -H 'content-type: application/json' -d '{"wi
 HTTP 200
 ```
 
-| Request | Result |
-| :--- | :--- |
-| `GET /health` | 200, the health body above |
-| `POST /predict` with -0.5 and -18.0 | 200, home win probability 0.3296, prediction 0 |
-| `POST /predict` with only `win_pct_differential` of 1.5 | 422, naming both fields |
-| `GET /predict` | 404, `{"message":"Not Found"}`, because the gateway has no route for it |
+- **`GET /health`:** 200, the health body above.
+- **`POST /predict` with -0.5 and -18.0:** 200, home win probability 0.3296, prediction 0.
+- **`POST /predict` with only `win_pct_differential` of 1.5:** 422, naming both fields.
+- **`GET /predict`:** 404, `{"message":"Not Found"}`, because the gateway has no route for it.
 
 ## Step 10: Check the Deployed Model Against the Local Model
 
@@ -412,14 +392,12 @@ HTTP 200
 
 **Then, every game through the public API.** A local script (`build/parity_check.py`, kept on the developer's machine and not committed) builds the local answers with the saved model, and sends each of the 1,759 games to `POST /predict`, one at a time, then compares each answer.
 
-| Result | Value |
-| :--- | :--- |
-| Requests sent | 1,759 (1,339 training, 271 validation, 149 test) |
-| Retries | 0 |
-| Status 200 answers | 1,759 |
-| Picks that match the local pick | 1,759 |
-| Probabilities that match the local probability (rounded to 4 places) | 1,759, with a largest difference of 0.0 |
-| Slowest and average request | 0.29 s and 0.033 s |
+- **Requests sent:** 1,759 (1,339 training, 271 validation, 149 test).
+- **Retries:** 0.
+- **Status 200 answers:** 1,759.
+- **Picks that match the local pick:** 1,759.
+- **Probabilities that match the local probability (rounded to 4 places):** 1,759, with a largest difference of 0.0.
+- **Slowest and average request:** 0.29 s and 0.033 s.
 
 | Group | Correct from the deployed answers | Committed run summary |
 | :--- | :--- | :--- |
@@ -440,11 +418,3 @@ The deployed model and the local model are the same at the 4-decimal precision t
 
 - **[Deployment Guide](./deployment-guide.md)** lists every command of Steps 4 to 10, in order, with placeholders such as `<account-id>` and `<api-id>` for values that differ between accounts. It ends with the commands that remove everything this phase created. Those removal commands are written, and not run.
 - **No `deploy.yml` workflow.** The steps are run by hand. See [Decisions](../decisions.md#deployment-and-front-end).
-
-## What Is Left to Watch?
-
-- **The zip has about 30.9 MB of room.** A new large dependency, or a version bump, can push it over. Re-measure after changing a pin.
-- **The API has no protection rules, request limit, or firewall.** Anyone can call it. That is acceptable for this project.
-- **CORS allows only the local web app.** The CloudFront address is added in Phase 5.
-
-The [Brief](./brief.md#what-could-go-wrong) lists the original risks.

@@ -1,3 +1,8 @@
+/* Oswald is the condensed headline face the web app uses. It must be the first
+   rule in the file for the browser to load it. Inter (body) and JetBrains Mono
+   (code) are loaded by the Material theme from mkdocs.yml. */
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap");
+
 /* ------------------------------------------------------------------
    Layout rules for the whole site
    ------------------------------------------------------------------ */
@@ -21,155 +26,302 @@
 }
 
 /* ------------------------------------------------------------------
-   Color theme: a light page with sky blue as the main color.
-     Sky blue   header, section labels, links
-     Navy       headings and the page being read
-     Slate gray body text
-     Green      "note" callouts
-     Orange     "Purpose" callouts
+   Color themes: the same palette as the web app, built from white,
+   black, purple, orange, gold, silver, and amber.
+     Purple  header band, links, headings, the page being read
+     Orange  link hover, the warning (disclaimer) callout
+     Gold    "Purpose" callouts, section bars beside headings
+     Amber   yard lines and the rule under the header and page titles
+     Silver  borders, table stripes, secondary text
+     Black / white  page, text, and footer, swapped between the themes
+   Every text color has at least 4.5 to 1 contrast on its background in
+   both themes.
    ------------------------------------------------------------------ */
 
-:root > * {
-  --md-primary-fg-color: #0ea5e9;
-  --md-primary-fg-color--light: #38bdf8;
-  --md-primary-fg-color--dark: #0284c7;
-  --md-primary-bg-color: #ffffff;
-  --md-primary-bg-color--light: rgba(255, 255, 255, 0.8);
-  --md-accent-fg-color: #0369a1;
-  --md-accent-fg-color--transparent: rgba(3, 105, 161, 0.1);
+:root {
+  --nfl-headline: "Oswald", "Arial Narrow", sans-serif;
 }
 
+/* Light theme (Material's "default" scheme). */
 [data-md-color-scheme="default"] {
-  --md-default-bg-color: #f4faff;
-  --md-default-fg-color: #1e293b;
-  --md-default-fg-color--light: #475569;
-  --md-default-fg-color--lighter: #94a3b8;
-  --md-default-fg-color--lightest: #dbeafe;
-  --md-typeset-color: #1e293b;
-  --md-typeset-a-color: #0369a1;
-  --md-code-bg-color: #e6f3fc;
-  --md-code-fg-color: #0f2a43;
-  --md-footer-bg-color: #0c4a6e;
-  --md-footer-bg-color--dark: #0a3d5c;
+  --nfl-brand: #3b1a78;
+  --nfl-brand-soft: #d9cfef;
+  --nfl-link: #5b21b6;
+  --nfl-heading: #3b1a78;
+  --nfl-orange: #c2410c;
+  --nfl-gold: #8a6100;
+  --nfl-amber: #d97706;
+  --nfl-line: #d6d3dc;
+  --nfl-stripe: #efedf3;
+  --nfl-footer: #141218;
+
+  --md-primary-fg-color: var(--nfl-brand);
+  --md-primary-fg-color--light: #5b21b6;
+  --md-primary-fg-color--dark: #2a1257;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.82);
+  --md-accent-fg-color: var(--nfl-orange);
+  --md-accent-fg-color--transparent: rgba(194, 65, 12, 0.1);
+
+  --md-default-bg-color: #f6f5f8;
+  --md-default-fg-color: #141218;
+  --md-default-fg-color--light: #55525c;
+  --md-default-fg-color--lighter: #8e8a96;
+  --md-default-fg-color--lightest: var(--nfl-line);
+  --md-typeset-color: #141218;
+  --md-typeset-a-color: var(--nfl-link);
+  --md-code-bg-color: #ece9f2;
+  --md-code-fg-color: #1e1235;
+  --md-footer-bg-color: var(--nfl-footer);
+  --md-footer-bg-color--dark: #08070b;
+
+  /* Diagrams: pale purple boxes with dark purple text and lines. */
+  --md-mermaid-node-bg-color: #ebe5f7;
+  --md-mermaid-node-fg-color: #1e1235;
+  --md-mermaid-edge-color: #3b1a78;
+  --md-mermaid-label-bg-color: #f6f5f8;
+  --md-mermaid-label-fg-color: #1e1235;
 }
 
-/* Header: a soft sky blue gradient with white text. */
+/* Dark theme (Material's "slate" scheme). */
+[data-md-color-scheme="slate"] {
+  --nfl-brand: #1e1235;
+  --nfl-brand-soft: #c9b8f0;
+  --nfl-link: #c4b5fd;
+  --nfl-heading: #e4dcfb;
+  --nfl-orange: #fb923c;
+  --nfl-gold: #facc15;
+  --nfl-amber: #fbbf24;
+  --nfl-line: #34303d;
+  --nfl-stripe: #221e29;
+  --nfl-footer: #08070b;
+
+  --md-primary-fg-color: var(--nfl-brand);
+  --md-primary-fg-color--light: #2e1d52;
+  --md-primary-fg-color--dark: #140b25;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.82);
+  --md-accent-fg-color: var(--nfl-orange);
+  --md-accent-fg-color--transparent: rgba(251, 146, 60, 0.12);
+
+  --md-default-bg-color: #0e0c12;
+  --md-default-fg-color: #f4f2f7;
+  --md-default-fg-color--light: #b4afbe;
+  --md-default-fg-color--lighter: #8e8a96;
+  --md-default-fg-color--lightest: var(--nfl-line);
+  --md-typeset-color: #f4f2f7;
+  --md-typeset-a-color: var(--nfl-link);
+  --md-code-bg-color: #1a1720;
+  --md-code-fg-color: #e9e4f5;
+  --md-footer-bg-color: var(--nfl-footer);
+  --md-footer-bg-color--dark: #000000;
+
+  --md-mermaid-node-bg-color: #241a3a;
+  --md-mermaid-node-fg-color: #f4f2f7;
+  --md-mermaid-edge-color: #c4b5fd;
+  --md-mermaid-label-bg-color: #0e0c12;
+  --md-mermaid-label-fg-color: #f4f2f7;
+}
+
+/* ------------------------------------------------------------------
+   Header: purple with faint amber yard lines and an amber rule
+   ------------------------------------------------------------------ */
+
 .md-header {
-  background-image: linear-gradient(100deg, #38bdf8 0%, #0ea5e9 55%, #0284c7 100%);
-  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.25);
+  background-color: var(--nfl-brand);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(217, 119, 6, 0.22) 0,
+    rgba(217, 119, 6, 0.22) 2px,
+    transparent 2px,
+    transparent 64px
+  );
+  border-bottom: 4px solid var(--nfl-amber);
+  box-shadow: 0 2px 6px rgba(8, 7, 11, 0.35);
 }
 
 .md-header__title {
+  font-family: var(--nfl-headline);
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ------------------------------------------------------------------
+   Left navigation
+   ------------------------------------------------------------------ */
+
+.md-nav__link--active,
+.md-nav__item .md-nav__link--active {
+  color: var(--nfl-heading);
   font-weight: 700;
+}
+
+/* Section labels (Implementation, Phase 1, and so on) read like a scoreboard. */
+.md-nav__item--section > .md-nav__link {
+  font-family: var(--nfl-headline);
+  color: var(--nfl-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.md-nav__link:hover,
+.md-typeset a:hover {
+  color: var(--nfl-orange);
+}
+
+/* ------------------------------------------------------------------
+   Headings: Oswald, with an amber rule under the page title and a
+   gold bar beside section titles
+   ------------------------------------------------------------------ */
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-family: var(--nfl-headline);
+  color: var(--nfl-heading);
   letter-spacing: 0.02em;
 }
 
-/* Left navigation: navy marks the page being read, and sky blue marks the
-   section labels. */
-.md-nav__link--active,
-.md-nav__item .md-nav__link--active {
-  color: #0c4a6e;
-  font-weight: 700;
-}
-
-.md-nav__item--section > .md-nav__link {
-  color: #0284c7;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-}
-
-/* Headings: navy text, with a sky blue line under the page title and a
-   sky blue bar beside section titles. */
 .md-typeset h1 {
-  color: #0c4a6e;
   font-weight: 700;
-  letter-spacing: -0.01em;
-  padding-bottom: 0.35em;
-  border-bottom: 3px solid #38bdf8;
+  font-size: 2.1em;
+  text-transform: uppercase;
+  padding-bottom: 0.3em;
+  border-bottom: 4px solid var(--nfl-amber);
 }
 
 .md-typeset h2 {
-  color: #0c4a6e;
-  font-weight: 700;
+  font-weight: 600;
   padding-left: 0.7rem;
-  border-left: 4px solid #38bdf8;
+  border-left: 5px solid var(--nfl-gold);
 }
 
 .md-typeset h3 {
-  color: #0369a1;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-/* Tables (the few that remain): a sky blue header row and light stripes. */
+/* Bold text is the key numbers and conclusions, so give it the heading color. */
+.md-typeset strong {
+  color: var(--nfl-heading);
+}
+
+/* ------------------------------------------------------------------
+   Tables (the few that remain): a purple header row and silver stripes
+   ------------------------------------------------------------------ */
+
 .md-typeset table:not([class]) {
-  border: 0.05rem solid #bae6fd;
+  border: 0.05rem solid var(--nfl-line);
   border-radius: 0.3rem;
 }
 
 .md-typeset table:not([class]) th {
-  background-color: #0ea5e9;
+  background-color: var(--nfl-brand);
   color: #ffffff;
-  font-weight: 700;
+  font-family: var(--nfl-headline);
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 .md-typeset table:not([class]) tbody tr:nth-child(even) {
-  background-color: #eaf6fe;
+  background-color: var(--nfl-stripe);
 }
 
-/* Callout boxes. "Purpose" blocks use the abstract style in orange, and
-   notes use green. */
+/* ------------------------------------------------------------------
+   Callout boxes: "Purpose" blocks in gold, notes in purple, and
+   warnings (the disclaimer) in orange
+   ------------------------------------------------------------------ */
+
+/* Material sets callouts in a smaller font than the page. Bring them up so the
+   disclaimer and the "Purpose" boxes read at the same size as the text. */
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: 0.85rem;
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+  font-family: var(--nfl-headline);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .md-typeset .admonition.abstract,
 .md-typeset details.abstract {
-  border-color: #f97316;
-  background-color: rgba(249, 115, 22, 0.07);
+  border-color: var(--nfl-gold);
+  background-color: color-mix(in srgb, var(--nfl-gold) 7%, transparent);
 }
 
 .md-typeset .abstract > .admonition-title,
 .md-typeset .abstract > summary {
-  background-color: rgba(249, 115, 22, 0.16);
+  background-color: color-mix(in srgb, var(--nfl-gold) 16%, transparent);
 }
 
 .md-typeset .abstract > .admonition-title::before,
 .md-typeset .abstract > summary::before {
-  background-color: #f97316;
+  background-color: var(--nfl-gold);
 }
 
 .md-typeset .admonition.note,
 .md-typeset details.note {
-  border-color: #22c55e;
-  background-color: rgba(34, 197, 94, 0.07);
+  border-color: var(--nfl-link);
+  background-color: color-mix(in srgb, var(--nfl-link) 7%, transparent);
 }
 
 .md-typeset .note > .admonition-title,
 .md-typeset .note > summary {
-  background-color: rgba(34, 197, 94, 0.16);
+  background-color: color-mix(in srgb, var(--nfl-link) 16%, transparent);
 }
 
 .md-typeset .note > .admonition-title::before,
 .md-typeset .note > summary::before {
-  background-color: #22c55e;
+  background-color: var(--nfl-link);
 }
 
-/* Code blocks get a sky blue edge. */
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: var(--nfl-orange);
+  background-color: color-mix(in srgb, var(--nfl-orange) 7%, transparent);
+}
+
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary {
+  background-color: color-mix(in srgb, var(--nfl-orange) 16%, transparent);
+  font-weight: 700;
+}
+
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .warning > summary::before {
+  background-color: var(--nfl-orange);
+}
+
+/* ------------------------------------------------------------------
+   Code
+   ------------------------------------------------------------------ */
+
 .md-typeset pre > code {
-  border-left: 3px solid #38bdf8;
+  border-left: 3px solid var(--nfl-amber);
 }
 
-.md-typeset code {
-  color: #075985;
-}
-
+.md-typeset code,
 .md-typeset pre > code,
 .md-typeset pre code {
   color: var(--md-code-fg-color);
 }
 
-/* Footer: deep blue, with the disclaimer in a quiet tone. */
+/* ------------------------------------------------------------------
+   Footer: black, with the disclaimer in bold white so it is never missed
+   ------------------------------------------------------------------ */
+
 .md-footer-meta {
   background-color: var(--md-footer-bg-color--dark);
+  border-top: 3px solid var(--nfl-amber);
 }
 
 .md-copyright {
-  color: var(--md-primary-bg-color--light);
+  color: #ffffff;
+  font-weight: 700;
 }

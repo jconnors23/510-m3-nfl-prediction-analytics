@@ -25,4 +25,5 @@ Phase 1 gets the data into the cloud and back. It downloads a public file of NFL
 
 ## Where to Read More
 
-[Implementation](./implementation.md) explains how each step works, what was created, and why the choices were made.
+- [Implementation](./implementation.md) explains how each step works, what was created, and why the choices were made.
+- [Development Guide](./development-guide.md) shows how to run the four steps, change the pipeline, and check the cloud storage.
