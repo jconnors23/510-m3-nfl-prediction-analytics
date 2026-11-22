@@ -1,0 +1,34 @@
+{
+  "baseline_test": {
+    "step": 0,
+    "value": 0.47651006711409394
+  },
+  "baseline_train": {
+    "step": 0,
+    "value": 0.5332337565347274
+  },
+  "baseline_validation": {
+    "step": 0,
+    "value": 0.5387453874538746
+  },
+  "test_accuracy": {
+    "step": 0,
+    "value": 0.5906040268456376
+  },
+  "test_log_loss": {
+    "step": 0,
+    "value": 0.6815183015134572
+  },
+  "train_accuracy": {
+    "step": 0,
+    "value": 0.6123973114264376
+  },
+  "validation_accuracy": {
+    "step": 0,
+    "value": 0.6309963099630996
+  },
+  "validation_log_loss": {
+    "step": 0,
+    "value": 0.6450696272369913
+  }
+}

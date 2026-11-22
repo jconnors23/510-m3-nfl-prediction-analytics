@@ -1,0 +1,17 @@
+{
+  "C": "1.0",
+  "data_sha256": "7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb",
+  "feature_names": "win_pct_differential,point_diff_per_game_differential",
+  "max_iter": "1000",
+  "model_version": "v1.0",
+  "n_test": "149",
+  "n_train": "1339",
+  "n_validation": "271",
+  "random_seed": "42",
+  "scikit_learn_version": "1.9.1",
+  "solver": "lbfgs",
+  "test_season": "2026",
+  "train_end_season": "2024",
+  "train_start_season": "2020",
+  "validation_season": "2025"
+}
