@@ -25,6 +25,7 @@ concurrency:
   group: deploy-web-app
   cancel-in-progress: false
 
+# Fixed values for this deployment. None is secret. The role to assume is the only secret-backed value.
 env:
   AWS_REGION: us-east-1
   BUCKET: 510-m3-nfl-web-app
@@ -48,6 +49,8 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
+      # The tests run before the build, so a failing test stops the deploy. npm ci installs the exact
+      # versions in package-lock.json.
       - name: Install, test, and build
         run: |
           npm ci
@@ -60,13 +63,14 @@ jobs:
         run: |
           found=$(grep -rhoE 'https?://[a-zA-Z0-9.-]+' dist | sed -E 's#https?://##' | sort -u)
           printf '%s\n' "$found"
-          extra=$(printf '%s\n' "$found" | grep -vxE '9awodatqc5.execute-api.us-east-1.amazonaws.com|www.w3.org|react.dev' || true)
+          extra=$(printf '%s\n' "$found" | grep -vxE '9awodatqc5.execute-api.us-east-1.amazonaws.com|www.w3.org|react.dev|github.com|jconnors23.github.io' || true)
           if [ -n "$extra" ]; then
             echo "Unexpected host:"
             printf '%s\n' "$extra"
             exit 1
           fi
 
+      # Trades the run's GitHub token for short-lived AWS credentials. Only the role name is stored.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
@@ -80,6 +84,8 @@ jobs:
           aws s3 cp dist/assets/ "s3://$BUCKET/assets/" --recursive --cache-control "public, max-age=31536000, immutable" --region "$AWS_REGION"
           aws s3 cp dist/index.html "s3://$BUCKET/index.html" --cache-control "no-cache" --content-type "text/html; charset=utf-8" --region "$AWS_REGION"
 
+      # CloudFront keeps old copies of index.html and /. Clearing them makes visitors get the new page,
+      # and the wait makes the next step read the new copy.
       - name: Invalidate the page
         id: invalidation
         run: |
@@ -87,6 +93,8 @@ jobs:
           echo "id=$id" >> "$GITHUB_OUTPUT"
           aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$id" --region "$AWS_REGION"
 
+      # Downloads each file from the live site and compares its hash with the built file. A mismatch
+      # means visitors are not getting what was built.
       - name: Check the served bytes
         id: served
         run: |
@@ -118,6 +126,7 @@ jobs:
           fi
           echo "result=matched" >> "$GITHUB_OUTPUT"
 
+      # always() so the summary is written even when an earlier check failed.
       - name: Write a summary
         if: always()
         run: |

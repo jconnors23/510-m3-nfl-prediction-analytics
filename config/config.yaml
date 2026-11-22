@@ -67,8 +67,14 @@ tracking:
   # A small readable summary of the latest run (settings, data fingerprint, scores, and the
   # learned weights). It is committed to git. MLflow keeps the full history of runs.
   summary_path: results/run-summary.json
+  # A readable log of every MLflow run, committed to git, so the logging can be seen without
+  # running anything. mlflow.db and mlartifacts/ stay local, because they store absolute paths.
+  reference_folder: mlflow-reference
 
 # Phase 5: where the frontend's team profiles file is written. The season and the last week
 # counted come from the window settings above, so they are not written here a second time.
 frontend:
   profiles_path: frontend/src/data/team-profiles.json
+  # Every 2026 game with the standings before each week, for the Games by Week, Custom
+  # Matchup, and Team Stats tabs.
+  season_path: frontend/src/data/season-2026.json
