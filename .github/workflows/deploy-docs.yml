@@ -1,6 +1,9 @@
 # Builds the documentation site and publishes it to GitHub Pages.
 # It runs when a change to the docs or the site settings reaches the main branch,
 # and it can also be started by hand from the repository's Actions tab.
+# Pages is set to deploy from GitHub Actions, so the built site is uploaded and
+# deployed here. That is what attaches the site address to the run. No commit
+# is made, so the Actions bot is not an author of the site.
 name: Deploy Docs
 
 on:
@@ -12,19 +15,21 @@ on:
       - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
-# mkdocs gh-deploy pushes the built site to the gh-pages branch, so the job needs
-# permission to write to the repository.
+# The deploy job publishes through GitHub Pages. It only needs to read the
+# repository. pages and id-token are what the Pages deploy action requires.
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
-# Two deploys at the same time would push to the same branch. A newer run waits
+# Two deploys at the same time would publish over each other. A newer run waits
 # for the one already running to finish.
 concurrency:
   group: deploy-docs
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -46,11 +51,18 @@ jobs:
       - name: Build the site in strict mode
         run: mkdocs build --strict
 
-      # gh-deploy makes a commit on the gh-pages branch, and a commit needs an author.
-      - name: Set the commit author
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Upload the built site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Publish to GitHub Pages
-        run: mkdocs gh-deploy --force
+        id: deployment
+        uses: actions/deploy-pages@v4
