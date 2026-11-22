@@ -1,0 +1,2413 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/phase-2/implementation-part-1/">
+      
+      
+        <link rel="prev" href="../brief/">
+      
+      
+        <link rel="next" href="../implementation-part-2/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Implementation Part 1 - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-2-implementation-part-1-steps-1-to-3" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Implementation Part 1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Data Flow?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-feature-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Feature Engineering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Feature Engineering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-functions-do-the-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Functions Do the Work?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-counted-before-each-game" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Counted Before Each Game?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-do-the-standings-look-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Do the Standings Look Like?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-are-the-standings-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Are the Standings Built?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-each-game-become" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does Each Game Become?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-do-real-rows-look-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Do Real Rows Look Like?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Worked Example?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-small-example-worked-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Small Example Worked by Hand?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-the-inputs-behave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do the Inputs Behave?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-in-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens in Week 1?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-the-week-1-rule-enforced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is the Week-1 Rule Enforced?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-split-the-games-by-season" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Split the Games by Season
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Split the Games by Season">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-games-go-in-each-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Games Go in Each Group?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-are-the-seasons-chosen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Are the Seasons Chosen?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-the-table-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is the Table Split?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-add-the-model-and-tracking-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Add the Model and Tracking Settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Add the Model and Tracking Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-does-each-setting-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does Each Setting Do?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-does-mlflow-keep-its-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where Does MLflow Keep Its Records?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reproduce-end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Data Flow?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-feature-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Feature Engineering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Feature Engineering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-functions-do-the-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Functions Do the Work?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-counted-before-each-game" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Counted Before Each Game?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-do-the-standings-look-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Do the Standings Look Like?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-are-the-standings-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Are the Standings Built?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-each-game-become" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does Each Game Become?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-do-real-rows-look-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Do Real Rows Look Like?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Worked Example?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-small-example-worked-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Small Example Worked by Hand?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-the-inputs-behave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do the Inputs Behave?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-in-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens in Week 1?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-the-week-1-rule-enforced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is the Week-1 Rule Enforced?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-split-the-games-by-season" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Split the Games by Season
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Split the Games by Season">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-games-go-in-each-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Games Go in Each Group?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-are-the-seasons-chosen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Are the Seasons Chosen?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-the-table-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is the Table Split?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-add-the-model-and-tracking-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Add the Model and Tracking Settings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Add the Model and Tracking Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-does-each-setting-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does Each Setting Do?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-does-mlflow-keep-its-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where Does MLflow Keep Its Records?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="phase-2-implementation-part-1-steps-1-to-3">Phase 2 Implementation, Part 1: Steps 1 to 3</h1>
+<p>This page explains how the first three Phase 2 steps work: feature engineering (the two model inputs), the split by season, and the new settings. <a href="../implementation-part-2/">Part 2</a> covers training, scoring, MLflow, and saving the model. For the short version, see the <a href="../brief/">Brief</a>.</p>
+<p><strong>Status: built and tested.</strong> The code is in <code>src/model/features.py</code>, with the new setting reader in <code>src/config.py</code>. Every number below was recomputed from the downloaded table (<code>data/from-s3/nfl_matchups_2020_2026.csv</code>, 1,759 rows) with this code, and from a second, independent calculation that matched it row for row.</p>
+<h2 id="how-does-the-data-flow">How Does the Data Flow?</h2>
+<pre class="mermaid"><code>flowchart LR
+    A["data/from-s3/&lt;br/&gt;1,759 games"] --&gt; B["Step 1: standings&lt;br/&gt;before each week"]
+    B --&gt; C["Step 1: two inputs&lt;br/&gt;and home_win"]
+    C --&gt; D["Step 2: split&lt;br/&gt;by season"]
+    D --&gt; E["Training 1,339"]
+    D --&gt; F["Validation 271"]
+    D --&gt; G["Test 149"]
+    H["Step 3: settings&lt;br/&gt;in config.yaml"] -.-&gt; B
+    H -.-&gt; D</code></pre>
+<h2 id="step-1-feature-engineering">Step 1: Feature Engineering</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Turn each game into two numbers the model can learn from, plus the answer it should predict. Building input numbers (features) from raw columns is called feature engineering.</p>
+<p><strong>Why:</strong> The model cannot read team names. It needs numbers that say how the home team compares with the away team going into the game.</p>
+<p><strong>If skipped:</strong> There would be nothing to train on.</p>
+</div>
+<h3 id="which-functions-do-the-work">Which Functions Do the Work?</h3>
+<p>All of these are in <code>src/model/features.py</code>. Everything is built in memory on each run, and no new data file is saved.</p>
+<ul>
+<li><code>load_games(config)</code> reads the downloaded table, and stops with a message to run the download step first if the file is missing.</li>
+<li><code>standings_before_week(games, season, week, teams)</code> returns one row per team, counting only earlier weeks of that season.</li>
+<li><code>build_model_table(games)</code> returns one row per game with the two inputs and the answer.</li>
+<li><code>check_model_table(table)</code> stops the run if an input is blank or any week-1 input is not exactly 0.</li>
+<li><code>split_games(table, config)</code> is Step 2.</li>
+</ul>
+<h3 id="what-is-counted-before-each-game">What Is Counted Before Each Game?</h3>
+<ul>
+<li><strong>Earlier weeks of the same season only.</strong> For a game in week 7 of 2025, each team's numbers come from its games in weeks 1 to 6 of 2025. Games in week 7 itself are never counted, so a game cannot be described by its own result or by another result from the same week.</li>
+<li><strong>Numbers start over every season.</strong> A team's 2024 results are not used in 2025.</li>
+<li><strong>Win percentage:</strong> wins divided by games played so far.</li>
+<li><strong>Point margin per game:</strong> points scored minus points allowed so far, divided by games played so far.</li>
+<li><strong>A team with no games yet</strong> counts as win percentage 0.5 and point margin 0.0. This happens for every team in week 1.</li>
+<li><strong>Per game, not season totals.</strong> Teams have played different numbers of games by mid-season because of bye weeks. Before week 8 of 2025, 23 teams had played 7 games, 8 teams had played 6, and 1 team had played 5. A season total would favor the teams that had played more games.</li>
+<li><strong>Tied games are not in the table.</strong> Phase 1 removed them, so two teams in a removed game show one fewer game.</li>
+</ul>
+<h3 id="what-do-the-standings-look-like">What Do the Standings Look Like?</h3>
+<p>Standings before week 7 of 2025 for a few teams. Twenty-five teams had played 6 games, six had played 5, and Green Bay had played 4.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">team</th>
+<th style="text-align: left;">games</th>
+<th style="text-align: left;">wins</th>
+<th style="text-align: left;">win_pct</th>
+<th style="text-align: left;">point_diff_per_game</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">IND</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">0.8333</td>
+<td style="text-align: left;">13.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">TB</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">0.8333</td>
+<td style="text-align: left;">2.3333</td>
+</tr>
+<tr>
+<td style="text-align: left;">PIT</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">0.8</td>
+<td style="text-align: left;">2.4</td>
+</tr>
+<tr>
+<td style="text-align: left;">GB</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">0.75</td>
+<td style="text-align: left;">7.25</td>
+</tr>
+<tr>
+<td style="text-align: left;">NE</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">0.6667</td>
+<td style="text-align: left;">5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">TEN</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0.1667</td>
+<td style="text-align: left;">-13.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">CLE</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0.1667</td>
+<td style="text-align: left;">-10.6667</td>
+</tr>
+<tr>
+<td style="text-align: left;">NYJ</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">-7.8333</td>
+</tr>
+</tbody>
+</table>
+<p>Before week 1 the same table has every team at <code>games</code> 0, <code>wins</code> 0, <code>win_pct</code> 0.5, and <code>point_diff_per_game</code> 0.0.</p>
+<h3 id="how-are-the-standings-built">How Are the Standings Built?</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">standings_before_week</span><span class="p">(</span><span class="n">games</span><span class="p">,</span> <span class="n">season</span><span class="p">,</span> <span class="n">week</span><span class="p">,</span> <span class="n">teams</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""One row per team from games played earlier in this season."""</span>
+    <span class="c1"># Same-week games are left out, so a result cannot describe itself or the other game that week.</span>
+    <span class="n">earlier</span> <span class="o">=</span> <span class="n">games</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">games</span><span class="p">[</span><span class="s2">"season"</span><span class="p">]</span> <span class="o">==</span> <span class="n">season</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">games</span><span class="p">[</span><span class="s2">"week"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">week</span><span class="p">)]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">team</span> <span class="ow">in</span> <span class="n">teams</span><span class="p">:</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="n">earlier</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">earlier</span><span class="p">[</span><span class="s2">"home_team"</span><span class="p">]</span> <span class="o">==</span> <span class="n">team</span><span class="p">]</span>
+        <span class="n">away</span> <span class="o">=</span> <span class="n">earlier</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">earlier</span><span class="p">[</span><span class="s2">"away_team"</span><span class="p">]</span> <span class="o">==</span> <span class="n">team</span><span class="p">]</span>
+        <span class="n">played</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">away</span><span class="p">)</span>
+        <span class="c1"># No games yet would make a percentage undefined. 0.5 and 0 leave week 1 as a tie.</span>
+        <span class="k">if</span> <span class="n">played</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">wins</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">win_pct</span> <span class="o">=</span> <span class="mf">0.5</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">home</span><span class="p">[</span><span class="s2">"home_score"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">home</span><span class="p">[</span><span class="s2">"away_score"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">away</span><span class="p">[</span><span class="s2">"away_score"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">away</span><span class="p">[</span><span class="s2">"home_score"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">scored</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">home</span><span class="p">[</span><span class="s2">"home_score"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">away</span><span class="p">[</span><span class="s2">"away_score"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+            <span class="n">allowed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">home</span><span class="p">[</span><span class="s2">"away_score"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">away</span><span class="p">[</span><span class="s2">"home_score"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+            <span class="c1"># Divide by games played, not a season total, because bye weeks leave teams on different game counts.</span>
+            <span class="n">win_pct</span> <span class="o">=</span> <span class="n">wins</span> <span class="o">/</span> <span class="n">played</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="p">(</span><span class="n">scored</span> <span class="o">-</span> <span class="n">allowed</span><span class="p">)</span> <span class="o">/</span> <span class="n">played</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"team"</span><span class="p">:</span> <span class="n">team</span><span class="p">,</span> <span class="s2">"games"</span><span class="p">:</span> <span class="n">played</span><span class="p">,</span> <span class="s2">"wins"</span><span class="p">:</span> <span class="n">wins</span><span class="p">,</span>
+                     <span class="s2">"win_pct"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">win_pct</span><span class="p">),</span> <span class="s2">"point_diff_per_game"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">margin</span><span class="p">)})</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+</code></pre></div>
+<p>A game counts for both teams. The home team's points scored are <code>home_score</code>, and the away team's are <code>away_score</code>.</p>
+<h3 id="what-does-each-game-become">What Does Each Game Become?</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Column</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">What it means</th>
+<th style="text-align: left;">Example (<code>2025_07_NE_TEN</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>game_id</code></td>
+<td style="text-align: left;">text</td>
+<td style="text-align: left;">Season, week, away team, home team</td>
+<td style="text-align: left;"><code>2025_07_NE_TEN</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>season</code></td>
+<td style="text-align: left;">whole number</td>
+<td style="text-align: left;">Season year</td>
+<td style="text-align: left;">2025</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>week</code></td>
+<td style="text-align: left;">whole number</td>
+<td style="text-align: left;">Week of the regular season</td>
+<td style="text-align: left;">7</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>home_team</code></td>
+<td style="text-align: left;">text</td>
+<td style="text-align: left;">Home team code</td>
+<td style="text-align: left;"><code>TEN</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>away_team</code></td>
+<td style="text-align: left;">text</td>
+<td style="text-align: left;">Away team code</td>
+<td style="text-align: left;"><code>NE</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>win_pct_differential</code></td>
+<td style="text-align: left;">decimal</td>
+<td style="text-align: left;">Home win percentage minus away win percentage</td>
+<td style="text-align: left;">-0.5</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>point_diff_per_game_differential</code></td>
+<td style="text-align: left;">decimal</td>
+<td style="text-align: left;">Home margin per game minus away margin per game</td>
+<td style="text-align: left;">-18.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>home_win</code></td>
+<td style="text-align: left;">whole number</td>
+<td style="text-align: left;">1 if <code>home_score</code> is greater than <code>away_score</code>, otherwise 0</td>
+<td style="text-align: left;">0</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>A <strong>positive</strong> differential means the home team looks stronger. A <strong>negative</strong> one means the away team does.</li>
+<li><code>home_win</code> is the answer the model learns to predict. It is the only column that uses the current game's result, and it is never an input.</li>
+<li>The model uses only the two differential columns. The other columns identify the game.</li>
+<li>Rows are sorted by <code>season</code>, <code>week</code>, and <code>game_id</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_model_table</span><span class="p">(</span><span class="n">games</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""One row per game, with the two pre-game differentials and the home-win answer."""</span>
+    <span class="n">teams</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">games</span><span class="p">[</span><span class="s2">"home_team"</span><span class="p">])</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">games</span><span class="p">[</span><span class="s2">"away_team"</span><span class="p">]))</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">season</span><span class="p">,</span> <span class="n">week</span><span class="p">),</span> <span class="n">week_games</span> <span class="ow">in</span> <span class="n">games</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"season"</span><span class="p">,</span> <span class="s2">"week"</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Once per week, then reused for every game in that week.</span>
+        <span class="n">standings</span> <span class="o">=</span> <span class="n">standings_before_week</span><span class="p">(</span><span class="n">games</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">season</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">week</span><span class="p">),</span> <span class="n">teams</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"team"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">game</span> <span class="ow">in</span> <span class="n">week_games</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">home</span> <span class="o">=</span> <span class="n">standings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">home_team</span><span class="p">]</span>
+            <span class="n">away</span> <span class="o">=</span> <span class="n">standings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">away_team</span><span class="p">]</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">"game_id"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">game_id</span><span class="p">,</span>
+                <span class="s2">"season"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">season</span><span class="p">),</span>
+                <span class="s2">"week"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">week</span><span class="p">),</span>
+                <span class="s2">"home_team"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">home_team</span><span class="p">,</span>
+                <span class="s2">"away_team"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">away_team</span><span class="p">,</span>
+                <span class="s2">"win_pct_differential"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">home</span><span class="p">[</span><span class="s2">"win_pct"</span><span class="p">]</span> <span class="o">-</span> <span class="n">away</span><span class="p">[</span><span class="s2">"win_pct"</span><span class="p">]),</span>
+                <span class="s2">"point_diff_per_game_differential"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span>
+                    <span class="n">home</span><span class="p">[</span><span class="s2">"point_diff_per_game"</span><span class="p">]</span> <span class="o">-</span> <span class="n">away</span><span class="p">[</span><span class="s2">"point_diff_per_game"</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="s2">"home_win"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">home_score</span> <span class="o">&gt;</span> <span class="n">game</span><span class="o">.</span><span class="n">away_score</span><span class="p">),</span>
+            <span class="p">})</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">MODEL_COLUMNS</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">table</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">"season"</span><span class="p">,</span> <span class="s2">"week"</span><span class="p">,</span> <span class="s2">"game_id"</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="what-do-real-rows-look-like">What Do Real Rows Look Like?</h3>
+<p>The first two rows are from week 1 of 2025, and the rest are from week 7.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">game_id</th>
+<th style="text-align: left;">home_team</th>
+<th style="text-align: left;">away_team</th>
+<th style="text-align: left;">win_pct_differential</th>
+<th style="text-align: left;">point_diff_per_game_differential</th>
+<th style="text-align: left;">home_win</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">2025_01_ARI_NO</td>
+<td style="text-align: left;">NO</td>
+<td style="text-align: left;">ARI</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">2025_01_BAL_BUF</td>
+<td style="text-align: left;">BUF</td>
+<td style="text-align: left;">BAL</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">2025_07_ATL_SF</td>
+<td style="text-align: left;">SF</td>
+<td style="text-align: left;">ATL</td>
+<td style="text-align: left;">0.0667</td>
+<td style="text-align: left;">-0.5</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">2025_07_CAR_NYJ</td>
+<td style="text-align: left;">NYJ</td>
+<td style="text-align: left;">CAR</td>
+<td style="text-align: left;">-0.5</td>
+<td style="text-align: left;">-5.5</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">2025_07_LV_KC</td>
+<td style="text-align: left;">KC</td>
+<td style="text-align: left;">LV</td>
+<td style="text-align: left;">0.1667</td>
+<td style="text-align: left;">12.8333</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">2025_07_NE_TEN</td>
+<td style="text-align: left;">TEN</td>
+<td style="text-align: left;">NE</td>
+<td style="text-align: left;">-0.5</td>
+<td style="text-align: left;">-18.0</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">2025_07_PIT_CIN</td>
+<td style="text-align: left;">CIN</td>
+<td style="text-align: left;">PIT</td>
+<td style="text-align: left;">-0.4667</td>
+<td style="text-align: left;">-15.7333</td>
+<td style="text-align: left;">1</td>
+</tr>
+</tbody>
+</table>
+<p>The last row shows that the inputs do not decide a game. Pittsburgh looked stronger on both numbers, and Cincinnati still won at home.</p>
+<h3 id="what-is-a-worked-example">What Is a Worked Example?</h3>
+<p>Game <code>2025_07_NE_TEN</code> is New England at Tennessee in week 7 of 2025. From the standings table above:</p>
+<ul>
+<li>Tennessee (home) had played 6 games, won 1, and had a point margin of -78, so its win percentage was 0.1667 and its margin per game was -13.0.</li>
+<li>New England (away) had played 6 games, won 4, and had a point margin of +30, so its win percentage was 0.6667 and its margin per game was +5.0.</li>
+<li>The two inputs are 0.1667 - 0.6667 = <strong>-0.5</strong> and -13.0 - 5.0 = <strong>-18.0</strong>. Both are negative, so the away team looks stronger.</li>
+<li>Tennessee lost, so <code>home_win</code> is 0.</li>
+</ul>
+<h3 id="what-is-a-small-example-worked-by-hand">What Is a Small Example Worked by Hand?</h3>
+<p>Four teams (A, B, C, D) play two games each week for three weeks. This is the league the tests use.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">game</th>
+<th style="text-align: left;">week</th>
+<th style="text-align: left;">home</th>
+<th style="text-align: left;">away</th>
+<th style="text-align: left;">score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">w1a</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">30 to 0</td>
+</tr>
+<tr>
+<td style="text-align: left;">w1b</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">10 to 7</td>
+</tr>
+<tr>
+<td style="text-align: left;">w2a</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">14 to 10</td>
+</tr>
+<tr>
+<td style="text-align: left;">w2b</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">21 to 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">w3a</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">17 to 14</td>
+</tr>
+<tr>
+<td style="text-align: left;">w3b</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">28 to 7</td>
+</tr>
+</tbody>
+</table>
+<p>Standings before week 3 (after two games each):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">team</th>
+<th style="text-align: left;">games</th>
+<th style="text-align: left;">wins</th>
+<th style="text-align: left;">win_pct</th>
+<th style="text-align: left;">point_diff_per_game</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">17.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">-6.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">-0.5</td>
+</tr>
+<tr>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">-10.5</td>
+</tr>
+</tbody>
+</table>
+<p>The inputs for each game:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">game</th>
+<th style="text-align: left;">win_pct_differential</th>
+<th style="text-align: left;">point_diff_per_game_differential</th>
+<th style="text-align: left;">home_win</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">w1a, w1b</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">w2a</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">27.0</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">w2b</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">-27.0</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">w3a</td>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">27.5</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">w3b</td>
+<td style="text-align: left;">0.0</td>
+<td style="text-align: left;">5.5</td>
+<td style="text-align: left;">1</td>
+</tr>
+</tbody>
+</table>
+<p>For <code>w3a</code>, A is at home against D. The win percentage input is 1.0 - 0.0 = 1.0, and the margin input is 17.0 - (-10.5) = 27.5.</p>
+<h3 id="how-do-the-inputs-behave">How Do the Inputs Behave?</h3>
+<ul>
+<li><strong>Ranges across all 1,759 games:</strong> <code>win_pct_differential</code> runs from -1.0 to 1.0, and <code>point_diff_per_game_differential</code> runs from -49.0 to 39.0. Neither has a blank value.</li>
+<li><strong>All games:</strong> <code>win_pct_differential</code> has an average of -0.0045 and a spread (standard deviation) of 0.3598. <code>point_diff_per_game_differential</code> has an average of -0.2317 and a spread of 10.1942.</li>
+<li><strong>Training games only:</strong> the averages are -0.0004 and -0.1762, and the spreads are 0.3476 and 10.1117. Part 2 uses these when it standardizes the inputs.</li>
+<li><strong>The two inputs overlap.</strong> Their correlation in the training games is 0.78, because teams that win more tend to have better margins. Logistic regression handles this.</li>
+<li><strong>The scales differ by about 30 times,</strong> which is why Part 2 standardizes the inputs before the model sees them.</li>
+<li><strong>When both inputs agree, the home team usually follows them.</strong> In 574 games both inputs are positive, and the home team won 69.51% of them. In 604 games both are negative, and the home team won 36.92%. In 196 games the two inputs point opposite ways, and 115 games have both inputs at 0 (111 in week 1 and 4 later).</li>
+</ul>
+<h3 id="what-happens-in-week-1">What Happens in Week 1?</h3>
+<ul>
+<li>Before week 1 no team has played, so every team counts as 0.5 and 0.0, and <strong>both inputs are exactly 0 for all 111 week-1 games</strong> (79 training, 16 validation, 16 test).</li>
+<li>The model cannot tell those games apart, so it will pick the home team in all of them.</li>
+<li>Week 1 games are kept in the data like every other week.</li>
+</ul>
+<h3 id="how-is-the-week-1-rule-enforced">How Is the Week-1 Rule Enforced?</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_model_table</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Stop if a model input is blank or a week-1 differential is not zero."""</span>
+    <span class="k">if</span> <span class="n">table</span><span class="p">[</span><span class="n">INPUT_COLUMNS</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"a model input is blank"</span><span class="p">)</span>
+    <span class="n">week_one</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">"week"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">INPUT_COLUMNS</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">week_one</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"a week-1 differential is not 0"</span><span class="p">)</span>
+</code></pre></div>
+<p>If a number used the current or a later week, week 1 would not be exactly 0 and the run would stop here.</p>
+<h3 id="run-it">Run It</h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.model.features
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code>training: 1339 rows, home win share 53.32%
+validation: 271 rows, home win share 53.87%
+test: 149 rows, home win share 47.65%
+win_pct_differential: min -1.0, max 1.0
+point_diff_per_game_differential: min -49.0, max 39.0
+week 1 differentials are all 0
+</code></pre></div>
+<h2 id="step-2-split-the-games-by-season">Step 2: Split the Games by Season</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Split the games into training, validation, and test groups by season.</p>
+<p><strong>Why:</strong> The model must predict games that have not happened yet. It learns from earlier seasons, is scored on a later finished season, and is also shown the season in progress.</p>
+<p><strong>If skipped:</strong> A random split would train on later games and score on earlier ones, and the scores could not be trusted.</p>
+</div>
+<h3 id="which-games-go-in-each-group">Which Games Go in Each Group?</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Group</th>
+<th style="text-align: left;">Seasons</th>
+<th style="text-align: left;">Games</th>
+<th style="text-align: left;">Weeks</th>
+<th style="text-align: left;">Home wins</th>
+<th style="text-align: left;">Home win share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Training</td>
+<td style="text-align: left;">2020 to 2024</td>
+<td style="text-align: left;">1,339</td>
+<td style="text-align: left;">1 to 18</td>
+<td style="text-align: left;">714</td>
+<td style="text-align: left;">53.32%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Validation</td>
+<td style="text-align: left;">2025</td>
+<td style="text-align: left;">271</td>
+<td style="text-align: left;">1 to 18</td>
+<td style="text-align: left;">146</td>
+<td style="text-align: left;">53.87%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Test</td>
+<td style="text-align: left;">2026</td>
+<td style="text-align: left;">149</td>
+<td style="text-align: left;">1 to 10</td>
+<td style="text-align: left;">71</td>
+<td style="text-align: left;">47.65%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Training</strong> is the only group the model is fit on.</li>
+<li><strong>Validation</strong> is the last finished season. It is never used to fit the model, and it gives the score to report.</li>
+<li><strong>Test</strong> is the season in progress, cut to the weeks that have scores. It is never used to fit the model. With only 149 games, its accuracy can move by about 4 points either way by chance.</li>
+<li><strong>Always picking the home team</strong> is the baseline in the last column. The model has to beat it to add anything.</li>
+<li><strong>Week 1 games:</strong> 79 are in training, 16 in validation, and 16 in test.</li>
+<li><strong>Games by season:</strong> 255 (2020), 271 (2021), 269 (2022), 272 (2023), 272 (2024), 271 (2025), and 149 (2026). A full season has 272 games. 2020 had 256 (its last week was week 17), and 2022 had 271 because one game was cancelled. Each season then loses its tied games: one each in 2020, 2021, and 2025, two in 2022, and one in 2026.</li>
+<li><strong>Why by season, not at random:</strong> each season stands on its own, because the numbers start over each year. Splitting whole seasons also keeps every game in a group from using results that came after the games in the next group.</li>
+</ul>
+<h3 id="how-are-the-seasons-chosen">How Are the Seasons Chosen?</h3>
+<p>The test season and the week cap come from the existing <code>window</code> block, and only two seasons are new in <code>split</code>, so no season is written in two places.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_seasons</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""First training season, last training season, validation season, and test season."""</span>
+    <span class="n">start_season</span><span class="p">,</span> <span class="n">test_season</span><span class="p">,</span> <span class="n">_test_week</span> <span class="o">=</span> <span class="n">season_window</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">train_end_season</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"split"</span><span class="p">][</span><span class="s2">"train_end_season"</span><span class="p">])</span>
+    <span class="n">validation_season</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"split"</span><span class="p">][</span><span class="s2">"validation_season"</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">start_season</span> <span class="o">&gt;</span> <span class="n">train_end_season</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"first training season </span><span class="si">{</span><span class="n">start_season</span><span class="si">}</span><span class="s2"> is after last training season </span><span class="si">{</span><span class="n">train_end_season</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">train_end_season</span> <span class="o">&gt;=</span> <span class="n">validation_season</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"validation season </span><span class="si">{</span><span class="n">validation_season</span><span class="si">}</span><span class="s2"> is not after last training season </span><span class="si">{</span><span class="n">train_end_season</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">validation_season</span> <span class="o">&gt;=</span> <span class="n">test_season</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"validation season </span><span class="si">{</span><span class="n">validation_season</span><span class="si">}</span><span class="s2"> is not before test season </span><span class="si">{</span><span class="n">test_season</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">start_season</span><span class="p">,</span> <span class="n">train_end_season</span><span class="p">,</span> <span class="n">validation_season</span><span class="p">,</span> <span class="n">test_season</span>
+</code></pre></div>
+<p>With the real settings this returns <code>(2020, 2024, 2025, 2026)</code>. A season order that would score the model on a season it already trained on is rejected with a message.</p>
+<h3 id="how-is-the-table-split">How Is the Table Split?</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_games</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Training, validation, and test tables, one season range each."""</span>
+    <span class="n">start_season</span><span class="p">,</span> <span class="n">train_end_season</span><span class="p">,</span> <span class="n">validation_season</span><span class="p">,</span> <span class="n">test_season</span> <span class="o">=</span> <span class="n">split_seasons</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"training"</span><span class="p">:</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">"season"</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">start_season</span><span class="p">,</span> <span class="n">train_end_season</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+        <span class="s2">"validation"</span><span class="p">:</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">"season"</span><span class="p">]</span> <span class="o">==</span> <span class="n">validation_season</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+        <span class="s2">"test"</span><span class="p">:</span> <span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">"season"</span><span class="p">]</span> <span class="o">==</span> <span class="n">test_season</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> has no rows"</span><span class="p">)</span>
+    <span class="n">game_ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">"game_id"</span><span class="p">])</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="n">combined</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">game_ids</span><span class="p">)</span>
+    <span class="c1"># A season that falls in a gap, or a game id that lands in two groups, would make the sizes disagree.</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="k">for</span> <span class="n">ids</span> <span class="ow">in</span> <span class="n">game_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"every game must be in exactly one split group"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">groups</span>
+</code></pre></div>
+<ul>
+<li>An empty group stops the run with a message that names the group, such as <code>validation has no rows</code>.</li>
+<li>Every game must land in exactly one group, so the three sizes always add up to 1,759.</li>
+</ul>
+<h2 id="step-3-add-the-model-and-tracking-settings">Step 3: Add the Model and Tracking Settings</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Put every new tunable value for Phase 2 into <code>config/config.yaml</code>.</p>
+<p><strong>Why:</strong> Changing a run should mean editing the settings file, not the code.</p>
+<p><strong>If skipped:</strong> Seasons, model values, and file names would be written inside the code.</p>
+</div>
+<p>Three new blocks sit below the existing <code>data</code> and <code>window</code> blocks. Those two blocks did not change.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># How the games are split by season. Training starts at window.start_season (2020) and stops</span>
+<span class="c1"># at train_end_season. The validation season is the finished season after it, and its score is</span>
+<span class="c1"># the one to report. The test season is window.end_season, so that year is not written here</span>
+<span class="c1"># a second time. The model is fit on the training seasons only.</span>
+<span class="nt">split</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">train_end_season</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2024</span>
+<span class="w">  </span><span class="nt">validation_season</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2025</span>
+
+<span class="c1"># The model and how it is saved.</span>
+<span class="nt">model</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># A label for this trained model. It is saved inside the model file and in the MLflow run.</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1.0</span>
+<span class="w">  </span><span class="c1"># A starting number for any random choice, so a rerun gives the same result. The solver</span>
+<span class="w">  </span><span class="c1"># below does not use randomness, so two fits match either way. The seed is kept so a random</span>
+<span class="w">  </span><span class="c1"># step added later stays repeatable.</span>
+<span class="w">  </span><span class="nt">random_seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
+<span class="w">  </span><span class="c1"># Where the trained model is saved.</span>
+<span class="w">  </span><span class="nt">output_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">models/model.joblib</span>
+<span class="w">  </span><span class="c1"># Logistic regression: the model gives each input a weight, adds them up, and turns the</span>
+<span class="w">  </span><span class="c1"># total into a chance (0 to 1) that the home team wins.</span>
+<span class="w">  </span><span class="nt">logistic_regression</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># How strongly the weights are held close to zero, to stop the model from memorizing the</span>
+<span class="w">    </span><span class="c1"># training games. A smaller number holds them tighter. 1.0 is the usual starting point.</span>
+<span class="w">    </span><span class="nt">C</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">    </span><span class="c1"># The method that finds the best weights. "lbfgs" repeatedly nudges the weights to lower</span>
+<span class="w">    </span><span class="c1"># the model's errors until they stop improving. It suits a small table like this one.</span>
+<span class="w">    </span><span class="nt">solver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lbfgs</span>
+<span class="w">    </span><span class="c1"># The most nudges the solver may make before it gives up. The solver finishes in about 6</span>
+<span class="w">    </span><span class="c1"># here, so 1000 leaves a wide safety margin.</span>
+<span class="w">    </span><span class="nt">max_iter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+
+<span class="c1"># MLflow, the tool that records every training run so runs can be compared later.</span>
+<span class="nt">tracking</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># The name that groups every run of this project.</span>
+<span class="w">  </span><span class="nt">experiment_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfl-pregame-winner-v1</span>
+<span class="w">  </span><span class="c1"># The database file where MLflow keeps each run's settings and scores.</span>
+<span class="w">  </span><span class="nt">database_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlflow.db</span>
+<span class="w">  </span><span class="c1"># The folder where MLflow keeps each run's files (the model, the plot, a copy of this file).</span>
+<span class="w">  </span><span class="nt">artifact_folder</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlartifacts</span>
+<span class="w">  </span><span class="c1"># A small readable summary of the latest run (settings, data fingerprint, scores, and the</span>
+<span class="w">  </span><span class="c1"># learned weights). It is committed to git. MLflow keeps the full history of runs.</span>
+<span class="w">  </span><span class="nt">summary_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">results/run-summary.json</span>
+</code></pre></div>
+<h3 id="what-does-each-setting-do">What Does Each Setting Do?</h3>
+<ul>
+<li><strong><code>split.train_end_season</code>:</strong> the last training season (2024). Training starts at <code>window.start_season</code> (2020).</li>
+<li><strong><code>split.validation_season</code>:</strong> the validation season (2025). The test season is <code>window.end_season</code> (2026), and <code>window.test_through_week</code> (10) is already applied by cleaning.</li>
+<li><strong><code>model.version</code>:</strong> a label for the trained model (<code>v1.0</code>). It is saved with the model and shown by the API later.</li>
+<li><strong><code>model.random_seed</code>:</strong> the starting number for any random choice (42). The <code>lbfgs</code> solver does not use randomness, so two fits give the same result either way. The seed is kept so any later random step stays repeatable.</li>
+<li><strong><code>model.output_path</code>:</strong> where the trained model is saved (<code>models/model.joblib</code>).</li>
+<li><strong><code>model.logistic_regression.C</code>:</strong> regularization strength (1.0). A smaller value pulls the weights toward zero more strongly. This is scikit-learn's default.</li>
+<li><strong><code>model.logistic_regression.solver</code>:</strong> the method that finds the weights (<code>lbfgs</code>).</li>
+<li><strong><code>model.logistic_regression.max_iter</code>:</strong> the most steps the solver may take (1000), set high enough that it always finishes.</li>
+<li><strong><code>tracking.experiment_name</code>:</strong> the MLflow group that holds every run (<code>nfl-pregame-winner-v1</code>).</li>
+<li><strong><code>tracking.database_path</code>:</strong> the database file that holds the run record (<code>mlflow.db</code>).</li>
+<li><strong><code>tracking.artifact_folder</code>:</strong> the folder that holds each run's files (<code>mlartifacts</code>).</li>
+<li><strong><code>tracking.summary_path</code>:</strong> where each run writes its readable summary (<code>results/run-summary.json</code>). See <a href="../implementation-part-2/#what-is-the-run-summary-file">What Is the Run Summary File?</a>.</li>
+</ul>
+<h3 id="where-does-mlflow-keep-its-records">Where Does MLflow Keep Its Records?</h3>
+<ul>
+<li><strong>A database file.</strong> MLflow stores each run's settings and scores in a local database file, <code>mlflow.db</code>. It is a single file, it needs no server, and it is not committed to git.</li>
+<li><strong>A folder of files.</strong> Each run's files (the model, the plot, and a copy of the settings) go in <code>mlartifacts/</code>, in a subfolder for each run.</li>
+<li><strong>The tracking address.</strong> The only place the database type shows up is the address MLflow requires, which starts with <code>sqlite:///</code> followed by the full path of <code>mlflow.db</code>.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

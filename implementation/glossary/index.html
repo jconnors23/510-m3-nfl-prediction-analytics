@@ -1,0 +1,1737 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/glossary/">
+      
+      
+        <link rel="prev" href="../decisions/">
+      
+      
+        <link rel="next" href="../requirements/assignment-brief/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Glossary - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#glossary" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Glossary
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-1/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-1/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-2/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-2/implementation-part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-2/implementation-part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-2/reproduce-end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-3/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-3/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-4/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-4/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-4/deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-data-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Data Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-2-features-training-and-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Features, Training, and Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Features, Training, and Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features-and-the-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features and the Split
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving the Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mlflow-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MLflow Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-3-local-prediction-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Local Prediction API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-aws-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: AWS Deployment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-5-web-app-and-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Web App and Hosting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-6-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-7-documentation-and-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Documentation and README
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-8-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8: Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-machine-learning-ideas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Machine Learning Ideas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-tooling-and-reproducibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Tooling and Reproducibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-data-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Data Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-2-features-training-and-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Features, Training, and Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Features, Training, and Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features-and-the-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features and the Split
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving the Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mlflow-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MLflow Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-3-local-prediction-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Local Prediction API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-aws-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: AWS Deployment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-5-web-app-and-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Web App and Hosting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-6-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-7-documentation-and-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Documentation and README
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-8-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8: Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-machine-learning-ideas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Machine Learning Ideas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-tooling-and-reproducibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Tooling and Reproducibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="glossary">Glossary</h1>
+<p>Key terms and tools, grouped by the phase where they first matter, followed by general ideas that apply across the project. Each phase starts with a <strong>Docs</strong> line that links to the official documentation for its tools. The links go to the latest documentation, and the installed versions are pinned in <code>requirements.txt</code>, so a page may describe a newer feature.</p>
+<ul>
+<li><a href="#phase-1-data-pipeline">Phase 1: Data Pipeline</a></li>
+<li><a href="#phase-2-features-training-and-tracking">Phase 2: Features, Training, and Tracking</a></li>
+<li><a href="#phase-3-local-prediction-api">Phase 3: Local Prediction API</a></li>
+<li><a href="#phase-4-aws-deployment">Phase 4: AWS Deployment</a></li>
+<li><a href="#phase-5-web-app-and-hosting">Phase 5: Web App and Hosting</a></li>
+<li><a href="#phase-6-docker">Phase 6: Docker</a></li>
+<li><a href="#phase-7-documentation-and-readme">Phase 7: Documentation and README</a></li>
+<li><a href="#phase-8-review">Phase 8: Review</a></li>
+<li><a href="#general-machine-learning-ideas">General Machine Learning Ideas</a></li>
+<li><a href="#general-tooling-and-reproducibility">General Tooling and Reproducibility</a></li>
+</ul>
+<h2 id="phase-1-data-pipeline">Phase 1: Data Pipeline</h2>
+<p><strong>Docs:</strong> <a href="https://github.com/nflverse/nfldata">nflverse nfldata</a>, <a href="https://requests.readthedocs.io/en/latest/">requests</a>, <a href="https://pandas.pydata.org/docs/">pandas</a>, <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html">Amazon S3</a>, <a href="https://docs.aws.amazon.com/boto3/latest/">boto3</a>, <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html">IAM</a>.</p>
+<ul>
+<li><strong>nflverse:</strong> the open project that publishes the games file, one row per NFL game since 1999. See the <a href="https://github.com/nflverse/nfldata/blob/master/data/games.csv"><code>games.csv</code> file</a>.</li>
+<li><strong>requests:</strong> the Python library that downloads the games file.</li>
+<li><strong>pandas:</strong> the Python library that holds the game tables and does the filtering and grouping. It is used in cleaning (Phase 1) and in building the model inputs (Phase 2).</li>
+<li><strong>NumPy:</strong> the Python library for number work that pandas and scikit-learn are built on. See the <a href="https://numpy.org/doc/stable/">documentation</a>.</li>
+<li><strong>Amazon S3:</strong> storage for files in the cloud. This project keeps one cleaned table in a private bucket.</li>
+<li><strong>Bucket and key:</strong> a bucket is a named container in S3, and a key is a file's path inside it.</li>
+<li><strong>boto3:</strong> the Python library for calling AWS. It finds credentials itself, from environment variables or <code>~/.aws</code>, so no key is written in the project.</li>
+<li><strong>IAM and least privilege:</strong> IAM decides who may do what in AWS, and least privilege gives each identity only the access it needs. See the <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html">best practices</a>.</li>
+</ul>
+<h2 id="phase-2-features-training-and-tracking">Phase 2: Features, Training, and Tracking</h2>
+<p><strong>Docs:</strong> <a href="https://scikit-learn.org/stable/">scikit-learn</a>, <a href="https://mlflow.org/docs/latest/">MLflow</a>, <a href="https://mlflow.org/docs/latest/ml/tracking/">MLflow tracking</a>, <a href="https://mlflow.org/docs/latest/ml/model/">MLflow Models</a>, <a href="https://joblib.readthedocs.io/en/stable/">joblib</a>, <a href="https://skops.readthedocs.io/en/stable/">skops</a>, <a href="https://matplotlib.org/stable/">matplotlib</a>, <a href="https://www.sqlite.org/docs.html">SQLite</a>.</p>
+<h3 id="features-and-the-split">Features and the Split</h3>
+<ul>
+<li><strong>Feature:</strong> one input number the model uses. This project has two, both built from earlier games of the same season: <code>win_pct_differential</code> (home win percentage minus away) and <code>point_diff_per_game_differential</code> (home point margin per game minus away).</li>
+<li><strong>Feature engineering:</strong> building features from raw columns. Here, scores and weeks become each team's win percentage and margin so far, then the two differences.</li>
+<li><strong>Target (label):</strong> the answer the model learns to predict, <code>home_win</code> (1 or 0). It is the only column that uses the current game's result.</li>
+<li><strong>Split by season:</strong> training games (2020 to 2024) fit the model, validation games (2025) give the reported score, and test games (2026 weeks 1 to 10) are a final check. Whole seasons go to one group, so the model never trains on games played after the ones it is scored on.</li>
+</ul>
+<h3 id="the-model">The Model</h3>
+<ul>
+<li><strong>Logistic regression:</strong> a simple classifier. It multiplies each feature by a learned weight, adds an intercept, and passes the total through an S-shaped function that gives a probability from 0 to 1. See the <a href="https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression">guide</a> and the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html"><code>LogisticRegression</code> class</a>.</li>
+<li><strong>Weight and intercept:</strong> a weight says how much one feature moves the prediction. The intercept is the starting value, which here captures the average home-field edge.</li>
+<li><strong>Probability and threshold:</strong> the model outputs the chance that the home team wins. Above 0.5 picks the home team, and exactly 0.5 picks the away team.</li>
+<li><strong>Standardization (scaler):</strong> subtracting each feature's average and dividing by its spread, measured on training games only. The two features differ in size by about 30 times, so this lets the model weigh them fairly. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html"><code>StandardScaler</code></a>.</li>
+<li><strong>Pipeline:</strong> one object chaining the scaler and the model, so a saved model can never be used without its scaling. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html"><code>Pipeline</code></a>.</li>
+<li><strong>Parameter and hyperparameter:</strong> a parameter is learned in training, such as a weight. A hyperparameter is chosen beforehand. Neither is the same as an MLflow parameter, which is a setting written down for a run.</li>
+<li><strong>Regularization and <code>C</code>:</strong> a penalty that holds weights near zero so the model does not memorize the training games. <code>C</code> is the inverse of its strength, so a smaller <code>C</code> is a stronger penalty. The default is 1.0.</li>
+<li><strong>Solver (<code>lbfgs</code>) and <code>max_iter</code>:</strong> the solver finds the best weights by repeatedly adjusting them until the errors stop falling. <code>max_iter</code> caps the adjustments. It finishes in about 6 here, so 1000 is a safety margin.</li>
+<li><strong>Random seed:</strong> a starting number for random choices, so reruns match. The <code>lbfgs</code> solver uses no randomness, so the seed only protects later random steps.</li>
+</ul>
+<h3 id="scoring">Scoring</h3>
+<ul>
+<li><strong>Accuracy and baseline:</strong> accuracy is the share of games where the pick matches the result. It is shown next to the baseline, the score of always picking the home team. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html"><code>accuracy_score</code></a>.</li>
+<li><strong>Log loss:</strong> a score for the probabilities, not just the picks. Each game gets a penalty that is small if the model gave a high chance to what really happened and large if it gave a low one. Lower is better, and saying 50-50 on every game scores 0.6931. It is not logged for training games, because the model is fitted by pushing it down there. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html"><code>log_loss</code></a>.</li>
+<li><strong>Calibration:</strong> whether percentages match how often things happen, so 70% should be right about 7 times in 10. Log loss rewards it and accuracy cannot see it. See <a href="https://scikit-learn.org/stable/modules/calibration.html">probability calibration</a>.</li>
+<li><strong>Confusion matrix:</strong> a 2 by 2 table of picks against results. The diagonal holds the correct picks. See <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html"><code>confusion_matrix</code></a>.</li>
+<li><strong>matplotlib and the Agg backend:</strong> matplotlib draws the confusion-matrix image. The <a href="https://matplotlib.org/stable/users/explain/figure/backends.html"><code>Agg</code> backend</a> draws to a file without opening a window.</li>
+</ul>
+<h3 id="saving-the-model">Saving the Model</h3>
+<ul>
+<li><strong>joblib:</strong> saves a Python object to a file and loads it back. It is the usual way to save a scikit-learn model. See <a href="https://scikit-learn.org/stable/modules/model_persistence.html">model persistence</a>.</li>
+<li><strong>pickle:</strong> the Python format that joblib builds on. Only load a saved file you trust. See <a href="https://docs.python.org/3/library/pickle.html"><code>pickle</code></a>.</li>
+<li><strong><code>model.joblib</code>:</strong> the working copy of the model, saved with the input names, the model version, the scikit-learn version, and the training seasons. It is the file the API loads.</li>
+</ul>
+<h3 id="mlflow-tracking">MLflow Tracking</h3>
+<ul>
+<li><strong>MLflow:</strong> an open-source tool for keeping a record of machine learning work. This project uses its tracking part only: each run writes down its settings, scores, and files. It does not use the model registry or serving tools.</li>
+<li><strong>Experiment and run:</strong> an experiment is a named group of runs (<code>nfl-pregame-winner-v1</code>). A run is one execution of training, with a run ID, a name (<code>LogisticRegression-v1.0</code>), and a status such as FINISHED or FAILED.</li>
+<li><strong>Parameter (MLflow):</strong> a setting written down for a run as text, such as the seed, <code>C</code>, the seasons, the row counts, the scikit-learn version, and the data fingerprint. Each run records 15.</li>
+<li><strong>Metric:</strong> a number written down for a run, such as an accuracy. Each run records 8.</li>
+<li><strong>Tag:</strong> a label on a run. MLflow adds the git commit, branch, repository address, script name, and user itself.</li>
+<li><strong>Artifact:</strong> a file stored with a run. Each run stores three: the saved model file, the confusion-matrix image, and a copy of <code>config.yaml</code>.</li>
+<li><strong>Backend store:</strong> where MLflow keeps experiments, runs, parameters, metrics, and tags. Here it is a database file, <code>mlflow.db</code>. See <a href="https://mlflow.org/docs/latest/self-hosting/architecture/backend-store/">backend stores</a>.</li>
+<li><strong>SQLite and the tracking URI:</strong> SQLite is a database that lives in one file and needs no server. The tracking URI is the address MLflow uses to find the store, here <code>sqlite:///</code> plus the full path of <code>mlflow.db</code>. The path starts with <code>/</code>, so the address has four slashes in a row.</li>
+<li><strong>Artifact store:</strong> where MLflow keeps files. Here it is <code>mlartifacts/</code>, with a subfolder per run. The location is set when an experiment is created and cannot be changed afterward. See <a href="https://mlflow.org/docs/latest/self-hosting/architecture/artifact-store/">artifact stores</a>.</li>
+<li><strong>MLflow model format and flavor:</strong> a standard folder layout for a saved model, so MLflow can load it back: a description file (<code>MLmodel</code>), the serialized model, and files listing the needed packages. The flavor names the library that built the model, here scikit-learn. See the <a href="https://mlflow.org/docs/latest/api_reference/python_api/mlflow.sklearn.html">scikit-learn flavor</a>.</li>
+<li><strong>Logged model:</strong> in MLflow 3, a model saved in that format is its own entry linked to the run, stored in a <code>models/</code> folder in the artifact store and not in the run's file list.</li>
+<li><strong>MLflow UI:</strong> a web page for browsing runs, started with <code>mlflow ui --backend-store-uri sqlite:///mlflow.db</code>. See <a href="https://mlflow.org/docs/latest/ml/tracking/#tracking-ui">the tracking UI</a>.</li>
+<li><strong>Run summary (<code>results/run-summary.json</code>):</strong> a small readable record of the latest run, committed to git. It has no run ID, time, or machine path, so it stays identical when the settings and data do not change.</li>
+</ul>
+<h2 id="phase-3-local-prediction-api">Phase 3: Local Prediction API</h2>
+<p>Built. See the <a href="../phase-3/brief/">Phase 3 Brief</a> and the <a href="../phase-3/implementation/">Phase 3 Implementation</a>.</p>
+<p><strong>Docs:</strong> <a href="https://fastapi.tiangolo.com/">FastAPI</a>, <a href="https://docs.pydantic.dev/latest/">Pydantic</a>, <a href="https://uvicorn.dev/">Uvicorn</a>, <a href="https://asgi.readthedocs.io/en/latest/">ASGI</a>.</p>
+<ul>
+<li><strong>FastAPI:</strong> the Python library that builds the web service. It routes each request to a function and returns JSON.</li>
+<li><strong>Pydantic:</strong> the library FastAPI uses to check each request's fields, types, and ranges, and to describe the response. A request that fails the checks gets an error before any model code runs.</li>
+<li><strong>Uvicorn and ASGI:</strong> a FastAPI app is only a Python object. It does not listen for requests on its own. Uvicorn is the program that does: it opens a port on the computer, receives each HTTP request, hands it to the app, and sends the app's answer back. They talk through ASGI, the standard interface between Python web servers and Python web apps. Uvicorn is used only on a laptop. On AWS Lambda there is no port to listen on, and Mangum takes its place (Phase 4).</li>
+<li><strong>Start-up step (lifespan):</strong> code that runs once when the app starts. The API loads the saved model there, so each request reuses it.</li>
+<li><strong>NumPy, not pandas, in the API:</strong> the API passes the two inputs to the model as a NumPy array. It does not import pandas, which would push the Lambda zip over its 250 MB limit (278.4 MB with pandas, 231.3 MB without). Training and cleaning still use pandas. See <a href="../phase-3/implementation/#why-does-the-api-use-numpy-instead-of-pandas">Why Does the API Use NumPy Instead of pandas?</a>.</li>
+<li><strong>Test client:</strong> FastAPI's way to call the app in memory, with no server and no network, so tests run fast.</li>
+</ul>
+<h2 id="phase-4-aws-deployment">Phase 4: AWS Deployment</h2>
+<p>Built. See the <a href="../phase-4/brief/">Phase 4 Brief</a> and the <a href="../phase-4/implementation/">Phase 4 Implementation</a>.</p>
+<p><strong>Docs:</strong> <a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS Lambda</a>, <a href="https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html">API Gateway</a>, <a href="https://mangum.fastapiexpert.com/">Mangum</a>, <a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html">Amazon ECR</a>.</p>
+<ul>
+<li><strong>AWS Lambda:</strong> runs code only when a request arrives, with no server to manage.</li>
+<li><strong>API Gateway:</strong> gives the function a public web address, and routes each request to it.</li>
+<li><strong>Mangum:</strong> a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See <a href="../phase-4/implementation/#what-is-mangum">What Is Mangum?</a>.</li>
+<li><strong>Lambda zip and size limit:</strong> the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without <code>pandas</code>. See the <a href="../phase-4/implementation/#step-3-measure-the-package-size">Phase 4 Implementation, Step 3</a>.</li>
+<li><strong>Environment variable:</strong> a named setting passed to the function when it starts. This function has one, <code>JOBLIB_MULTIPROCESSING=0</code>, which stops joblib from checking for multiprocessing support that Lambda does not have.</li>
+<li><strong>CodeSha256:</strong> the SHA-256 fingerprint AWS stores for the zip a function was created from. When it equals the hash of the local zip, Lambda is running the file built here.</li>
+<li><strong>ECR:</strong> stores Docker images. It is used only if the Lambda zip turns out to be too large.</li>
+</ul>
+<h2 id="phase-5-web-app-and-hosting">Phase 5: Web App and Hosting</h2>
+<p>Planned. See <a href="../remaining-phases/#phase-5-web-app-and-hosting">Remaining Phases</a>.</p>
+<p><strong>Docs:</strong> <a href="https://vite.dev/guide/">Vite</a>, <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html">Amazon S3</a>, <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">CloudFront</a>.</p>
+<ul>
+<li><strong>Vite:</strong> the tool that runs the web app on a laptop during development and builds the files that are published.</li>
+<li><strong>CloudFront:</strong> serves the built web app's files over HTTPS from a private S3 bucket.</li>
+</ul>
+<h2 id="phase-6-docker">Phase 6: Docker</h2>
+<p>Planned. See <a href="../remaining-phases/#phase-6-docker">Remaining Phases</a>.</p>
+<p><strong>Docs:</strong> <a href="https://docs.docker.com/">Docker</a>, <a href="https://docs.docker.com/build/building/multi-stage/">multi-stage builds</a>.</p>
+<ul>
+<li><strong>Docker:</strong> packages a program with everything it needs, so it runs the same on any machine.</li>
+<li><strong>Image:</strong> the packaged snapshot that Docker builds.</li>
+<li><strong>Dockerfile and build target:</strong> a Dockerfile lists the build steps. It can define several build targets, here <code>train</code> and <code>serve</code>.</li>
+</ul>
+<h2 id="phase-7-documentation-and-readme">Phase 7: Documentation and README</h2>
+<p>Planned. See <a href="../remaining-phases/#phase-7-documentation-and-readme">Remaining Phases</a>.</p>
+<p><strong>Docs:</strong> <a href="https://www.mkdocs.org/">MkDocs</a>, <a href="https://squidfunk.github.io/mkdocs-material/">Material for MkDocs</a>, <a href="https://mermaid.js.org/">Mermaid</a>, <a href="https://docs.github.com/en/pages">GitHub Pages</a>, <a href="https://docs.github.com/en/actions">GitHub Actions</a>.</p>
+<ul>
+<li><strong>MkDocs:</strong> builds the pages in <code>docs/</code> into a documentation site. A strict build (<code>mkdocs build --strict</code>) fails on a broken link, so it doubles as a link check.</li>
+<li><strong>Material for MkDocs:</strong> the theme that gives the site its layout, navigation, and diagram support.</li>
+<li><strong>Mermaid:</strong> a text format for diagrams, written inside a code block in a page and drawn by the site.</li>
+<li><strong>GitHub Pages:</strong> a GitHub feature that serves a built site from a repository. <code>mkdocs gh-deploy</code> builds the docs and pushes the result to a branch named <code>gh-pages</code>, and Pages serves that branch. See <a href="https://www.mkdocs.org/user-guide/deploying-your-docs/">deploying your docs</a>.</li>
+<li><strong>GitHub Actions:</strong> GitHub's built-in way to run a job when something happens in the repository. The workflow <code>.github/workflows/deploy-docs.yml</code> runs when docs change on <code>main</code>: it installs MkDocs, runs a strict build, and publishes the site. See the <a href="https://docs.github.com/en/actions">documentation</a>.</li>
+<li><strong>README:</strong> the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.</li>
+</ul>
+<h2 id="phase-8-review">Phase 8: Review</h2>
+<p>Planned. See <a href="../remaining-phases/#phase-8-review">Remaining Phases</a>. This phase uses no new tools.</p>
+<h2 id="general-machine-learning-ideas">General Machine Learning Ideas</h2>
+<ul>
+<li><strong>Supervised learning:</strong> learning from examples that come with known answers. Every game has a known winner, so the model can be checked against answers it has not seen.</li>
+<li><strong>Binary classification:</strong> a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale. See <a href="../decisions/#why-binary-classification-and-not-regression">Why Binary Classification and Not Regression?</a>.</li>
+<li><strong>Training, validation, and test sets:</strong> training data fits the model, validation data gives the score to report, and test data is a final check on games the model never touched.</li>
+<li><strong>Data leakage:</strong> a feature that uses information from after the thing being predicted, which inflates scores. Using only earlier weeks prevents it, and a check stops the run if a week-1 feature is not 0.</li>
+<li><strong>Overfitting:</strong> memorizing the training games instead of learning a pattern that carries over, so the training score is high and the score on unseen games is lower.</li>
+</ul>
+<h2 id="general-tooling-and-reproducibility">General Tooling and Reproducibility</h2>
+<p><strong>Docs:</strong> <a href="https://docs.pytest.org/en/stable/">pytest</a>, <a href="https://docs.python.org/3/library/venv.html"><code>venv</code></a>, <a href="https://docs.python.org/3/library/hashlib.html"><code>hashlib</code></a>, <a href="https://pyyaml.org/wiki/PyYAMLDocumentation">PyYAML</a>.</p>
+<ul>
+<li><strong>Reproducibility:</strong> getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See <a href="../phase-2/reproduce-end-to-end/">Reproducing the Pipeline End to End</a>.</li>
+<li><strong>Pinned version:</strong> an exact version in <code>requirements.txt</code>, such as <code>scikit-learn==1.9.1</code>, so every install is identical. A saved model may fail to load under another scikit-learn version.</li>
+<li><strong>Virtual environment:</strong> a private folder of Python packages for one project, so projects do not interfere.</li>
+<li><strong><code>config.yaml</code>:</strong> the one file holding every adjustable setting. YAML is a text format of indented <code>name: value</code> lines.</li>
+<li><strong>Data fingerprint (SHA-256):</strong> a short code worked out from every byte of a file. If one byte changes, the code changes, so two runs with the same fingerprint used the same data.</li>
+<li><strong>pytest and stand-in objects:</strong> pytest runs the tests in <code>tests/</code>. The tests use made-up data and stand-ins for the real S3 client and model, so they need no internet and no AWS account.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

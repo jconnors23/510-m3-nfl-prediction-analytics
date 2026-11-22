@@ -1,0 +1,175 @@
+/* ------------------------------------------------------------------
+   Layout rules for the whole site
+   ------------------------------------------------------------------ */
+
+/* Hide the per-page (right-hand) table of contents everywhere. The left
+   navigation is the only index for this site. */
+.md-sidebar--secondary,
+.md-nav--secondary {
+  display: none !important;
+}
+
+/* Larger, more readable body copy and navigation text than the cramped
+   Material defaults. */
+.md-typeset {
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.md-nav {
+  font-size: 0.88rem;
+}
+
+/* ------------------------------------------------------------------
+   Color theme: a light page with sky blue as the main color.
+     Sky blue   header, section labels, links
+     Navy       headings and the page being read
+     Slate gray body text
+     Green      "note" callouts
+     Orange     "Purpose" callouts
+   ------------------------------------------------------------------ */
+
+:root > * {
+  --md-primary-fg-color: #0ea5e9;
+  --md-primary-fg-color--light: #38bdf8;
+  --md-primary-fg-color--dark: #0284c7;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.8);
+  --md-accent-fg-color: #0369a1;
+  --md-accent-fg-color--transparent: rgba(3, 105, 161, 0.1);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #f4faff;
+  --md-default-fg-color: #1e293b;
+  --md-default-fg-color--light: #475569;
+  --md-default-fg-color--lighter: #94a3b8;
+  --md-default-fg-color--lightest: #dbeafe;
+  --md-typeset-color: #1e293b;
+  --md-typeset-a-color: #0369a1;
+  --md-code-bg-color: #e6f3fc;
+  --md-code-fg-color: #0f2a43;
+  --md-footer-bg-color: #0c4a6e;
+  --md-footer-bg-color--dark: #0a3d5c;
+}
+
+/* Header: a soft sky blue gradient with white text. */
+.md-header {
+  background-image: linear-gradient(100deg, #38bdf8 0%, #0ea5e9 55%, #0284c7 100%);
+  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.25);
+}
+
+.md-header__title {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Left navigation: navy marks the page being read, and sky blue marks the
+   section labels. */
+.md-nav__link--active,
+.md-nav__item .md-nav__link--active {
+  color: #0c4a6e;
+  font-weight: 700;
+}
+
+.md-nav__item--section > .md-nav__link {
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* Headings: navy text, with a sky blue line under the page title and a
+   sky blue bar beside section titles. */
+.md-typeset h1 {
+  color: #0c4a6e;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.35em;
+  border-bottom: 3px solid #38bdf8;
+}
+
+.md-typeset h2 {
+  color: #0c4a6e;
+  font-weight: 700;
+  padding-left: 0.7rem;
+  border-left: 4px solid #38bdf8;
+}
+
+.md-typeset h3 {
+  color: #0369a1;
+  font-weight: 700;
+}
+
+/* Tables (the few that remain): a sky blue header row and light stripes. */
+.md-typeset table:not([class]) {
+  border: 0.05rem solid #bae6fd;
+  border-radius: 0.3rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: #0ea5e9;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: #eaf6fe;
+}
+
+/* Callout boxes. "Purpose" blocks use the abstract style in orange, and
+   notes use green. */
+.md-typeset .admonition.abstract,
+.md-typeset details.abstract {
+  border-color: #f97316;
+  background-color: rgba(249, 115, 22, 0.07);
+}
+
+.md-typeset .abstract > .admonition-title,
+.md-typeset .abstract > summary {
+  background-color: rgba(249, 115, 22, 0.16);
+}
+
+.md-typeset .abstract > .admonition-title::before,
+.md-typeset .abstract > summary::before {
+  background-color: #f97316;
+}
+
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: #22c55e;
+  background-color: rgba(34, 197, 94, 0.07);
+}
+
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: rgba(34, 197, 94, 0.16);
+}
+
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before {
+  background-color: #22c55e;
+}
+
+/* Code blocks get a sky blue edge. */
+.md-typeset pre > code {
+  border-left: 3px solid #38bdf8;
+}
+
+.md-typeset code {
+  color: #075985;
+}
+
+.md-typeset pre > code,
+.md-typeset pre code {
+  color: var(--md-code-fg-color);
+}
+
+/* Footer: deep blue, with the disclaimer in a quiet tone. */
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color--dark);
+}
+
+.md-copyright {
+  color: var(--md-primary-bg-color--light);
+}

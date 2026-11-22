@@ -1,0 +1,1835 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/phase-2/reproduce-end-to-end/">
+      
+      
+        <link rel="prev" href="../implementation-part-2/">
+      
+      
+        <link rel="next" href="../../phase-3/brief/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Reproducing End to End - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#reproducing-the-pipeline-end-to-end" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Reproducing End to End
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-makes-a-rerun-give-the-same-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Makes a Rerun Give the Same Result?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-a-rebuild-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does a Rebuild Flow?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-path-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Path Applies?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-a-train-on-the-committed-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path A: Train on the Committed Table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path A: Train on the Committed Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-create-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Create the Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-run-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Run the Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Train
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-confirm-nothing-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Confirm Nothing Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-b-rebuild-the-data-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path B: Rebuild the Data First
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-a-training-run-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does a Training Run Create?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-each-file-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Each File Type?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Is Each File Type?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-inside-mlartifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Inside mlartifacts/?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Was Checked?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-guaranteed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Not Guaranteed?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-makes-a-rerun-give-the-same-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Makes a Rerun Give the Same Result?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-a-rebuild-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does a Rebuild Flow?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-path-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Path Applies?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-a-train-on-the-committed-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path A: Train on the Committed Table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path A: Train on the Committed Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-create-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Create the Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-run-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Run the Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Train
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-confirm-nothing-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Confirm Nothing Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path-b-rebuild-the-data-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path B: Rebuild the Data First
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-a-training-run-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does a Training Run Create?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-each-file-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Each File Type?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Is Each File Type?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-inside-mlartifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Inside mlartifacts/?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-checked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Was Checked?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-guaranteed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Not Guaranteed?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="reproducing-the-pipeline-end-to-end">Reproducing the Pipeline End to End</h1>
+<p>This page shows a new reader how to rebuild the Phase 2 model from a fresh copy of the project and check that the result matches the committed one.</p>
+<p><strong>Short answer:</strong> yes. Starting from a clean checkout, one command (<code>python -m src.model.train</code>) rebuilds the model, the MLflow records, and <code>results/run-summary.json</code>. The summary file came out byte for byte identical to the committed one in a check on the author's machine (details in <a href="#what-was-checked">What Was Checked?</a>).</p>
+<h2 id="what-makes-a-rerun-give-the-same-result">What Makes a Rerun Give the Same Result?</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Ingredient</th>
+<th style="text-align: left;">How it is fixed</th>
+<th style="text-align: left;">Where to read more</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">The data</td>
+<td style="text-align: left;">The cleaned table is committed in <code>data/</code>. Its SHA-256 fingerprint is logged on every run.</td>
+<td style="text-align: left;"><a href="../../phase-1/implementation/">Phase 1 Implementation</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">The settings</td>
+<td style="text-align: left;">Every value is in <code>config/config.yaml</code>. The code holds no model settings.</td>
+<td style="text-align: left;"><a href="../implementation-part-1/">Part 1</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">The packages</td>
+<td style="text-align: left;"><code>requirements.txt</code> pins every package to an exact version. Python 3.13 is required.</td>
+<td style="text-align: left;"><a href="../../phase-1/implementation/#what-is-the-run-environment">Phase 1 Implementation</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">The randomness</td>
+<td style="text-align: left;"><code>model.random_seed</code> is 42. The solver (<code>lbfgs</code>) uses no randomness, so two fits match either way.</td>
+<td style="text-align: left;"><a href="../implementation-part-2/#step-4-fit-the-scaler-and-the-model">Part 2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">The record of the result</td>
+<td style="text-align: left;"><code>results/run-summary.json</code> has no run id, timestamp, or machine paths, and its decimals are rounded to 6 places.</td>
+<td style="text-align: left;"><a href="../implementation-part-2/#what-is-the-run-summary-file">Part 2</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-does-a-rebuild-flow">How Does a Rebuild Flow?</h2>
+<pre class="mermaid"><code>flowchart LR
+    A["Fresh checkout"] --&gt; B["Install Python 3.13&lt;br/&gt;packages"]
+    B --&gt; C["Run the tests"]
+    C --&gt; D["Train:&lt;br/&gt;python -m src.model.train"]
+    D --&gt; E["Compare&lt;br/&gt;run-summary.json"]</code></pre>
+<h2 id="which-path-applies">Which Path Applies?</h2>
+<p>The training command reads <code>data/from-s3/nfl_matchups_2020_2026.csv</code>. The folder <code>data/</code> is committed, so a fresh checkout already has that file. Pick the path that matches what you want to prove.</p>
+<pre class="mermaid"><code>flowchart TB
+    A{"What do you&lt;br/&gt;want to rebuild?"} --&gt; B["Only the model&lt;br/&gt;(no AWS needed)"]
+    A --&gt; C["The data too&lt;br/&gt;(AWS account needed)"]
+    B --&gt; D["Path A:&lt;br/&gt;train on the committed table"]
+    C --&gt; E["Path B:&lt;br/&gt;fetch, clean, upload,&lt;br/&gt;download, then train"]
+    E --&gt; F["Data may differ from&lt;br/&gt;the committed table"]
+    F --&gt; G["Check data_sha256&lt;br/&gt;before comparing scores"]</code></pre>
+<ul>
+<li><strong>Path A (recommended for a first check).</strong> Needs Python 3.13 and the pinned packages. It needs no AWS account and no internet after the install.</li>
+<li><strong>Path B (full rebuild).</strong> Needs an AWS account, AWS CLI version 2, credentials on the machine, and internet access to GitHub and S3. See the <a href="../../phase-1/implementation/#what-is-the-run-environment">run environment</a>.</li>
+<li><strong>Heads up for Path B.</strong> Step 1 downloads the current nflverse file, and nflverse can correct old scores or add games. A new download can produce a different table, and so different scores. The <code>data_sha256</code> value tells you whether the table matches the committed one.</li>
+</ul>
+<h2 id="path-a-train-on-the-committed-table">Path A: Train on the Committed Table</h2>
+<h3 id="step-1-create-the-environment">Step 1: Create the Environment</h3>
+<div class="highlight"><pre><span></span><code>python3.13<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div>
+<h3 id="step-2-run-the-tests">Step 2: Run the Tests</h3>
+<p>The tests use made-up data and a stand-in S3 client, so they need no internet and no AWS account.</p>
+<div class="highlight"><pre><span></span><code>pytest
+</code></pre></div>
+<p>Expected: <strong>30 passed</strong>.</p>
+<h3 id="step-3-train">Step 3: Train</h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.model.train
+</code></pre></div>
+<p>Expected output, eight lines:</p>
+<div class="highlight"><pre><span></span><code>training: 820 of 1339 correct (61.24%), always-home 53.32%
+validation: 171 of 271 correct (63.10%), always-home 53.87%
+test: 88 of 149 correct (59.06%), always-home 47.65%
+validation log loss 0.6451
+test log loss 0.6815
+saved: models/model.joblib
+summary: results/run-summary.json
+MLflow run: LogisticRegression-v1.0
+</code></pre></div>
+<h3 id="step-4-confirm-nothing-changed">Step 4: Confirm Nothing Changed</h3>
+<p>Training overwrites <code>results/run-summary.json</code>. If the rebuild matches, git shows no change to that file.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>status<span class="w"> </span>--short<span class="w"> </span>results/run-summary.json
+</code></pre></div>
+<p>No output means the file is identical to the committed one. A change means the data, the settings, or a package version is different. Compare <code>data_sha256</code> and <code>scikit_learn_version</code> in the file first.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>diff<span class="w"> </span>results/run-summary.json
+</code></pre></div>
+<h2 id="path-b-rebuild-the-data-first">Path B: Rebuild the Data First</h2>
+<p>Run these in order, then continue with Steps 2 to 4 of Path A. Each step is explained in the <a href="../../phase-1/implementation/">Phase 1 Implementation</a>.</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.data.fetch_raw
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.data.clean
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.data.upload_to_s3
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.data.download_from_s3
+</code></pre></div>
+<h2 id="what-does-a-training-run-create">What Does a Training Run Create?</h2>
+<p>One training run reads the cleaned table and the settings file, and writes five kinds of output. They look similar but hold different things, and only one is committed to git.</p>
+<pre class="mermaid"><code>flowchart TB
+    A["data/from-s3/&lt;br/&gt;nfl_matchups_2020_2026.csv"] --&gt; B["python -m src.model.train"]
+    C["config/config.yaml"] --&gt; B
+    B --&gt; D["models/model.joblib&lt;br/&gt;the trained model"]
+    B --&gt; E["mlflow.db&lt;br/&gt;run settings and scores"]
+    B --&gt; F["mlartifacts/&lt;br/&gt;files saved with each run"]
+    B --&gt; G["results/run-summary.json&lt;br/&gt;readable summary"]
+    F --&gt; H["Copy of model.joblib,&lt;br/&gt;plot, config copy,&lt;br/&gt;MLflow-format model"]</code></pre>
+<h2 id="what-is-each-file-type">What Is Each File Type?</h2>
+<h3 id="comparison">Comparison</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Output</th>
+<th style="text-align: left;">Format</th>
+<th style="text-align: left;">What it holds</th>
+<th style="text-align: left;">Who reads it</th>
+<th style="text-align: left;">In git?</th>
+<th style="text-align: left;">Same on every rerun?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>models/model.joblib</code></td>
+<td style="text-align: left;">Python object saved with joblib</td>
+<td style="text-align: left;">The fitted scaler and logistic regression, plus the input names, model version, scikit-learn version, and training seasons</td>
+<td style="text-align: left;">The Phase 3 API</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Same predictions. The bytes are not compared.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mlflow.db</code></td>
+<td style="text-align: left;">SQLite database (one file)</td>
+<td style="text-align: left;">A table of runs: each run's 15 settings, 8 scores, tags, and the paths of its files. It holds no model and no images.</td>
+<td style="text-align: left;">MLflow and its web page</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No. Each rerun adds a row with a new run id and time.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mlartifacts/</code></td>
+<td style="text-align: left;">Folder of ordinary files</td>
+<td style="text-align: left;">The files each run saved: a copy of <code>model.joblib</code>, the confusion-matrix image, a copy of <code>config.yaml</code>, and the MLflow-format model</td>
+<td style="text-align: left;">MLflow and its web page, or a person opening the folder</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No. Each rerun adds a new subfolder.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>results/run-summary.json</code></td>
+<td style="text-align: left;">Plain JSON text</td>
+<td style="text-align: left;">The settings, data fingerprint, scores, and learned weights of the latest run</td>
+<td style="text-align: left;">A person, or git when comparing runs</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Yes, byte for byte, when data, settings, and packages match</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>config/config.yaml</code></td>
+<td style="text-align: left;">Plain YAML text</td>
+<td style="text-align: left;">Every setting</td>
+<td style="text-align: left;">The code, and a person</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Not an output. It is the input.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reading-the-differences">Reading the Differences</h3>
+<ul>
+<li><strong><code>model.joblib</code> is the model itself.</strong> It is the only file the API needs. It does not say how well the model scored.</li>
+<li><strong><code>mlflow.db</code> is the logbook.</strong> It records what each run used and scored, and it points to the run's files. It holds numbers and text only. If you delete it, the model and files stay, but MLflow can no longer list the runs.</li>
+<li><strong><code>mlartifacts/</code> is the shelf of files.</strong> The logbook (<code>mlflow.db</code>) says which run a file belongs to, and <code>mlartifacts/</code> holds the file. The two are only useful together, so keep or delete them as a pair.</li>
+<li><strong><code>run-summary.json</code> is the committed receipt.</strong> It repeats the key facts of the latest run in a form git can compare line by line. The database and the shelf cannot be compared that way, because they are binary or hold run ids and times.</li>
+</ul>
+<h3 id="what-is-inside-mlartifacts">What Is Inside <code>mlartifacts/</code>?</h3>
+<div class="highlight"><pre><span></span><code>mlartifacts/
+  &lt;run id&gt;/artifacts/            files in the run's own file list
+    model/model.joblib             copy of the working model
+    plots/confusion_matrix_validation.png
+    config/config.yaml             copy of the settings used
+  models/m-&lt;id&gt;/artifacts/       the MLflow-format model (a logged model)
+    MLmodel                        description of the model
+    model.skops                    the model, in skops format
+    conda.yaml, python_env.yaml    the environment it needs
+    requirements.txt               the packages it needs
+</code></pre></div>
+<ul>
+<li><strong>Two copies of the model.</strong> <code>model.joblib</code> is plain and carries the extra facts the API checks. The MLflow-format copy lets MLflow's own tools load the model in one call. Both come from the same fitted model. See <a href="../implementation-part-2/#why-is-the-model-stored-twice">Why Is the Model Stored Twice?</a>.</li>
+<li><strong><code>joblib</code> and <code>skops</code> are two ways to write a model to disk.</strong> joblib is the general way and works on any Python object. skops is the format MLflow's scikit-learn support uses.</li>
+<li><strong>Where the settings go.</strong> <code>config/config.yaml</code> is the input. The copy under <code>mlartifacts/</code> is a snapshot of what was used for that run.</li>
+<li><strong>Why they are not committed.</strong> The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See <a href="../../decisions/">Decisions</a>.</li>
+<li><strong>Terms.</strong> The <a href="../../glossary/">Glossary</a> defines artifact, artifact store, logged model, and SQLite.</li>
+</ul>
+<h2 id="what-was-checked">What Was Checked?</h2>
+<ul>
+<li>A copy of the project containing only <code>config/</code>, <code>data/</code>, <code>src/</code>, and <code>results/</code> (no <code>mlflow.db</code>, <code>mlartifacts/</code>, or <code>models/</code>), with <code>results/run-summary.json</code> deleted first. Running <code>python -m src.model.train</code> printed the eight lines above and <strong>rewrote the summary file identically to the committed one</strong> (<code>SUMMARY_IDENTICAL: True</code> from a byte comparison).</li>
+<li>The earlier real run was repeated and gave identical scores. See <a href="../implementation-part-2/">Part 2</a>.</li>
+</ul>
+<h2 id="what-is-not-guaranteed">What Is Not Guaranteed?</h2>
+<ul>
+<li><strong>Other machines.</strong> The check ran on one Mac with Python 3.13.14. A different operating system or processor could change a decimal beyond the 6th place, which rounding hides most of the time but not always.</li>
+<li><strong>Other package versions.</strong> The pins make a match likely. A different scikit-learn can change the weights, and the summary file records <code>scikit_learn_version</code> so you can see it.</li>
+<li><strong>A fresh download.</strong> See the Path B heads-up above.</li>
+<li><strong>The recorded git commit.</strong> MLflow tags each run with the commit that was checked out at the time. It is not in the summary file, so it does not affect the comparison.</li>
+<li><strong>Phases 3 to 5.</strong> This page covers the model only. The API, containers, and web app are planned in <a href="../../remaining-phases/">Remaining Phases</a>.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

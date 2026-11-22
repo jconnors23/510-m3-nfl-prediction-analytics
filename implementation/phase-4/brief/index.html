@@ -1,0 +1,1537 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/phase-4/brief/">
+      
+      
+        <link rel="prev" href="../../phase-3/implementation/">
+      
+      
+        <link rel="next" href="../implementation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Brief - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-4-brief-aws-deployment" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Brief
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/implementation-part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/implementation-part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/reproduce-end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-the-pieces-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do the Pieces Fit Together?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-in-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps in Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#details-in-brief" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Details in Brief
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-if-the-zip-is-too-large" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What If the Zip Is Too Large?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-could-go-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Could Go Wrong?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choices-made-along-the-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choices Made Along the Way
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Was Created
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-in-this-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Not in This Phase
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-read-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Read More
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-the-pieces-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do the Pieces Fit Together?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-in-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps in Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#details-in-brief" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Details in Brief
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-if-the-zip-is-too-large" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What If the Zip Is Too Large?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-could-go-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Could Go Wrong?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choices-made-along-the-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choices Made Along the Way
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Was Created
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-not-in-this-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Not in This Phase
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-read-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Read More
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="phase-4-brief-aws-deployment">Phase 4 Brief: AWS Deployment</h1>
+<p><strong>Status: Built and tested.</strong> All 11 steps are done, and <code>pytest</code> passes 53 tests. The API is live at <code>https://9awodatqc5.execute-api.us-east-1.amazonaws.com</code>.
+<strong>Needs first:</strong> Phase 3, which is built, and a trained model at <code>models/model.joblib</code>. Also an AWS account, AWS CLI version 2, and credentials on the machine, as listed in the <a href="../../phase-1/implementation/#what-is-the-run-environment">run environment</a>.</p>
+<p>Phase 4 puts the Phase 3 API on the internet. The same FastAPI app runs inside an AWS Lambda function, and an API Gateway address in front of it gives the world a public URL for <code>POST /predict</code> and <code>GET /health</code>. The worked example sent to that URL returns the same answer as the local service (0.3296), and all 1,759 games give the same answers as the local model. The web app that calls it comes in <a href="../../remaining-phases/#phase-5-web-app-and-hosting">Phase 5</a>.</p>
+<h2 id="how-do-the-pieces-fit-together">How Do the Pieces Fit Together?</h2>
+<pre class="mermaid"><code>flowchart LR
+    A["Caller&lt;br/&gt;(curl, or the web app&lt;br/&gt;in Phase 5)"] --&gt;|"HTTPS request"| B["API Gateway&lt;br/&gt;HTTP API&lt;br/&gt;routes and CORS"]
+    B --&gt;|"Lambda event"| C
+    subgraph L["AWS Lambda function (zip, arm64, Python 3.13)"]
+        C["Mangum"] --&gt; D["FastAPI app&lt;br/&gt;(same code as Phase 3)"]
+        D --&gt; E["Saved model&lt;br/&gt;loaded once, on the first call"]
+    end
+    L -.-&gt;|"logs"| F["CloudWatch Logs"]</code></pre>
+<ul>
+<li><strong>API Gateway</strong> receives the request, applies the CORS rules, and calls the function.</li>
+<li><strong>Mangum</strong> translates between the event Lambda hands the function and the request FastAPI expects. See <a href="../implementation/#what-is-mangum">What Is Mangum?</a>.</li>
+<li><strong>The FastAPI app and the model are the Phase 3 code,</strong> so the local tests cover what runs on AWS.</li>
+</ul>
+<h2 id="steps-in-order">Steps in Order</h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 1. Add the Lambda entry point.</strong> A new file (<code>src/api/lambda_handler.py</code>) wraps the app with Mangum. Mangum runs the app's start-up step on every request by default, which would re-read the model each time, so the entry point turns that off and loads the model itself on the first call.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 2. Test the entry point with no AWS.</strong> Call <code>handler</code> with a made-up API Gateway HTTP API event for <code>POST /predict</code>. The worked example returns status 200 and a home win probability of 0.3296.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 3. Measure the package size first.</strong> The serving packages for Linux, <code>arm64</code>, and Python 3.13 come to 231.3 MB unzipped without <code>pandas</code>, under the 250 MB limit, so the zip route works. See the <a href="../implementation/#step-3-measure-the-package-size">Phase 4 Implementation, Step 3</a>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 4. Build the zip.</strong> It holds the installed serving packages, <code>src/</code>, <code>config/config.yaml</code>, and <code>models/model.joblib</code>, in the same folder layout as the project so every path still resolves. It is 231,252,596 bytes unzipped and 63,452,500 bytes zipped.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 5. Create the function.</strong> Python 3.13, <code>arm64</code>, 1769 MB, a 10-second timeout, one environment variable, and a role that can only write logs.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 6. Test the function in AWS</strong> with the same made-up event as Step 2.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 7. Create the API Gateway HTTP API</strong> with the routes <code>POST /predict</code> and <code>GET /health</code>, both pointing at the function.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 8. Set CORS on the gateway.</strong> It allows the local web app address. The CloudFront address is added once it exists (Phase 5).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 9. Check the public address</strong> with <code>curl</code> and the worked example. It returns the same 0.3296 as the local API.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 10. Check the deployed model against the local model.</strong> All 1,759 games give the same pick and the same probability, and the accuracy equals the run summary.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Step 11. Write the deployment steps down,</strong> so they can be repeated by hand. See <a href="../deployment-guide/">Deployment Guide</a>.</li>
+</ul>
+<h2 id="details-in-brief">Details in Brief</h2>
+<ul>
+<li><strong>Lambda runs from a zip file,</strong> not a container image, so no Docker and no ECR are needed for this phase. The reasons are in <a href="../../decisions/#deployment-and-front-end">Decisions</a>.</li>
+<li><strong>Serving packages only.</strong> The zip uses a shorter list than <code>requirements.txt</code>, in <code>requirements-serve.txt</code>: <code>scikit-learn</code>, <code>numpy</code>, <code>joblib</code>, <code>PyYAML</code>, <code>fastapi</code>, <code>pydantic</code>, and <code>mangum</code>, plus <code>scipy</code>, which <code>scikit-learn</code> brings in and which is not pinned today. It leaves out <code>pandas</code>, <code>mlflow</code>, <code>matplotlib</code>, <code>boto3</code>, <code>uvicorn</code>, and the test packages. Lambda already provides <code>boto3</code>, and <code>uvicorn</code> is replaced by Mangum.</li>
+<li><strong>Built for the function's platform, not the Mac's.</strong> The packages are installed as Linux <code>arm64</code> for Python 3.13, the same chip type and Python version the function uses. The command and what each flag does are in the <a href="../implementation/#how-was-the-size-measured">Phase 4 Implementation, Step 3</a>.</li>
+<li><strong>The model is copied into the zip at build time.</strong> It is not committed to git and is not downloaded at start-up. The saved scikit-learn version must equal the one in the zip (1.9.1), or the service refuses to start, as in Phase 3.</li>
+<li><strong>The zip is larger than the console's upload limit.</strong> It is 63.2 MB zipped, and the console accepts about 50 MB, so the zip was uploaded through S3 (a temporary <code>deploy/</code> key in the data bucket, deleted afterward).</li>
+<li><strong>The function role can only write logs.</strong> Each AWS identity gets only the access its job needs.</li>
+<li><strong>The API is public, with no key.</strong> A key in a browser app would be visible to every visitor, so it would not protect anything. There are no protection rules, request limit, or firewall for now.</li>
+<li><strong>Function settings:</strong> 1769 MB of memory, a 10-second timeout, and one environment variable, <code>JOBLIB_MULTIPROCESSING=0</code>, which stops a harmless joblib warning. Logs are kept for 14 days. Accuracy is the only priority, so memory is not tuned further. The measurements are in <a href="../implementation/#what-is-the-memory-setting">Phase 4 Implementation, Step 5</a>.</li>
+<li><strong>Deployment is a set of written steps</strong> (commands that can be repeated by hand), with no <code>deploy.yml</code> workflow. They are on <a href="../deployment-guide/">Deployment Guide</a>.</li>
+<li><strong>Settings:</strong> none new in <code>config/config.yaml</code>. The Lambda settings live in the deployment steps.</li>
+</ul>
+<h2 id="what-if-the-zip-is-too-large">What If the Zip Is Too Large?</h2>
+<p><code>scikit-learn</code>, <code>scipy</code>, and <code>numpy</code> are large, so the zip could have gone over Lambda's 250 MB unzipped limit. Step 3 found out before anything else was built: the zip fits (231.3 MB unzipped) as long as <code>pandas</code> is left out. This fall-back stays unused unless the package grows past the limit. In that case, build one container image, store it in a private Amazon ECR repository, and run Lambda from that image. Docker is then needed earlier than <a href="../../remaining-phases/#phase-6-docker">Phase 6</a>, for this one step.</p>
+<pre class="mermaid"><code>flowchart TB
+    A["Install serving packages&lt;br/&gt;for Linux arm64, Python 3.13"] --&gt; B{"Unzipped size&lt;br/&gt;under 250 MB?"}
+    B --&gt;|"yes (231.3 MB measured)"| C["Build the zip&lt;br/&gt;and create the function"]
+    B --&gt;|"no"| D["Fall back: one container image&lt;br/&gt;in a private ECR repository"]
+    C --&gt; E["API Gateway routes&lt;br/&gt;and CORS point at the function"]
+    D --&gt; E</code></pre>
+<h2 id="what-could-go-wrong">What Could Go Wrong?</h2>
+<ul>
+<li><strong>A package that imports on a Mac can fail on Lambda,</strong> because the packages were downloaded for Linux. Steps 6, 9, and 10 are the proof, and the function ran with no import error.</li>
+<li><strong>The package has about 30.9 MB of room.</strong> A new large dependency, or a version bump, can push it over. Re-measure after changing a pin.</li>
+<li><strong>A public API can be called by anyone.</strong> For now there is no request limit and no firewall in front of it. That is acceptable for this project, and protection can be added later if it is needed.</li>
+<li><strong>CORS can block the browser.</strong> A wrong origin fails in the browser and not in <code>curl</code>, so the origin is checked again in Phase 5.</li>
+</ul>
+<h2 id="choices-made-along-the-way">Choices Made Along the Way</h2>
+<ul>
+<li><strong>Where the zip was staged.</strong> A temporary <code>deploy/</code> key in the private data bucket, deleted once the function existed.</li>
+<li><strong>The serving package list.</strong> A separate pinned list, <code>requirements-serve.txt</code>, including <code>scipy</code>.</li>
+<li><strong>Memory.</strong> 1769 MB, and not a priority. See <a href="../../decisions/#deployment-and-front-end">Decisions</a>.</li>
+<li>The other Phase 4 choices (zip or container image, no API key, written steps) are in <a href="../../decisions/#deployment-and-front-end">Decisions</a>.</li>
+</ul>
+<h2 id="what-was-created">What Was Created</h2>
+<ul>
+<li><strong>Code:</strong> <code>src/api/lambda_handler.py</code> and six tests in <code>tests/test_lambda_handler.py</code>.</li>
+<li><strong>Packaging:</strong> <code>requirements-serve.txt</code> and the written build and deploy commands on <a href="../deployment-guide/">Deployment Guide</a>.</li>
+<li><strong>Settings:</strong> one new warning filter in <code>pytest.ini</code>, and none in <code>config/config.yaml</code>.</li>
+<li><strong>On AWS:</strong> one Lambda function, one function role (the identity Lambda requires the function to run as, which can only write logs), and one API Gateway HTTP API with two routes. All are in <code>us-east-1</code>.</li>
+<li><strong>Nothing committed that is generated.</strong> The zip and the build folder stay local, and <code>build/</code> is already ignored by git.</li>
+</ul>
+<h2 id="what-is-not-in-this-phase">What Is Not in This Phase</h2>
+<ul>
+<li>The web app and its hosting, in <a href="../../remaining-phases/#phase-5-web-app-and-hosting">Phase 5</a>.</li>
+<li>Docker, in <a href="../../remaining-phases/#phase-6-docker">Phase 6</a>. The README and the review come after it, in <a href="../../remaining-phases/#phase-7-documentation-and-readme">Phase 7</a> and <a href="../../remaining-phases/#phase-8-review">Phase 8</a>.</li>
+</ul>
+<h2 id="where-to-read-more">Where to Read More</h2>
+<ul>
+<li><a href="../implementation/">Phase 4 Implementation</a> explains each step in detail, including the size measurement, the install command, and the limits (Step 3).</li>
+<li><a href="../implementation/#what-is-mangum">Phase 4 Implementation</a> explains Mangum with a request diagram.</li>
+<li><a href="../deployment-guide/">Deployment Guide</a> lists every command, in order, including the commands that remove the deployment.</li>
+<li><a href="../../phase-3/implementation/">Phase 3 Implementation</a> describes the app and the start-up checks that run on Lambda.</li>
+<li><a href="../../decisions/#deployment-and-front-end">Decisions</a> lists the deployment choices and why.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

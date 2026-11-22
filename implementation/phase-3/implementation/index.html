@@ -1,0 +1,2712 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/phase-3/implementation/">
+      
+      
+        <link rel="prev" href="../brief/">
+      
+      
+        <link rel="next" href="../../phase-4/brief/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Implementation - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-3-implementation-local-prediction-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Implementation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/implementation-part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/implementation-part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/reproduce-end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-run-it-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do I Run It Locally?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Do I Run It Locally?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-needed-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Needed First?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-the-project-and-activate-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Open the Project and Activate the Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-start-the-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Start the Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-check-that-it-is-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Check That It Is Running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-stop-the-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Stop the Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-ask-for-a-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do I Ask for a Prediction?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Do I Ask for a Prediction?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-are-the-two-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Are the Two Numbers?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-1-a-game-where-the-away-team-is-stronger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: A Game Where the Away Team Is Stronger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-two-evenly-matched-teams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Two Evenly Matched Teams
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-the-home-team-is-stronger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: The Home Team Is Stronger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showing-the-status-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Showing the Status Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-in-the-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is in the Response?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-happens-with-bad-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens With Bad Input?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Happens With Bad Input?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reading-an-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading an Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary-of-rejections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary of Rejections
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-can-i-try-it-in-a-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Can I Try It in a Browser?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-uvicorn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is uvicorn?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-service-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Service Work?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Does the Service Work?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-does-it-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does It Start?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-a-request-answered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is a Request Answered?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-files-were-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Files Were Added?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-load-the-saved-model-at-start-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Load the Saved Model at Start-Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-define-the-request-and-the-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Define the Request and the Response
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-add-the-post-predict-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Add the POST /predict Route
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Add the POST /predict Route">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-does-the-api-use-numpy-instead-of-pandas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Does the API Use NumPy Instead of pandas?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-add-the-get-health-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Add the GET /health Route
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-reject-bad-input-clearly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Reject Bad Input Clearly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-run-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Run the Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What If Something Goes Wrong?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-carries-into-phase-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Carries Into Phase 4?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-run-it-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do I Run It Locally?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Do I Run It Locally?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-needed-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Needed First?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-the-project-and-activate-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Open the Project and Activate the Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-start-the-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Start the Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-check-that-it-is-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Check That It Is Running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-stop-the-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Stop the Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-ask-for-a-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do I Ask for a Prediction?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Do I Ask for a Prediction?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-are-the-two-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Are the Two Numbers?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-1-a-game-where-the-away-team-is-stronger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: A Game Where the Away Team Is Stronger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-two-evenly-matched-teams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Two Evenly Matched Teams
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-the-home-team-is-stronger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: The Home Team Is Stronger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showing-the-status-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Showing the Status Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-in-the-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is in the Response?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-happens-with-bad-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens With Bad Input?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Happens With Bad Input?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reading-an-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading an Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary-of-rejections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary of Rejections
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-can-i-try-it-in-a-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Can I Try It in a Browser?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-uvicorn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is uvicorn?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-service-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Service Work?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Does the Service Work?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-does-it-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does It Start?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-a-request-answered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is a Request Answered?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-files-were-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Files Were Added?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-load-the-saved-model-at-start-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Load the Saved Model at Start-Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-define-the-request-and-the-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Define the Request and the Response
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-add-the-post-predict-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Add the POST /predict Route
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Add the POST /predict Route">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-does-the-api-use-numpy-instead-of-pandas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Does the API Use NumPy Instead of pandas?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-add-the-get-health-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Add the GET /health Route
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-reject-bad-input-clearly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Reject Bad Input Clearly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-run-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Run the Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What If Something Goes Wrong?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-carries-into-phase-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Carries Into Phase 4?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="phase-3-implementation-local-prediction-api">Phase 3 Implementation: Local Prediction API</h1>
+<p>This page explains how the Phase 3 service works and how to run it on your own computer. The service takes two numbers about a game and returns the model's pick and the home team's chance of winning, as JSON. For the short version, see the <a href="../brief/">Brief</a>.</p>
+<p><strong>Status: built and tested.</strong> The code is in <code>src/api/app.py</code> and <code>src/api/schemas.py</code>, and the tests are in <code>tests/test_api.py</code>. Every request and response shown below was produced by the running service. The full test suite passes with 47 tests: the 30 from earlier phases and 17 new ones.</p>
+<h2 id="how-do-i-run-it-locally">How Do I Run It Locally?</h2>
+<h3 id="what-is-needed-first">What Is Needed First?</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Need</th>
+<th style="text-align: left;">How to check or get it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Python 3.13 and the project's virtual environment</td>
+<td style="text-align: left;">See the <a href="../../phase-1/implementation/#what-is-the-run-environment">run environment</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">The pinned packages</td>
+<td style="text-align: left;"><code>pip install -r requirements.txt</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">The saved model <code>models/model.joblib</code></td>
+<td style="text-align: left;"><code>python -m src.model.train</code>. The file is not committed, so a fresh checkout needs this step.</td>
+</tr>
+</tbody>
+</table>
+<p>No AWS account, no internet connection, and no Docker are needed.</p>
+<h3 id="step-1-open-the-project-and-activate-the-environment">Step 1: Open the Project and Activate the Environment</h3>
+<p>From the project folder, activate the virtual environment so that <code>python</code> is the project's Python:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</code></pre></div>
+<p>Install the packages if this is a new checkout:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div>
+<p>Train the model if <code>models/model.joblib</code> does not exist:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.model.train
+</code></pre></div>
+<h3 id="step-2-start-the-service">Step 2: Start the Service</h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>uvicorn<span class="w"> </span>src.api.app:app<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
+</code></pre></div>
+<p><a href="https://uvicorn.dev/"><code>uvicorn</code></a> is the program that runs the service. See <a href="#what-is-uvicorn">What Is uvicorn?</a> below. Starting it with <code>python -m</code> makes sure the one in the project's environment is used, even if the shell cannot find a bare <code>uvicorn</code> command.</p>
+<p>When the service is ready, the terminal prints these lines and then waits:</p>
+<div class="highlight"><pre><span></span><code>INFO:     Started server process [32104]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+</code></pre></div>
+<ul>
+<li><strong>The terminal stays busy.</strong> The service runs until you stop it. Open a second terminal for the <code>curl</code> commands below.</li>
+<li><strong>Only this computer can reach it.</strong> The address <code>127.0.0.1</code> means "this machine", so nobody else on your network can connect.</li>
+<li><strong>Each request is logged</strong> in that terminal, for example <code>POST /predict HTTP/1.1" 200 OK</code>.</li>
+<li><strong>Port already in use?</strong> If the terminal says <code>address already in use</code>, another program owns port 8000. <code>mkdocs serve</code> uses port 8000 by default. Either stop that program, or start this service on another port, such as <code>--port 8001</code>, and use that port in every command below.</li>
+</ul>
+<h3 id="step-3-check-that-it-is-running">Step 3: Check That It Is Running</h3>
+<p>In the second terminal:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://127.0.0.1:8000/health
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"status"</span><span class="p">:</span><span class="s2">"ok"</span><span class="p">,</span><span class="nt">"model_version"</span><span class="p">:</span><span class="s2">"v1.0"</span><span class="p">,</span><span class="nt">"scikit_learn_version"</span><span class="p">:</span><span class="s2">"1.9.1"</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="step-4-stop-the-service">Step 4: Stop the Service</h3>
+<p>Press <code>Ctrl+C</code> in the terminal where it is running. It prints <code>Shutting down</code> and exits.</p>
+<h2 id="how-do-i-ask-for-a-prediction">How Do I Ask for a Prediction?</h2>
+<h3 id="what-are-the-two-numbers">What Are the Two Numbers?</h3>
+<p>The model uses two numbers, both measured <strong>before</strong> the game from the games already played earlier in the same season. Each one is the home team's value minus the away team's value.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">How to work it out</th>
+<th style="text-align: left;">Allowed range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>win_pct_differential</code></td>
+<td style="text-align: left;">Home team win percentage minus away team win percentage. A 6-2 team is 0.75, and a 4-4 team is 0.50, so the difference is 0.25.</td>
+<td style="text-align: left;">-1 to 1</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>point_diff_per_game_differential</code></td>
+<td style="text-align: left;">Home team points scored minus points allowed per game, minus the same figure for the away team. A team that is +8.0 per game against a team that is -2.0 per game gives 10.0.</td>
+<td style="text-align: left;">-100 to 100</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>A positive number favors the home team.</strong></li>
+<li><strong>Week 1:</strong> no team has played yet, so both numbers are 0.</li>
+<li><strong>Whole numbers are fine,</strong> for example <code>0</code> and <code>5</code>. Numbers written as text, such as <code>"0.5"</code>, are rejected.</li>
+<li><strong>The range for the second field is a loose guard.</strong> The real data runs from about -49 to 39.</li>
+<li>The inputs are explained further in <a href="../../phase-2/implementation-part-1/">Phase 2 Part 1</a>.</li>
+</ul>
+<h3 id="example-1-a-game-where-the-away-team-is-stronger">Example 1: A Game Where the Away Team Is Stronger</h3>
+<p>This is game <code>2025_07_NE_TEN</code>: the home team (Tennessee) is weaker on both numbers.</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"prediction"</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">"predicted_label"</span><span class="p">:</span><span class="s2">"away win"</span><span class="p">,</span><span class="nt">"home_win_probability"</span><span class="p">:</span><span class="mf">0.3296</span><span class="p">,</span><span class="nt">"model_version"</span><span class="p">:</span><span class="s2">"v1.0"</span><span class="p">}</span>
+</code></pre></div>
+<p>The model gives the home team a <strong>32.96%</strong> chance, which is below 50%, so the pick is an away win. New England won this game, so the pick was correct. This is the same game worked by hand in <a href="../../phase-2/implementation-part-2/#what-is-a-worked-example">Part 2</a>.</p>
+<p>What the pieces of the command mean:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Part</th>
+<th style="text-align: left;">What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>-X POST</code></td>
+<td style="text-align: left;">Sends a POST request, which is what <code>/predict</code> accepts.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>-H "Content-Type: application/json"</code></td>
+<td style="text-align: left;">Tells the service that the body is JSON.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>-d '{...}'</code></td>
+<td style="text-align: left;">The body: the two numbers, as JSON. Single quotes outside, double quotes inside.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>http://127.0.0.1:8000/predict</code></td>
+<td style="text-align: left;">This computer, port 8000, the <code>/predict</code> route.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-2-two-evenly-matched-teams">Example 2: Two Evenly Matched Teams</h3>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": 0, "point_diff_per_game_differential": 0}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"prediction"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">"predicted_label"</span><span class="p">:</span><span class="s2">"home win"</span><span class="p">,</span><span class="nt">"home_win_probability"</span><span class="p">:</span><span class="mf">0.5364</span><span class="p">,</span><span class="nt">"model_version"</span><span class="p">:</span><span class="s2">"v1.0"</span><span class="p">}</span>
+</code></pre></div>
+<p>With no difference between the teams, the model still gives the home team a <strong>53.64%</strong> chance. This is the home-field edge the model learned. See <a href="../../phase-2/implementation-part-2/#what-does-the-fit-learn">Part 2</a>.</p>
+<h3 id="example-3-the-home-team-is-stronger">Example 3: The Home Team Is Stronger</h3>
+<p>A home team that is 6-2 against a 4-4 away team (0.25), and +10.0 points per game better:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": 0.25, "point_diff_per_game_differential": 10.0}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"prediction"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">"predicted_label"</span><span class="p">:</span><span class="s2">"home win"</span><span class="p">,</span><span class="nt">"home_win_probability"</span><span class="p">:</span><span class="mf">0.6467</span><span class="p">,</span><span class="nt">"model_version"</span><span class="p">:</span><span class="s2">"v1.0"</span><span class="p">}</span>
+</code></pre></div>
+<p>The model gives the home team a <strong>64.67%</strong> chance, and the pick is a home win.</p>
+<h3 id="showing-the-status-code">Showing the Status Code</h3>
+<p>Add <code>-w</code> to print the HTTP status code after the body, and <code>-s</code> to hide curl's progress meter:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"\nHTTP %{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{"prediction":0,"predicted_label":"away win","home_win_probability":0.3296,"model_version":"v1.0"}
+HTTP 200
+</code></pre></div>
+<p>To print the JSON on several lines, pipe it through Python's formatter. This is one command with two parts, so it stays in one block:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>json.tool
+</code></pre></div>
+<h3 id="what-is-in-the-response">What Is in the Response?</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>prediction</code></td>
+<td style="text-align: left;">whole number, 1 or 0</td>
+<td style="text-align: left;">1 is a home win and 0 is an away win. A probability above 0.5 gives 1, and exactly 0.5 gives 0, the same rule as scoring in <a href="../../phase-2/implementation-part-2/#how-is-a-game-scored">Part 2</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>predicted_label</code></td>
+<td style="text-align: left;">text</td>
+<td style="text-align: left;">The same pick in words: <code>home win</code> or <code>away win</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>home_win_probability</code></td>
+<td style="text-align: left;">decimal number, 0 to 1</td>
+<td style="text-align: left;">The model's chance that the home team wins, rounded to 4 places. The pick is made from the unrounded value.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>model_version</code></td>
+<td style="text-align: left;">text</td>
+<td style="text-align: left;">The <code>model.version</code> setting that was saved with the model (<code>v1.0</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-happens-with-bad-input">What Happens With Bad Input?</h2>
+<p>A request that fails a check gets status <strong>422</strong> and a JSON error that names the problem. The model is never called. Each example below was sent to the running service.</p>
+<h3 id="reading-an-error">Reading an Error</h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"detail"</span><span class="p">:[{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"less_than_equal"</span><span class="p">,</span><span class="nt">"loc"</span><span class="p">:[</span><span class="s2">"body"</span><span class="p">,</span><span class="s2">"win_pct_differential"</span><span class="p">],</span><span class="nt">"msg"</span><span class="p">:</span><span class="s2">"Input should be less than or equal to 1"</span><span class="p">,</span><span class="nt">"input"</span><span class="p">:</span><span class="mf">1.5</span><span class="p">,</span><span class="nt">"ctx"</span><span class="p">:{</span><span class="nt">"le"</span><span class="p">:</span><span class="mf">1.0</span><span class="p">}}]}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Part</th>
+<th style="text-align: left;">What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>detail</code></td>
+<td style="text-align: left;">A list with one entry for each problem. A request with two problems has two entries.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>type</code></td>
+<td style="text-align: left;">A short code for the kind of problem.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>loc</code></td>
+<td style="text-align: left;">Where the problem is: <code>body</code>, then the field name.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>msg</code></td>
+<td style="text-align: left;">A plain sentence about the problem.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>input</code></td>
+<td style="text-align: left;">The value that was sent.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ctx</code></td>
+<td style="text-align: left;">Extra detail, such as the limit that was exceeded.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="error-examples">Error Examples</h3>
+<p><strong>A value out of range, and a missing field.</strong> This one request has two problems:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"\nHTTP %{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": 1.5}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{"detail":[{"type":"less_than_equal","loc":["body","win_pct_differential"],"msg":"Input should be less than or equal to 1","input":1.5,"ctx":{"le":1.0}},{"type":"missing","loc":["body","point_diff_per_game_differential"],"msg":"Field required","input":{"win_pct_differential":1.5}}]}
+HTTP 422
+</code></pre></div>
+<p><strong>An extra field.</strong> A misspelled or unknown name is refused, not ignored:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"\nHTTP %{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": 0.1, "point_diff_per_game_differential": 1.0, "week": 3}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{"detail":[{"type":"extra_forbidden","loc":["body","week"],"msg":"Extra inputs are not permitted","input":3}]}
+HTTP 422
+</code></pre></div>
+<p><strong>A number written as text:</strong></p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"\nHTTP %{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": "0.5", "point_diff_per_game_differential": 1.0}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{"detail":[{"type":"float_type","loc":["body","win_pct_differential"],"msg":"Input should be a valid number","input":"0.5"}]}
+HTTP 422
+</code></pre></div>
+<p><strong>Not a number (<code>NaN</code>):</strong> standard JSON has no <code>NaN</code>, but some tools write it. It is refused:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"\nHTTP %{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"win_pct_differential": NaN, "point_diff_per_game_differential": 1.0}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{"detail":[{"type":"finite_number","loc":["body","win_pct_differential"],"msg":"Input should be a finite number","input":"NaN"}]}
+HTTP 422
+</code></pre></div>
+<p>The <code>input</code> shows <code>"NaN"</code> as text. FastAPI cannot write a real <code>NaN</code> into a JSON response, so the service has its own error handler that swaps it for the string. See <a href="#step-5-reject-bad-input-clearly">Step 5</a>.</p>
+<p><strong>A body that is not JSON:</strong></p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"\nHTTP %{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/predict<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'not json'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{"detail":[{"type":"json_invalid","loc":["body",0],"msg":"JSON decode error","input":{},"ctx":{"error":"Expecting value"}}]}
+HTTP 422
+</code></pre></div>
+<h3 id="summary-of-rejections">Summary of Rejections</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Request problem</th>
+<th style="text-align: left;">Status</th>
+<th style="text-align: left;"><code>type</code> in the error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A field is missing</td>
+<td style="text-align: left;">422</td>
+<td style="text-align: left;"><code>missing</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">An unknown field is added</td>
+<td style="text-align: left;">422</td>
+<td style="text-align: left;"><code>extra_forbidden</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">A value is text, or a true/false</td>
+<td style="text-align: left;">422</td>
+<td style="text-align: left;"><code>float_type</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">A value is outside its range</td>
+<td style="text-align: left;">422</td>
+<td style="text-align: left;"><code>less_than_equal</code> or <code>greater_than_equal</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">A value is <code>NaN</code> or infinity</td>
+<td style="text-align: left;">422</td>
+<td style="text-align: left;"><code>finite_number</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">The body is not valid JSON</td>
+<td style="text-align: left;">422</td>
+<td style="text-align: left;"><code>json_invalid</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-can-i-try-it-in-a-browser">How Can I Try It in a Browser?</h2>
+<p>FastAPI serves a test page, so no <code>curl</code> is needed. With the service running, open <a href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a>.</p>
+<ol>
+<li>Click <code>POST /predict</code> to open it.</li>
+<li>Click <strong>Try it out</strong>.</li>
+<li>Edit the JSON in the box. It starts with an example of the right shape.</li>
+<li>Click <strong>Execute</strong>. The page shows the status code and the response body, and the <code>curl</code> command it sent.</li>
+</ol>
+<p>The same page lists <code>GET /health</code>, and shows the field descriptions and the allowed ranges. The machine-readable description of the service is at <a href="http://127.0.0.1:8000/openapi.json">http://127.0.0.1:8000/openapi.json</a>. Both pages returned status 200.</p>
+<h2 id="what-is-uvicorn">What Is uvicorn?</h2>
+<p>A FastAPI app is only a Python object. It does not listen for requests by itself, so something has to run it. <a href="https://uvicorn.dev/"><code>uvicorn</code></a> is that program (a web server). It opens a port on your computer, receives each HTTP request, passes it to the app, and sends the app's answer back to the caller. The two talk through <a href="https://asgi.readthedocs.io/en/latest/">ASGI</a>, the standard interface between Python web servers and web apps. See the <a href="../../glossary/#phase-3-local-prediction-api">Glossary</a> for the short definition, and the <a href="https://uvicorn.dev/">uvicorn documentation</a> for its options.</p>
+<ul>
+<li><strong>Only for the laptop.</strong> <code>uvicorn</code> runs the service in Phase 3. On AWS Lambda there is no port to listen on, so it is not used there and is left out of the Lambda zip. Mangum takes its place. See <a href="../../phase-4/implementation/#what-is-mangum">What Is Mangum?</a>.</li>
+<li><strong>It is not part of the API's logic.</strong> The routes, the input checks, and the model call are all in the FastAPI app. Swapping <code>uvicorn</code> for another server would not change an answer.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Part of the command</th>
+<th style="text-align: left;">What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>python -m uvicorn</code></td>
+<td style="text-align: left;">Run the <code>uvicorn</code> installed in the active environment.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>src.api.app:app</code></td>
+<td style="text-align: left;">Import the module <code>src/api/app.py</code> and run the object named <code>app</code> inside it. The part before the colon is the file, and the part after is the variable.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--port 8000</code></td>
+<td style="text-align: left;">Listen on port 8000. With no <code>--host</code>, it listens only on this computer.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-does-the-service-work">How Does the Service Work?</h2>
+<h3 id="how-does-it-start">How Does It Start?</h3>
+<p>The model file is read once, in the app's start-up step, and kept in memory. Every request after that reuses it.</p>
+<pre class="mermaid"><code>flowchart TB
+    A["Service starts"] --&gt; B["Read model.output_path&lt;br/&gt;from config.yaml"]
+    B --&gt; C{"models/model.joblib&lt;br/&gt;exists?"}
+    C --&gt;|"no"| X1["Stop with a message:&lt;br/&gt;run python -m src.model.train"]
+    C --&gt;|"yes"| D["Load the saved file"]
+    D --&gt; E{"File readable, with the&lt;br/&gt;four required keys?"}
+    E --&gt;|"no"| X3["Stop with a message that&lt;br/&gt;names the problem"]
+    E --&gt;|"yes"| F{"Saved scikit-learn version&lt;br/&gt;equals the installed one?"}
+    F --&gt;|"no"| X2["Stop with a message that&lt;br/&gt;names both versions"]
+    F --&gt;|"yes"| H{"Saved input names match&lt;br/&gt;the two request fields?"}
+    H --&gt;|"no"| X4["Stop with a message that&lt;br/&gt;names the input names"]
+    H --&gt;|"yes"| G["Ready for requests"]</code></pre>
+<h3 id="how-is-a-request-answered">How Is a Request Answered?</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant C as Caller (curl)
+    participant A as FastAPI app
+    participant V as Input check
+    participant M as Model in memory
+    C-&gt;&gt;A: POST /predict with JSON
+    A-&gt;&gt;V: check fields, types, ranges
+    alt input is not valid
+        V-&gt;&gt;C: 422 and error JSON that names the problem
+    else input is valid
+        V-&gt;&gt;M: the two numbers, in the saved order
+        M-&gt;&gt;A: home win probability
+        A-&gt;&gt;C: 200 with prediction, label, probability, model version
+    end</code></pre>
+<h2 id="which-files-were-added">Which Files Were Added?</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>src/api/app.py</code></td>
+<td style="text-align: left;">The <code>app</code> object, <code>create_app</code>, the start-up step (<code>load_model</code>), the 0.5 rule (<code>label_for</code>), and the two routes.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>src/api/schemas.py</code></td>
+<td style="text-align: left;">The three JSON shapes: <code>PredictRequest</code>, <code>PredictResponse</code>, and <code>HealthResponse</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tests/test_api.py</code></td>
+<td style="text-align: left;">17 tests for both routes, the start-up checks, and the no-pandas rule.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>requirements.txt</code></td>
+<td style="text-align: left;">One new pinned line, <code>httpx2==2.16.2</code>, used only by the tests.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>No new settings.</strong> The service reuses <code>model.output_path</code> from <code>config/config.yaml</code>. The host and port are given on the command line.</li>
+<li><strong><code>httpx2</code> is test-only.</strong> FastAPI's test client calls the app through it, and the installed Starlette asks for <code>httpx2</code> and prints a warning with the older <code>httpx</code>. It is not needed in the Lambda zip. It brought in two helper packages, <code>httpcore2</code> and <code>truststore</code>, which are left unpinned like the project's other indirect packages.</li>
+<li><strong>No <code>__init__.py</code> files,</strong> matching the rest of the project.</li>
+</ul>
+<h2 id="step-1-load-the-saved-model-at-start-up">Step 1: Load the Saved Model at Start-Up</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Read <code>models/model.joblib</code> once, check it, and keep it in memory.</p>
+<p><strong>Why:</strong> Loading on every request would be slow, and a model saved by a different scikit-learn version may fail to load or answer differently. Failing at start-up is clearer than failing on the first request.</p>
+<p><strong>If skipped:</strong> A missing or mismatched model would show up as an error in the middle of a request.</p>
+</div>
+<ul>
+<li><strong>Where the path comes from:</strong> <code>model.output_path</code> in <code>config/config.yaml</code>, turned into a full path with <code>resolve_path</code> from <code>src/config.py</code>. That function finds the project folder from the code's own location, so the same path works from any folder, and in the Lambda zip in Phase 4.</li>
+<li><strong>What is in the file:</strong> a dictionary with <code>pipeline</code>, <code>feature_names</code>, <code>model_version</code>, <code>scikit_learn_version</code>, <code>train_start_season</code>, and <code>train_end_season</code>. See <a href="../../phase-2/implementation-part-2/#what-is-saved">Step 7 of Phase 2</a>.</li>
+<li><strong>Where the model lives:</strong> in the app's start-up step (FastAPI's <code>lifespan</code>), stored on <code>app.state</code>. The routes read it from there. Importing <code>src/api/app.py</code> builds the app but does not read the file.</li>
+<li><strong>Why start-up and not import time:</strong> the tests build the app without a real model file, and Lambda (in Phase 4) reuses the same <code>load_model</code> function. Mangum would run this start-up step on every request by default, so Phase 4 turns that off and calls <code>load_model</code> itself, once, on the first call. See <a href="../../phase-4/implementation/#what-is-mangum">What Is Mangum?</a>.</li>
+<li><strong>Checks, in this order:</strong> the file exists, it loads, it holds the four keys the API needs (<code>pipeline</code>, <code>feature_names</code>, <code>model_version</code>, <code>scikit_learn_version</code>), the scikit-learn version matches, and the saved input names match the request fields.</li>
+</ul>
+<p>If any check fails, the service refuses to start, and <code>uvicorn</code> prints a traceback that ends with one of these messages (the <code>RuntimeError</code> line):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Problem</th>
+<th style="text-align: left;">Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">The file is missing</td>
+<td style="text-align: left;"><code>No saved model at models/model.joblib. Run python -m src.model.train first.</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">The file cannot be read, or is not a dictionary, or lacks a key</td>
+<td style="text-align: left;"><code>Could not read the saved model at models/model.joblib: &lt;reason&gt;. Run python -m src.model.train to rebuild it.</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Saved scikit-learn version differs</td>
+<td style="text-align: left;"><code>Saved model was built with scikit-learn &lt;saved&gt; but &lt;installed&gt; is installed. Retrain with python -m src.model.train, or install scikit-learn==&lt;saved&gt;.</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">The saved input names are not the two request fields</td>
+<td style="text-align: left;"><code>Could not read the saved model at models/model.joblib: input names [...] do not match the API fields.</code></td>
+</tr>
+</tbody>
+</table>
+<p>The real output when the model file is missing ends like this, and the process exits with code 3:</p>
+<div class="highlight"><pre><span></span><code>RuntimeError: No saved model at models/model.joblib. Run python -m src.model.train first.
+
+ERROR:    Application startup failed. Exiting.
+</code></pre></div>
+<h2 id="step-2-define-the-request-and-the-response">Step 2: Define the Request and the Response</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Describe the exact JSON the service accepts and returns, in one place.</p>
+<p><strong>Why:</strong> One definition gives the input checks, the error messages, and the <code>/docs</code> test page together.</p>
+<p><strong>If skipped:</strong> The checks would be written by hand in each route.</p>
+</div>
+<p>The request, from <code>src/api/schemas.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PredictRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The two pre-game numbers. Extra fields are refused so a typo is not ignored."""</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">win_pct_differential</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">allow_inf_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+    <span class="c1"># A loose guard, because the real data runs about -49 to 39.</span>
+    <span class="n">point_diff_per_game_differential</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">allow_inf_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li><strong><code>extra="forbid"</code></strong> refuses unknown fields.</li>
+<li><strong><code>strict=True</code></strong> refuses numbers written as text, and true or false, in place of numbers. Whole numbers such as <code>0</code> are still accepted.</li>
+<li><strong><code>allow_inf_nan=False</code></strong> refuses <code>NaN</code> and infinity.</li>
+<li><strong>The field names match the model's input names</strong> (<code>INPUT_COLUMNS</code> in <code>src/model/features.py</code>), but the API does not import that file. At start-up it checks that the names saved in the model file are the same as the two request fields.</li>
+</ul>
+<p>The response has four fields (<code>prediction</code>, <code>predicted_label</code>, <code>home_win_probability</code>, <code>model_version</code>), described in <a href="#what-is-in-the-response">What Is in the Response?</a>. The health response has three (<code>status</code>, <code>model_version</code>, <code>scikit_learn_version</code>).</p>
+<h2 id="step-3-add-the-post-predict-route">Step 3: Add the <code>POST /predict</code> Route</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Turn a valid request into a prediction.</p>
+<p><strong>Why:</strong> This is the route the web app calls.</p>
+<p><strong>If skipped:</strong> There would be no way to ask the model a question.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/predict"</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">PredictResponse</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="s2">"Predict which team wins."</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">PredictRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PredictResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Score one game from the two numbers, in the order saved with the model."""</span>
+    <span class="n">saved</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">model</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">saved</span><span class="p">[</span><span class="s2">"feature_names"</span><span class="p">]]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="c1"># The scaler was fitted on a table with column names, and this call passes a plain array</span>
+    <span class="c1"># so the service does not import pandas. The probability is the same either way.</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">"X does not have valid feature names"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="n">probability</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">saved</span><span class="p">[</span><span class="s2">"pipeline"</span><span class="p">]</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">row</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">prediction</span><span class="p">,</span> <span class="n">predicted_label</span> <span class="o">=</span> <span class="n">label_for</span><span class="p">(</span><span class="n">probability</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PredictResponse</span><span class="p">(</span>
+        <span class="n">prediction</span><span class="o">=</span><span class="n">prediction</span><span class="p">,</span>
+        <span class="n">predicted_label</span><span class="o">=</span><span class="n">predicted_label</span><span class="p">,</span>
+        <span class="n">home_win_probability</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">model_version</span><span class="o">=</span><span class="n">saved</span><span class="p">[</span><span class="s2">"model_version"</span><span class="p">],</span>
+    <span class="p">)</span>
+</code></pre></div>
+<ol>
+<li>FastAPI checks the request against <code>PredictRequest</code> before the route code runs.</li>
+<li>The route looks up each saved input name on the request and builds a numpy array with one row and two columns, <strong>in the order of <code>feature_names</code> from the model file.</strong> The order of the fields in the JSON does not matter.</li>
+<li>The route calls <code>predict_proba</code> and takes the probability of class 1 (a home win).</li>
+<li><code>label_for</code> applies the 0.5 rule: above 0.5 is <code>(1, "home win")</code>, and anything else, including exactly 0.5, is <code>(0, "away win")</code>. It is applied to the unrounded probability.</li>
+<li>The response rounds the probability to 4 places.</li>
+</ol>
+<h3 id="why-does-the-api-use-numpy-instead-of-pandas">Why Does the API Use NumPy Instead of pandas?</h3>
+<p>The API uses <a href="https://numpy.org/doc/stable/">NumPy</a> only. It does not use <a href="https://pandas.pydata.org/docs/">pandas</a>, although training and cleaning do. The two numbers go to the model as a NumPy array and not as a pandas table (a DataFrame).</p>
+<ul>
+<li><strong>The Lambda zip fits only without <code>pandas</code>.</strong> It is 231.3 MB without it and 278.4 MB with it, against a 250 MB limit. See the <a href="../../phase-4/implementation/#step-3-measure-the-package-size">Phase 4 Implementation, Step 3</a>.</li>
+<li><strong><code>src/model/features.py</code> imports <code>pandas</code> at the top,</strong> so no file in <code>src/api/</code> may import from it. The input names come from the model file instead.</li>
+<li><strong>One warning is expected.</strong> The scaler was fitted on a table with column names, so a plain array makes scikit-learn warn that "X does not have valid feature names". The probability is the same. The route silences this one warning and no others.</li>
+<li><strong>The answer is unchanged.</strong> With only NumPy installed, the inputs -0.5 and -18.0 give 0.3296, matching <a href="../../phase-2/implementation-part-2/#what-is-a-worked-example">Part 2</a>.</li>
+</ul>
+<h2 id="step-4-add-the-get-health-route">Step 4: Add the <code>GET /health</code> Route</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Report that the service is running and which model it loaded.</p>
+<p><strong>Why:</strong> It is the quickest way to check a running service, and it shows which model version is answering.</p>
+<p><strong>If skipped:</strong> A person could not tell a running service from a stopped one without sending a real prediction.</p>
+</div>
+<p>The response is <code>{"status":"ok","model_version":"v1.0","scikit_learn_version":"1.9.1"}</code>. The route reads only from memory. It does not open the file or call the model. The <code>scikit_learn_version</code> is the one saved in the model file, and start-up has already checked that it equals the installed one.</p>
+<h2 id="step-5-reject-bad-input-clearly">Step 5: Reject Bad Input Clearly</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Make every bad request return an error that names the problem, and never a prediction or a crash.</p>
+<p><strong>Why:</strong> The web app and a person with <code>curl</code> both need to see what to fix.</p>
+<p><strong>If skipped:</strong> A bad value could reach the model and return a meaningless probability.</p>
+</div>
+<pre class="mermaid"><code>flowchart TB
+    A["Request arrives"] --&gt; B{"Valid JSON?"}
+    B --&gt;|"no"| E["422: json_invalid"]
+    B --&gt;|"yes"| C{"Both fields present,&lt;br/&gt;no extra fields?"}
+    C --&gt;|"no"| E2["422: missing or extra_forbidden"]
+    C --&gt;|"yes"| D{"Both are numbers&lt;br/&gt;inside their ranges?"}
+    D --&gt;|"no"| E3["422: float_type, finite_number,&lt;br/&gt;or a range error"]
+    D --&gt;|"yes"| F["Run the model"]</code></pre>
+<p>The checks all come from the request definition in Step 2, and FastAPI answers a failed check with status 422. One piece of extra code was needed. When a value is <code>NaN</code>, the error body would contain a real <code>NaN</code>, which JSON cannot hold, and FastAPI crashed while writing the 422. The service has its own handler for these errors (<code>reject_invalid_request</code> in <code>src/api/app.py</code>) that replaces a non-finite number with the text <code>"NaN"</code> or <code>"Infinity"</code> and then sends the 422. Real examples are shown in <a href="#error-examples">Error Examples</a>.</p>
+<h2 id="step-6-run-the-tests">Step 6: Run the Tests</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Check both routes, the start-up checks, and the no-pandas rule, without a real saved model or the internet.</p>
+<p><strong>Why:</strong> The tests keep the Lambda size result and the input rules from breaking later.</p>
+<p><strong>If skipped:</strong> A change could pass unnoticed until the deployed function failed.</p>
+</div>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest
+</code></pre></div>
+<p>Expected: <strong>47 passed</strong>, with no warnings, in about 11 seconds. Without <code>models/model.joblib</code>, test 17 is skipped instead, and 46 pass.</p>
+<ul>
+<li><strong>Made-up model.</strong> A fixture fits a tiny pipeline on 40 made-up rows (fixed random seed), saves it in the same dictionary format that training writes, and points the service at it. The tests never touch <code>models/model.joblib</code>, except test 17.</li>
+<li><strong>In-memory calls.</strong> FastAPI's test client calls the app without starting a server. It is used as a context manager (<code>with TestClient(app)</code>), because that is what runs the start-up step.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">#</th>
+<th style="text-align: left;">Test</th>
+<th style="text-align: left;">What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><code>test_prediction_matches_the_pipeline</code></td>
+<td style="text-align: left;">The probability from <code>/predict</code> equals the pipeline's own answer, rounded to 4 places.</td>
+</tr>
+<tr>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><code>test_pick_rule</code></td>
+<td style="text-align: left;"><code>label_for</code> gives an away win for 0.0, 0.4999, and exactly 0.5, and a home win for 0.5001 and 1.0.</td>
+</tr>
+<tr>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><code>test_response_fields</code></td>
+<td style="text-align: left;">The response has the four fields with the right types, and whole-number inputs are accepted.</td>
+</tr>
+<tr>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><code>test_field_order_does_not_change_the_answer</code></td>
+<td style="text-align: left;">The same two values with the JSON fields in the opposite order give the same response.</td>
+</tr>
+<tr>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"><code>test_missing_field_is_rejected</code></td>
+<td style="text-align: left;">Status 422, and the error names the missing field.</td>
+</tr>
+<tr>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;"><code>test_extra_field_is_rejected</code></td>
+<td style="text-align: left;">Status 422, and the error names the extra field.</td>
+</tr>
+<tr>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;"><code>test_text_value_is_rejected</code></td>
+<td style="text-align: left;">Both <code>"abc"</code> and <code>"0.5"</code> give 422.</td>
+</tr>
+<tr>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;"><code>test_out_of_range_value_is_rejected</code></td>
+<td style="text-align: left;">1.5 and 500 are rejected and name the field, and the edge values 1 and -100 are accepted.</td>
+</tr>
+<tr>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;"><code>test_not_a_number_is_rejected</code></td>
+<td style="text-align: left;">A body containing <code>NaN</code> gives 422.</td>
+</tr>
+<tr>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;"><code>test_invalid_json_is_rejected</code></td>
+<td style="text-align: left;">A body that is not valid JSON gives 422.</td>
+</tr>
+<tr>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;"><code>test_health</code></td>
+<td style="text-align: left;">Status 200, with the three expected fields.</td>
+</tr>
+<tr>
+<td style="text-align: left;">12</td>
+<td style="text-align: left;"><code>test_missing_model_file_stops_startup</code></td>
+<td style="text-align: left;">Start-up raises an error that says to run the training command.</td>
+</tr>
+<tr>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;"><code>test_unreadable_model_file_stops_startup</code></td>
+<td style="text-align: left;">A file holding plain text stops start-up with "Could not read the saved model".</td>
+</tr>
+<tr>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;"><code>test_version_mismatch_stops_startup</code></td>
+<td style="text-align: left;">A saved scikit-learn version of <code>0.0.0</code> stops start-up and names both versions.</td>
+</tr>
+<tr>
+<td style="text-align: left;">15</td>
+<td style="text-align: left;"><code>test_wrong_feature_names_stop_startup</code></td>
+<td style="text-align: left;">Saved input names that are not the two request fields stop start-up.</td>
+</tr>
+<tr>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;"><code>test_api_files_do_not_import_pandas</code></td>
+<td style="text-align: left;">The API files are read as text and checked: none imports <code>pandas</code>, <code>mlflow</code>, <code>matplotlib</code>, or anything from <code>src/model/</code>. Checking <code>sys.modules</code> would not work, because scikit-learn loads <code>pandas</code> on its own when it is installed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;"><code>test_real_model_worked_example</code></td>
+<td style="text-align: left;">With the real model, the inputs -0.5 and -18.0 return the exact response shown in Example 1. Skipped if <code>models/model.joblib</code> does not exist.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-if-something-goes-wrong">What If Something Goes Wrong?</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">What you see</th>
+<th style="text-align: left;">Likely cause</th>
+<th style="text-align: left;">What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>command not found: uvicorn</code></td>
+<td style="text-align: left;">The virtual environment is not active, or the shell has no <code>uvicorn</code> command.</td>
+<td style="text-align: left;">Run <code>source .venv/bin/activate</code>, and start the service with <code>python -m uvicorn ...</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>address already in use</code></td>
+<td style="text-align: left;">Another program, often <code>mkdocs serve</code>, owns port 8000.</td>
+<td style="text-align: left;">Stop it, or use <code>--port 8001</code> here and in every <code>curl</code> command.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RuntimeError: No saved model at models/model.joblib</code></td>
+<td style="text-align: left;">The model has not been trained on this machine.</td>
+<td style="text-align: left;">Run <code>python -m src.model.train</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RuntimeError: Saved model was built with scikit-learn ...</code></td>
+<td style="text-align: left;">The installed scikit-learn differs from the one that trained the model.</td>
+<td style="text-align: left;">Run <code>pip install -r requirements.txt</code>, or retrain.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>curl: (7) Failed to connect</code></td>
+<td style="text-align: left;">The service is not running, or is on another port.</td>
+<td style="text-align: left;">Check the first terminal, and check the port in the command.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Status 422</td>
+<td style="text-align: left;">The request failed an input check.</td>
+<td style="text-align: left;">Read <code>loc</code> and <code>msg</code> in the error. See <a href="#reading-an-error">Reading an Error</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Status 404</td>
+<td style="text-align: left;">The path is wrong.</td>
+<td style="text-align: left;">The routes are <code>/predict</code> and <code>/health</code>. <code>/predict</code> needs <code>POST</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Status 405</td>
+<td style="text-align: left;"><code>GET</code> was sent to <code>/predict</code>.</td>
+<td style="text-align: left;">Add <code>-X POST</code> and a body.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-carries-into-phase-4">What Carries Into Phase 4?</h2>
+<ul>
+<li><strong>The same <code>app</code> object</strong> is wrapped by Mangum in Phase 4, so the local tests cover the code that runs on Lambda.</li>
+<li><strong>The no-pandas rule</strong> keeps the Lambda zip under its size limit.</li>
+<li><strong>The <code>load_model</code> function</strong> is reused on Lambda. Mangum runs the app's start-up step on every request by default, so Phase 4 turns that off and loads the model once, on the first call, instead.</li>
+<li><strong>The folder layout</strong> (<code>src/</code>, <code>config/</code>, <code>models/</code>) must stay the same inside the zip, so <code>resolve_path</code> finds the same files.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1712 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/phase-1/implementation/">
+      
+      
+        <link rel="prev" href="../brief/">
+      
+      
+        <link rel="next" href="../../phase-2/brief/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Implementation - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-1-implementation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Implementation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Data Flow?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-source-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Source Data?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-run-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Run Environment?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-prediction-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Prediction Task?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-fetch-the-raw-data-and-save-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Fetch the Raw Data and Save It
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-clean-the-raw-data-and-save-the-cleaned-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Clean the Raw Data and Save the Cleaned Table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Clean the Raw Data and Save the Cleaned Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-columns-are-kept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Columns Are Kept?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-rules-run-and-in-what-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Rules Run, and in What Order?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-stops-the-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Stops the Step?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-the-saved-table-look-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does the Saved Table Look Like?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-upload-the-cleaned-table-to-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Upload the Cleaned Table to S3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-download-the-cleaned-table-from-s3-and-save-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Download the Cleaned Table From S3 and Save It
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-phase-1-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does Phase 1 Create?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-choices-were-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Choices Were Made?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/implementation-part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/implementation-part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-2/reproduce-end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Data Flow?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-source-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Source Data?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-run-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Run Environment?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-the-prediction-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Prediction Task?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-fetch-the-raw-data-and-save-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Fetch the Raw Data and Save It
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-clean-the-raw-data-and-save-the-cleaned-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Clean the Raw Data and Save the Cleaned Table
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Clean the Raw Data and Save the Cleaned Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-columns-are-kept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Columns Are Kept?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-rules-run-and-in-what-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Rules Run, and in What Order?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-stops-the-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Stops the Step?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-the-saved-table-look-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does the Saved Table Look Like?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-upload-the-cleaned-table-to-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Upload the Cleaned Table to S3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-download-the-cleaned-table-from-s3-and-save-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Download the Cleaned Table From S3 and Save It
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-does-phase-1-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does Phase 1 Create?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-choices-were-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Choices Were Made?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="phase-1-implementation">Phase 1 Implementation</h1>
+<p>This page explains how the Phase 1 data pipeline works, what it creates, and why. For the short version, see the <a href="../brief/">Brief</a>.</p>
+<h2 id="how-does-the-data-flow">How Does the Data Flow?</h2>
+<pre class="mermaid"><code>flowchart LR
+    A["nflverse games.csv&lt;br/&gt;(GitHub)"] --&gt; B["Step 1: fetch&lt;br/&gt;src/data/fetch_raw.py"]
+    B --&gt; C["data/raw/games.csv&lt;br/&gt;7,548 rows, 46 columns"]
+    C --&gt; D["Step 2: clean&lt;br/&gt;src/data/clean.py"]
+    D --&gt; E["data/processed/&lt;br/&gt;1,759 rows, 7 columns"]
+    E --&gt; F["Step 3: upload&lt;br/&gt;src/data/upload_to_s3.py"]
+    F --&gt; G[("S3 bucket&lt;br/&gt;510-m3-nfl-dataset")]
+    G --&gt; H["Step 4: download&lt;br/&gt;src/data/download_from_s3.py"]
+    H --&gt; I["data/from-s3/&lt;br/&gt;1,759 rows"]</code></pre>
+<h2 id="what-is-the-source-data">What Is the Source Data?</h2>
+<ul>
+<li><strong>Dataset:</strong> nflverse <code>games.csv</code> (<a href="https://github.com/nflverse/nfldata/blob/master/data/games.csv">link</a>), downloaded from <code>https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv</code>.</li>
+<li><strong>Size when downloaded (2026-11-17):</strong> 7,548 rows and 46 columns. Each row is one game, from the 1999 season through the 2026 schedule.</li>
+<li><strong>Why this window:</strong> the project uses 2020 through 2026 week 10. That stays within the past decade and uses the most recent data. Week 10 of 2026 is the last week where every game has a score in the file.</li>
+</ul>
+<h2 id="what-is-the-run-environment">What Is the Run Environment?</h2>
+<p>This is the one place the environment is stated. Other pages refer to it.</p>
+<ul>
+<li><strong>Language:</strong> Python 3.13 (the local virtual environment uses 3.13.14). The Lambda function in Phase 4 and the Docker image in Phase 6 must use the same minor version.</li>
+<li><strong>Python packages:</strong> installed from <code>requirements.txt</code>, pinned to exact versions.</li>
+<li><strong>AWS:</strong> an account, AWS CLI version 2, and credentials configured on the machine. Steps 3 and 4 need them.</li>
+<li><strong>Network:</strong> access to GitHub (Step 1) and S3 (Steps 3 and 4).</li>
+<li><strong>Later phases:</strong> Node.js with npm for the Phase 5 web app, and Docker Desktop for Phase 6.</li>
+<li><strong>Docs:</strong> MkDocs with the Material theme, kept out of the project dependency files.</li>
+</ul>
+<h2 id="what-is-the-prediction-task">What Is the Prediction Task?</h2>
+<p>The first design choice is the prediction task: classification or regression. It is made in Phase 1 because it decides which rows are usable and which columns are kept.</p>
+<ul>
+<li><strong>Supervised learning:</strong> the model learns from past games where the answer is known, then predicts games where it is not.</li>
+<li><strong>Classification</strong> predicts one of a fixed set of labels. <strong>Regression</strong> predicts a number on a scale, such as a score margin.</li>
+<li><strong>This project uses binary classification</strong> (two labels): did the home team win? The answer is 1 (home win) or 0 (away win). That answer is the target, in a column called <code>home_win</code>.</li>
+<li><strong>Why not regression:</strong> the web app shows a predicted winner and a win probability. A classifier gives both directly. A margin model would need an extra step to turn a margin into a probability. The full reasoning, with the numbers, is in <a href="../../decisions/#why-binary-classification-and-not-regression">Decisions</a>.</li>
+<li><strong>What the task needs from the data:</strong><ul>
+<li>Exactly two outcomes. A tie has neither, so the 6 tied games are removed.</li>
+<li>Both final scores. <code>home_win</code> is 1 when <code>home_score</code> is greater than <code>away_score</code>. It is built in Phase 2, so the saved table holds only facts from the source file.</li>
+<li>A finished game for every row. Unplayed games have no answer and are removed.</li>
+</ul>
+</li>
+<li><strong>Home-win rate:</strong> home teams won 931 of the 1,759 kept games, or <strong>52.93%</strong>. Always picking the home team is therefore the baseline the model must beat.</li>
+</ul>
+<h2 id="step-1-fetch-the-raw-data-and-save-it">Step 1: Fetch the Raw Data and Save It</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Download <code>games.csv</code> and save an unchanged copy as <code>data/raw/games.csv</code>.</p>
+<p><strong>Why:</strong> nflverse updates this file as games are played and can correct old scores, so a saved copy gives cleaning a fixed input.</p>
+<p><strong>If skipped:</strong> Two cleaning runs on different days could produce different tables.</p>
+</div>
+<p><code>src/data/fetch_raw.py</code> downloads with <code>requests</code> into a temporary <code>.partial</code> file. It checks the HTTP status, that the file has at least one row, and that the eight columns cleaning reads are present (<code>game_id</code>, <code>season</code>, <code>game_type</code>, <code>week</code>, <code>home_team</code>, <code>away_team</code>, <code>home_score</code>, <code>away_score</code>). Only then does it rename the file, so a failed download never replaces a good copy.</p>
+<h2 id="step-2-clean-the-raw-data-and-save-the-cleaned-table">Step 2: Clean the Raw Data and Save the Cleaned Table</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Read the raw file and save <code>data/processed/nfl_matchups_2020_2026.csv</code> with only the 1,759 games that should be used and the 7 columns later steps need.</p>
+<p><strong>Why:</strong> The raw file holds playoff games, 21 seasons (1999 to 2019) the project does not use, 122 games not played yet, 6 tied games, and 39 columns the project does not use.</p>
+<p><strong>If skipped:</strong> Playoff and unplayed games would reach the model, and tied games would have no correct answer.</p>
+</div>
+<p>Run it with <code>python -m src.data.clean</code>. The script reads only the saved raw file and never goes to the internet, so the same raw file always gives the same output.</p>
+<h3 id="which-columns-are-kept">Which Columns Are Kept?</h3>
+<p>The raw file has 46 columns. Cleaning keeps 7 and drops 39.</p>
+<ul>
+<li><strong>Kept:</strong> <code>game_id</code>, <code>season</code>, <code>week</code>, <code>home_team</code>, <code>away_team</code>, <code>home_score</code>, and <code>away_score</code>.</li>
+<li><strong>Used to filter, then dropped:</strong> <code>game_type</code>. It holds <code>REG</code> (7,239 games), <code>WC</code> (120), <code>DIV</code> (108), <code>CON</code> (54), and <code>SB</code> (27).</li>
+<li><strong>Dropped, because season and week already say when a game was played:</strong> <code>gameday</code>, <code>weekday</code>, and <code>gametime</code>.</li>
+<li><strong>Dropped, because the kept scores already hold them:</strong> <code>result</code> (home minus away score), <code>total</code> (the two scores added), and <code>overtime</code>.</li>
+<li><strong>Dropped as outside team results:</strong> venue columns (<code>location</code>, <code>roof</code>, <code>surface</code>, <code>temp</code>, <code>wind</code>, <code>stadium_id</code>, <code>stadium</code>), betting lines (moneylines, spread, total line, and odds), and people (quarterbacks, coaches, referee).</li>
+<li><strong>Dropped for now:</strong> <code>away_rest</code>, <code>home_rest</code>, and <code>div_game</code>. Rest days are not a model input in this project.</li>
+<li><strong>Dropped as identifiers from other data sources:</strong> <code>old_game_id</code>, <code>gsis</code>, <code>nfl_detail_id</code>, <code>pfr</code>, <code>pff</code>, <code>espn</code>, and <code>ftn</code>.</li>
+</ul>
+<h3 id="which-rules-run-and-in-what-order">Which Rules Run, and in What Order?</h3>
+<p>The script prints the row count after each rule, so a reader can see where every removed game went.</p>
+<ul>
+<li><strong>Start:</strong> 7,548 rows, the whole raw file.</li>
+<li><strong>Rule 1, regular season only (<code>game_type</code> is <code>REG</code>):</strong> 7,239 rows left, 309 removed. Playoff games are played under different conditions and give some teams extra games, so they stay out of every team's record.</li>
+<li><strong>Rule 2, seasons 2020 to 2026:</strong> 1,887 rows left, 5,352 removed. These are the 1999 to 2019 seasons. The seasons 2020 to 2026 have 256, 272, 271, 272, 272, 272, and 272 games.</li>
+<li><strong>Rule 3, cut 2026 after week 10:</strong> 1,765 rows left, 122 removed. Weeks 11 to 18 of 2026 have no scores yet.</li>
+<li><strong>Rule 4, remove tied games:</strong> 1,759 rows left, 6 removed. A tie has no winner. The tied games are <code>2020_03_CIN_PHI</code>, <code>2021_10_DET_PIT</code>, <code>2022_01_IND_HOU</code>, <code>2022_13_WAS_NYG</code>, <code>2025_04_GB_DAL</code>, and <code>2026_05_NYG_WAS</code>. Each removed tie leaves a one-game gap in the records of the two teams involved.</li>
+</ul>
+<p>Rule 3 runs before the missing-score check on purpose. Unplayed games have blank scores, and checking first would stop the step on those 122 rows. After the week cut, a blank score in a game that should have one is a real problem.</p>
+<p>The week cut is <code>window.test_through_week</code> (10) in <code>config/config.yaml</code>, applied to the <code>window.end_season</code> season (2026). If nflverse scores week 11 later, the cleaned table does not change until that number is raised.</p>
+<h3 id="what-stops-the-step">What Stops the Step?</h3>
+<ul>
+<li><strong>No raw file:</strong> <code>data/raw/games.csv</code> is missing or empty. The step ends with a short message, not a traceback. The fix is to run Step 1.</li>
+<li><strong>Blank score or team:</strong> after rule 3, any game is missing a score, home team, or away team. The message gives the count and the first five game ids.</li>
+<li><strong>Wrong number of teams:</strong> the table does not hold exactly 32 team codes, which would mean a code changed or the window moved.</li>
+</ul>
+<h3 id="what-does-the-saved-table-look-like">What Does the Saved Table Look Like?</h3>
+<ul>
+<li><code>game_id</code>: the unique game name (season, week, away team, home team), such as <code>2020_01_ARI_SF</code>. No id repeats.</li>
+<li><code>season</code> and <code>week</code>: whole numbers. Weeks run 1 to 18, and 2026 stops at week 10.</li>
+<li><code>home_team</code> and <code>away_team</code>: team codes, such as <code>SF</code> and <code>ARI</code>. 32 different codes appear.</li>
+<li><code>home_score</code> and <code>away_score</code>: final points as whole numbers, 0 to 70 for home teams and 0 to 59 for away teams. The raw file stores them as decimals (<code>20.0</code>) because blank scores exist in it. After the checks none are blank.</li>
+<li><strong>Example first row:</strong> <code>2020_01_ARI_SF,2020,1,SF,ARI,20,24</code>.</li>
+<li><strong>Order:</strong> rows are sorted by <code>season</code>, <code>week</code>, and <code>game_id</code>, so the saved file is identical every run.</li>
+<li><strong>Values are never edited.</strong> Cleaning only removes rows and columns. Neutral-site games, such as international games, stay in with the home label the schedule gives them.</li>
+<li><strong>Size:</strong> 1,759 rows and 63,908 bytes. Rows by season are 255 (2020), 271 (2021), 269 (2022), 272 (2023), 272 (2024), 271 (2025), and 149 (2026, weeks 1 to 10). 2022 has one fewer game than the other full seasons because one game was cancelled.</li>
+</ul>
+<h2 id="step-3-upload-the-cleaned-table-to-s3">Step 3: Upload the Cleaned Table to S3</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Copy the cleaned table to a private S3 bucket.</p>
+<p><strong>Why:</strong> The pipeline reads its data from cloud storage, and one shared copy keeps every run on the same data.</p>
+<p><strong>If skipped:</strong> The pipeline would depend on a file on one laptop.</p>
+</div>
+<p>The bucket is <code>510-m3-nfl-dataset</code> in <code>us-east-1</code>, and the object key is <code>data/processed/nfl_matchups_2020_2026.csv</code>. Both come from <code>config.yaml</code>. Only the cleaned table is uploaded.</p>
+<ul>
+<li><strong>The bucket was created by hand,</strong> in the AWS console, with all four public-access blocks on. No script creates it, because only an upload script and a download script are needed. S3 encrypts new objects with AES-256 by default.</li>
+<li><code>src/data/upload_to_s3.py</code> uploads the file, then asks S3 for the object's size and compares it with the local file (63,908 bytes). A difference stops the step.</li>
+<li>A failed AWS call (missing credentials, a wrong bucket name, or no permission) ends the step with boto3's own error message and no traceback.</li>
+</ul>
+<h2 id="step-4-download-the-cleaned-table-from-s3-and-save-it">Step 4: Download the Cleaned Table From S3 and Save It</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Download the cleaned table and save it as <code>data/from-s3/nfl_matchups_2020_2026.csv</code>.</p>
+<p><strong>Why:</strong> Every later run must start from the S3 copy and not from a file someone saved by hand.</p>
+<p><strong>If skipped:</strong> A run could use an old or edited local file without anyone knowing.</p>
+</div>
+<p><code>src/data/download_from_s3.py</code> downloads into a temporary <code>.partial</code> file and renames it when the download finishes, so a failed download never replaces a good local copy. It always downloads again, never reuses an earlier local copy, and prints the row count (1,759). Credentials come from the standard AWS credential chain and are never stored in the repository. Step 2 already checked the table, so this step does not check it again. Steps 1 to 3 run once, when the data changes. Anyone who only trains starts at Step 4.</p>
+<h2 id="what-does-phase-1-create">What Does Phase 1 Create?</h2>
+<ul>
+<li><strong>Code:</strong> <code>src/config.py</code> reads <code>config/config.yaml</code>, so no script hard-codes a season, path, or bucket. The four steps live in <code>src/data/</code>, one file per step, in run order: <code>fetch_raw.py</code>, <code>clean.py</code>, <code>upload_to_s3.py</code>, and <code>download_from_s3.py</code>. Later phases add their own folders next to it.</li>
+<li><strong>Run commands:</strong> <code>python -m src.data.fetch_raw</code>, <code>python -m src.data.clean</code>, <code>python -m src.data.upload_to_s3</code>, and <code>python -m src.data.download_from_s3</code>.</li>
+<li><strong>Settings:</strong> <code>config/config.yaml</code> has a <code>data</code> block (source address, the three file paths, bucket, S3 key, region) and a <code>window</code> block (<code>start_season</code> 2020, <code>end_season</code> 2026, <code>test_through_week</code> 10).</li>
+<li><strong>Other files:</strong> <code>requirements.txt</code> (exact versions), <code>pytest.ini</code>, and tests in <code>tests/test_clean.py</code> and <code>tests/test_upload.py</code>.</li>
+<li><strong>Local data files:</strong> <code>data/raw/games.csv</code> (7,548 rows, 46 columns), <code>data/processed/nfl_matchups_2020_2026.csv</code> (1,759 rows, 7 columns), and <code>data/from-s3/nfl_matchups_2020_2026.csv</code> (identical to the cleaned table).</li>
+<li><strong>In AWS:</strong> the bucket <code>510-m3-nfl-dataset</code> in <code>us-east-1</code>. It is private, has all four public-access blocks on, uses AES-256 encryption, and holds one object (63,908 bytes).</li>
+</ul>
+<h2 id="which-choices-were-made">Which Choices Were Made?</h2>
+<ul>
+<li><strong>Only the cleaned table goes to S3.</strong> The raw file stays on the developer machine, because only the cleaned data needs to be in the cloud.</li>
+<li><strong>Training always starts from the S3 copy.</strong> The download step fetches again and never reuses an earlier local copy.</li>
+<li><strong>AWS only.</strong> Turned down: Google Cloud and Azure.</li>
+<li><strong>Two small S3 scripts:</strong> upload (checks the object size) and download. Each ends with a short message on an AWS error. Turned down: a shared file that sorted AWS errors into named causes. boto3's own messages already say the same thing.</li>
+<li><strong>The bucket is created by hand, not by code.</strong> Turned down: a setup script. A script that creates AWS resources adds risk for no benefit.</li>
+<li><strong>Binary classification, not regression.</strong> Turned down: predicting the score margin. See <a href="../../decisions/#why-binary-classification-and-not-regression">Why Binary Classification and Not Regression?</a>.</li>
+<li><strong>Ties are removed (6 games).</strong> Turned down: labeling a tie as an away win, and counting a tie as half a win.</li>
+<li><strong>Playoffs and unplayed games are removed,</strong> and the week cap is a setting, not a code edit.</li>
+<li><strong>Dependencies are pinned to exact versions.</strong></li>
+<li><strong>No notebooks.</strong> They repeated what the scripts and these pages say.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

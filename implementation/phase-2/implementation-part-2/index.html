@@ -1,0 +1,2307 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.">
+      
+      
+      
+        <link rel="canonical" href="https://jconnors23.github.io/510-m3-nfl-prediction-analytics/implementation/phase-2/implementation-part-2/">
+      
+      
+        <link rel="prev" href="../implementation-part-1/">
+      
+      
+        <link rel="next" href="../reproduce-end-to-end/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Implementation Part 2 - NFL Prediction Analytics</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-2-implementation-part-2-steps-4-to-7" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-header__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFL Prediction Analytics
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Implementation Part 2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="NFL Prediction Analytics" class="md-nav__button md-logo" aria-label="NFL Prediction Analytics" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.39 21 3 15.61c0 1.09.04 2.1.2 3.02.15.92.3 1.47.51 1.66.19.21.73.36 1.64.52s1.92.19 3.04.19M15.5 9.89 9.89 15.5 8.5 14.11l5.61-5.61zM3.29 13.08l7.63 7.63c2.78-.5 4.98-1.56 6.61-3.18 1.62-1.63 2.68-3.83 3.18-6.61l-7.63-7.63c-2.78.5-4.98 1.56-6.61 3.18s-2.68 3.83-3.18 6.61M15.61 3 21 8.39c0-1.09-.04-2.1-.19-3.02-.16-.92-.31-1.47-.52-1.66-.19-.21-.73-.36-1.64-.51S16.73 3 15.61 3"/></svg>
+
+    </a>
+    NFL Prediction Analytics
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jconnors23/510-m3-nfl-prediction-analytics" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    510-m3-nfl-prediction-analytics
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1: Data Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1: Data Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-1/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 2: Features, Training, and Tracking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Part 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Data Flow?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Does the Data Flow?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-files-were-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Files Were Added?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-fit-the-scaler-and-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Fit the Scaler and the Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Fit the Scaler and the Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-is-the-pipeline-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is the Pipeline Built?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-the-fit-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does the Fit Learn?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Worked Example?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-score-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Score the Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Score the Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-is-a-game-scored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is a Game Scored?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Accuracy?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-log-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Log Loss?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-the-two-scores-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do the Two Scores Fit Together?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-the-confusion-matrix-show" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does the Confusion Matrix Show?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-plot-is-drawn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Plot Is Drawn?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-record-the-run-in-mlflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Record the Run in MLflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Record the Run in MLflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-is-mlflow-set-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is MLflow Set Up?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-logged-for-each-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Logged for Each Run?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-is-the-model-stored-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Is the Model Stored Twice?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-mlflow-kept-tidy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is MLflow Kept Tidy?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-save-the-final-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Save the Final Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Save the Final Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-saved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Saved?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-run-summary-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Run Summary File?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reproduce-end-to-end/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducing End to End
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3: Local Prediction API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 3: Local Prediction API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-3/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4: AWS Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 4: AWS Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../phase-4/deployment-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../remaining-phases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remaining Phases (Planned)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Requirements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/assignment-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignment Brief
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/project-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../requirements/requirements-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-the-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Does the Data Flow?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How Does the Data Flow?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-files-were-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Files Were Added?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-fit-the-scaler-and-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Fit the Scaler and the Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Fit the Scaler and the Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-is-the-pipeline-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is the Pipeline Built?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-the-fit-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does the Fit Learn?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Worked Example?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-score-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Score the Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Score the Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-is-a-game-scored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is a Game Scored?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Accuracy?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-log-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Log Loss?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-the-two-scores-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do the Two Scores Fit Together?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-does-the-confusion-matrix-show" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Does the Confusion Matrix Show?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-plot-is-drawn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Plot Is Drawn?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-record-the-run-in-mlflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Record the Run in MLflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Record the Run in MLflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-is-mlflow-set-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is MLflow Set Up?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-logged-for-each-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Logged for Each Run?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-is-the-model-stored-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Is the Model Stored Twice?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-is-mlflow-kept-tidy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Is MLflow Kept Tidy?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-save-the-final-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Save the Final Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Save the Final Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-saved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Saved?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-run-summary-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is the Run Summary File?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="phase-2-implementation-part-2-steps-4-to-7">Phase 2 Implementation, Part 2: Steps 4 to 7</h1>
+<p>This page explains how the last four Phase 2 steps work: fitting the model, scoring it, recording the run in MLflow, and saving the trained model. <a href="../implementation-part-1/">Part 1</a> covers the inputs, the split, and the settings. For the short version, see the <a href="../brief/">Brief</a>.</p>
+<p><strong>Status: built and tested.</strong> The code is in <code>src/model/train.py</code> and <code>src/model/evaluate.py</code>. Every number below comes from the real run of <code>python -m src.model.train</code> on the downloaded table. The command was run twice and gave identical scores, and <code>pytest</code> passes 30 tests.</p>
+<h2 id="how-does-the-data-flow">How Does the Data Flow?</h2>
+<pre class="mermaid"><code>flowchart LR
+    A["Training 1,339&lt;br/&gt;Validation 271&lt;br/&gt;Test 149"] --&gt; B["Step 4: fit scaler&lt;br/&gt;and model"]
+    B --&gt; C["Step 5: score&lt;br/&gt;and draw plot"]
+    C --&gt; D["Step 6: record&lt;br/&gt;in MLflow"]
+    B --&gt; E["Step 7: save&lt;br/&gt;model.joblib"]
+    D -.-&gt; E</code></pre>
+<h3 id="which-files-were-added">Which Files Were Added?</h3>
+<ul>
+<li><code>src/model/train.py</code> holds the command, the fit, the saved file, the run summary file, and the MLflow logging.</li>
+<li><code>src/model/evaluate.py</code> holds the scores and the plot. It has no MLflow code and reads no files.</li>
+<li><code>tests/test_train.py</code> and <code>tests/test_evaluate.py</code> hold the tests. They use made-up data, and every file they write goes in a temporary folder.</li>
+<li><code>requirements.txt</code> gains <code>matplotlib==3.11.2</code> and <code>joblib==1.6.0</code>. Both were already installed, because MLflow and scikit-learn bring them in, but the project pins them.</li>
+<li><code>.gitignore</code> gains <code>models/</code>, <code>mlflow.db</code>, and <code>mlartifacts/</code>.</li>
+<li><code>results/run-summary.json</code> is a small readable record of the latest run. It is created by training and committed to git.</li>
+</ul>
+<p>The command reads the table that Phase 1 downloaded, so run the download step first.</p>
+<h2 id="step-4-fit-the-scaler-and-the-model">Step 4: Fit the Scaler and the Model</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Learn the model from the training games, and keep the scaler and the model together as one object.</p>
+<p><strong>Why:</strong> The two inputs are on very different scales (about 0.35 versus about 10). Standardizing them first lets the model weigh them fairly, and keeping both in one object means the API cannot apply the model without the scaler.</p>
+<p><strong>If skipped:</strong> There would be no model to score or serve.</p>
+</div>
+<h3 id="how-is-the-pipeline-built">How Is the Pipeline Built?</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A scaler and a logistic regression, with every setting taken from the config file."""</span>
+    <span class="n">logistic</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"model"</span><span class="p">][</span><span class="s2">"logistic_regression"</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">make_pipeline</span><span class="p">(</span>
+        <span class="n">StandardScaler</span><span class="p">(),</span>
+        <span class="n">LogisticRegression</span><span class="p">(</span>
+            <span class="n">C</span><span class="o">=</span><span class="n">logistic</span><span class="p">[</span><span class="s2">"C"</span><span class="p">],</span>
+            <span class="n">solver</span><span class="o">=</span><span class="n">logistic</span><span class="p">[</span><span class="s2">"solver"</span><span class="p">],</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="n">logistic</span><span class="p">[</span><span class="s2">"max_iter"</span><span class="p">],</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"model"</span><span class="p">][</span><span class="s2">"random_seed"</span><span class="p">],</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">training</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Fit the scaler and the model on the training games only."""</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">build_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="c1"># Validation and test games stay out of this call, so their results cannot move the weights.</span>
+    <span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training</span><span class="p">[</span><span class="n">INPUT_COLUMNS</span><span class="p">],</span> <span class="n">training</span><span class="p">[</span><span class="s2">"home_win"</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">pipeline</span>
+</code></pre></div>
+<ul>
+<li><strong>Training rows only.</strong> The scaler's averages and spreads, and the model's weights, come from the 1,339 training games. Validation and test games never touch the fit.</li>
+<li><strong>Named columns.</strong> The inputs are passed as a table with the two column names, not as a bare array, so the order of the inputs is fixed and the API can rely on it.</li>
+<li><strong>Every value comes from <code>config.yaml</code>.</strong> Nothing about the model is written in the code.</li>
+</ul>
+<h3 id="what-does-the-fit-learn">What Does the Fit Learn?</h3>
+<ul>
+<li><strong>The scaler</strong> learns one average and one spread for each input, from the training games:<ul>
+<li><code>win_pct_differential</code>: average -0.0004, spread 0.3476</li>
+<li><code>point_diff_per_game_differential</code>: average -0.1762, spread 10.1117</li>
+</ul>
+</li>
+<li><strong>The model</strong> learns one weight for each standardized input, plus an intercept:<ul>
+<li>weight for <code>win_pct_differential</code>: 0.2138</li>
+<li>weight for <code>point_diff_per_game_differential</code>: 0.3081</li>
+<li>intercept: 0.1403</li>
+<li>The solver finished in 6 steps (the limit is 1000).</li>
+</ul>
+</li>
+<li><strong>Reading the weights:</strong> both are positive, so a stronger home team on either input raises the home win probability. The margin input has the larger weight.</li>
+<li><strong>Reading the intercept:</strong> it is positive, which is the home-field edge. With both inputs at 0, the home win probability is 0.5364. Home teams won 53.32% of the training games.</li>
+<li><strong>Repeatable:</strong> a second fit with the same settings gives identical probabilities.</li>
+</ul>
+<h3 id="what-is-a-worked-example">What Is a Worked Example?</h3>
+<p>Game <code>2025_07_NE_TEN</code> has inputs -0.5 and -18.0. The scaler turns them into standardized values, and the model adds them up:</p>
+<ul>
+<li>Standardized win percentage input: (-0.5 - (-0.0004)) / 0.3476 = about -1.44.</li>
+<li>Standardized margin input: (-18.0 - (-0.1762)) / 10.1117 = about -1.76.</li>
+<li>Weighted sum: 0.1403 + 0.2138 x (-1.44) + 0.3081 x (-1.76) = about -0.71.</li>
+<li>The logistic function turns -0.71 into a probability of about 0.33.</li>
+</ul>
+<p>The model's own output for this game is <strong>0.3296</strong>, a 33% chance that Tennessee wins. That is below 0.5, so the prediction is an away win. New England won, so it is correct.</p>
+<h2 id="step-5-score-the-model">Step 5: Score the Model</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Measure how often the model picks the winner, and compare it with the always-pick-home baseline.</p>
+<p><strong>Why:</strong> A score on its own means little. Beating a simple rule shows the inputs add something.</p>
+<p><strong>If skipped:</strong> There would be no result to report.</p>
+</div>
+<h3 id="how-is-a-game-scored">How Is a Game Scored?</h3>
+<ul>
+<li>The model gives a home win probability for each game. A probability <strong>above 0.5</strong> is a pick for the home team, and anything else is a pick for the away team.</li>
+<li><strong>Two scores</strong> are used, and each answers a different question:<ul>
+<li><strong>Accuracy:</strong> how often is the pick right?</li>
+<li><strong>Log loss:</strong> are the percentages the model gives believable?</li>
+</ul>
+</li>
+<li><strong>Baseline</strong> is the score of always picking the home team, which is the share of games the home team won.</li>
+<li><strong>Safeguard:</strong> log loss is always given the labels <code>[0, 1]</code>, so a group with only one outcome does not raise an error.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">score_group</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Accuracy, the always-home baseline, and log loss for one group."""</span>
+    <span class="c1"># Keep the column names so the pipeline applies the inputs in the saved order.</span>
+    <span class="n">probability</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="n">INPUT_COLUMNS</span><span class="p">])[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># Exactly 0.5 is an away pick. Only a higher probability picks the home team.</span>
+    <span class="n">picked_home</span> <span class="o">=</span> <span class="p">(</span><span class="n">probability</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">home_win</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s2">"home_win"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">games</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">))</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">picked_home</span> <span class="o">==</span> <span class="n">home_win</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"games"</span><span class="p">:</span> <span class="n">games</span><span class="p">,</span>
+        <span class="s2">"correct"</span><span class="p">:</span> <span class="n">correct</span><span class="p">,</span>
+        <span class="s2">"accuracy"</span><span class="p">:</span> <span class="n">correct</span> <span class="o">/</span> <span class="n">games</span><span class="p">,</span>
+        <span class="s2">"baseline"</span><span class="p">:</span> <span class="nb">float</span><span class="p">((</span><span class="n">home_win</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span>
+        <span class="s2">"log_loss"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">log_loss</span><span class="p">(</span><span class="n">home_win</span><span class="p">,</span> <span class="n">probability</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])),</span>
+    <span class="p">}</span>
+</code></pre></div>
+<h3 id="what-is-accuracy">What Is Accuracy?</h3>
+<p>Accuracy is the share of games where the model's pick matches the real result. It is the headline number the project reports, and it is shown next to the baseline so a reader can see whether the model adds anything.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Group</th>
+<th style="text-align: left;">Games</th>
+<th style="text-align: left;">Correct</th>
+<th style="text-align: left;">Accuracy</th>
+<th style="text-align: left;">Always pick home</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Training</td>
+<td style="text-align: left;">1,339</td>
+<td style="text-align: left;">820</td>
+<td style="text-align: left;">61.24%</td>
+<td style="text-align: left;">53.32%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Validation</td>
+<td style="text-align: left;">271</td>
+<td style="text-align: left;">171</td>
+<td style="text-align: left;">63.10%</td>
+<td style="text-align: left;">53.87%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Test</td>
+<td style="text-align: left;">149</td>
+<td style="text-align: left;">88</td>
+<td style="text-align: left;">59.06%</td>
+<td style="text-align: left;">47.65%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>The model beats the baseline in every group:</strong> by 7.9 points on training, 9.2 on validation, and 11.4 on test.</li>
+<li><strong>The validation score is the one to report.</strong> It is a finished season the model never saw.</li>
+<li><strong>The test score is noisy.</strong> With 149 games, accuracy can move by about 4 points either way by chance. The test baseline is low (47.65%) because home teams won fewer than half of those games.</li>
+<li><strong>The score is reported whatever it is,</strong> even if it is poor.</li>
+<li><strong>What accuracy cannot see:</strong> a pick of "home team, 51% chance" and a pick of "home team, 90% chance" count the same. Log loss looks at what accuracy ignores.</li>
+</ul>
+<h3 id="what-is-log-loss">What Is Log Loss?</h3>
+<p><strong>Short answer: a high log loss is bad, and a low one is good.</strong> It works like a golf score. It is a penalty, so lower is better.</p>
+<p><strong>In plain words:</strong> for every game, the model gives a percentage chance that the home team wins. After the game, look at how much chance the model had given to what really happened. If it gave the real result a high chance, the penalty is small. If it gave the real result a low chance, the penalty is large. Log loss is the average penalty over all the games.</p>
+<ul>
+<li><strong>A high log loss</strong> means the model was often surprised. It kept giving low chances to things that then happened, usually by being sure of itself and wrong.</li>
+<li><strong>A low log loss</strong> means the model was rarely surprised, so its percentages matched what happened.</li>
+</ul>
+<p><strong>How to read the number</strong></p>
+<ul>
+<li><strong>0</strong> is the best possible, and it would mean the model gave 100% to every real result. It never happens in practice.</li>
+<li><strong>0.6931</strong> is what a model that knows nothing scores. It is the penalty for saying "50-50" about every game.</li>
+<li><strong>Above 0.6931</strong> is worse than knowing nothing, because the model is confidently wrong too often.</li>
+<li><strong>Between 0 and 0.6931</strong> means the model has learned something. Football games are hard to predict, so a model that is honest about its uncertainty stays fairly close to 0.69.</li>
+<li><strong>This model:</strong> 0.6451 on validation and 0.6815 on the test set. Both are below 0.6931, so it has learned something. The test number is only a little below, which fits a small set of 149 games.</li>
+</ul>
+<p><strong>How the penalty works.</strong> It depends on how much chance the model gave to what actually happened. Say the home team won:</p>
+<ul>
+<li>The model said 90%: penalty <strong>0.11</strong> (small).</li>
+<li>The model said 70%: penalty <strong>0.36</strong>.</li>
+<li>The model said 50%: penalty <strong>0.69</strong>.</li>
+<li>The model said 30%: penalty <strong>1.20</strong>.</li>
+<li>The model said 10%: penalty <strong>2.30</strong> (large).</li>
+</ul>
+<p><strong>Why accuracy is not enough.</strong> Two models can pick the same winners and still score very differently. Say both pick the home team in three games, and the home team wins two and loses one. Both have the same accuracy, 2 of 3.</p>
+<ul>
+<li><strong>Model A</strong> says 60% each time. Its penalties are 0.51, 0.51, and 0.92, so its log loss is <strong>0.646</strong>.</li>
+<li><strong>Model B</strong> says 95% each time. Its penalties are 0.05, 0.05, and 3.00, so its log loss is <strong>1.033</strong>.</li>
+</ul>
+<p>Model B is worse because the one game it lost cost a huge penalty. Log loss rewards a model for saying "50-50" when it does not know, and for saving high percentages for games where it has a reason.</p>
+<p><strong>Why it matters here.</strong> The web app shows a win probability, not only a pick. Log loss is the check that those percentages mean something, which accuracy cannot tell you.</p>
+<p><strong>Does the model's confidence mean anything?</strong> Yes.</p>
+<ul>
+<li>In 2025, the model gave one team at least a 65% chance in 66 games, and it picked the winner in 75.76% of them. In the other 205 games, where it was less sure, it was right 59.02% of the time.</li>
+<li>In the test set, it was at least 65% sure in 43 games and right in 62.79%, against 57.55% in the other 106.</li>
+</ul>
+<p><strong>A game that hurt.</strong> In 2025, <code>2025_03_GB_CLE</code>, the model gave Cleveland (home) only a 23.1% chance, and Cleveland won. That one game had a penalty of 1.46, the largest in the validation season. In the test set, <code>2026_02_JAX_DEN</code> was the largest at 1.99, with Denver given a 13.7% chance.</p>
+<p><strong>Why it is not logged for the training games.</strong> Logistic regression is fitted by pushing this very number down on the training games. A low training log loss is expected and says little. Only games the model never saw are a fair check.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Group</th>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">Always 50%</th>
+<th style="text-align: left;">Always the home win rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Validation</td>
+<td style="text-align: left;">0.6451</td>
+<td style="text-align: left;">0.6931</td>
+<td style="text-align: left;">0.6902</td>
+</tr>
+<tr>
+<td style="text-align: left;">Test</td>
+<td style="text-align: left;">0.6815</td>
+<td style="text-align: left;">0.6931</td>
+<td style="text-align: left;">0.6985</td>
+</tr>
+</tbody>
+</table>
+<p>"Always the home win rate" means saying 53.32% (the training share) for every game. The model is lower, which is better, than both on both groups.</p>
+<h3 id="how-do-the-two-scores-fit-together">How Do the Two Scores Fit Together?</h3>
+<ul>
+<li><strong>Accuracy</strong> is the headline: how often the model picks the winner, next to the always-pick-home baseline.</li>
+<li><strong>Log loss</strong> supports it: it checks that the probabilities the web app will show are believable.</li>
+<li><strong>Both are reported for validation and test, and only accuracy for training.</strong></li>
+</ul>
+<h3 id="what-does-the-confusion-matrix-show">What Does the Confusion Matrix Show?</h3>
+<p>Validation 2025, with the actual result down the side and the model's pick across the top:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Actual result</th>
+<th style="text-align: left;">Picked away win</th>
+<th style="text-align: left;">Picked home win</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Away team won (125 games)</td>
+<td style="text-align: left;">62</td>
+<td style="text-align: left;">63</td>
+</tr>
+<tr>
+<td style="text-align: left;">Home team won (146 games)</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">109</td>
+</tr>
+</tbody>
+</table>
+<p>The model picks the home team in 172 of 271 games (63.5%), more often than home teams actually win (53.87%). The 171 correct picks are the 62 and the 109.</p>
+<h3 id="which-plot-is-drawn">Which Plot Is Drawn?</h3>
+<p>One image is drawn for the validation season with matplotlib's non-window drawing mode (<code>Agg</code>), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.</p>
+<ul>
+<li><strong><code>confusion_matrix_validation.png</code>:</strong> the table above as a heat map, with the count written in each cell.</li>
+<li><strong>Wording:</strong> the title is bold ("Validation 2025: Predicted vs Actual", with the year read from the games in the group), a one-line takeaway under it says how many games were picked correctly (171 of 271), and both axis labels are bold.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Save the group's confusion matrix and return the image path."""</span>
+    <span class="n">probability</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="n">INPUT_COLUMNS</span><span class="p">])[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># The same 0.5 rule as the score, so the picture counts the same picks.</span>
+    <span class="n">picked_home</span> <span class="o">=</span> <span class="p">(</span><span class="n">probability</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">"home_win"</span><span class="p">],</span> <span class="n">picked_home</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+    <span class="n">ConfusionMatrixDisplay</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">display_labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"Away win"</span><span class="p">,</span> <span class="s2">"Home win"</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">"Blues"</span><span class="p">,</span>
+        <span class="n">values_format</span><span class="o">=</span><span class="s2">"d"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># The year comes from the games in this group, so a different validation season renames the figure.</span>
+    <span class="n">season</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">"season"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">picked_home</span> <span class="o">==</span> <span class="n">group</span><span class="p">[</span><span class="s2">"home_win"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Validation </span><span class="si">{</span><span class="n">season</span><span class="si">}</span><span class="s2">: Predicted vs Actual"</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">correct</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="si">}</span><span class="s2"> games were picked correctly"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">get_xlabel</span><span class="p">(),</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">get_ylabel</span><span class="p">(),</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">destination</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">destination</span>
+</code></pre></div>
+<h2 id="step-6-record-the-run-in-mlflow">Step 6: Record the Run in MLflow</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Save the settings, scores, and files of every training run, so runs can be compared and traced.</p>
+<p><strong>Why:</strong> Each run's settings, scores, and files (the saved model and the plot) are recorded, so any run can be compared and traced later.</p>
+<p><strong>If skipped:</strong> There would be no record of which settings produced which scores.</p>
+</div>
+<h3 id="how-is-mlflow-set-up">How Is MLflow Set Up?</h3>
+<p>This is the first half of <code>log_run</code> in <code>src/model/train.py</code>. It also takes the fitted pipeline, which it stores in MLflow's own model format (see below).</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">log_run</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Record one run's settings, scores, and files, and return the run name."""</span>
+    <span class="n">database</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"tracking"</span><span class="p">][</span><span class="s2">"database_path"</span><span class="p">])</span>
+    <span class="n">artifacts</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"tracking"</span><span class="p">][</span><span class="s2">"artifact_folder"</span><span class="p">])</span>
+    <span class="c1"># MLflow keeps its records in a local database file. The address is "sqlite://" plus the</span>
+    <span class="c1"># full path (which starts with "/"), so it has four slashes in a row.</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">set_tracking_uri</span><span class="p">(</span><span class="sa">f</span><span class="s2">"sqlite:///</span><span class="si">{</span><span class="n">database</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">experiment_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"tracking"</span><span class="p">][</span><span class="s2">"experiment_name"</span><span class="p">]</span>
+    <span class="c1"># An experiment is the named group that holds every run. Its file folder can only be set</span>
+    <span class="c1"># when it is created, so create it once and let later runs join it.</span>
+    <span class="k">if</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">get_experiment_by_name</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">artifacts</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">create_experiment</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">,</span> <span class="n">artifact_location</span><span class="o">=</span><span class="n">artifacts</span><span class="o">.</span><span class="n">as_uri</span><span class="p">())</span>
+    <span class="n">mlflow</span><span class="o">.</span><span class="n">set_experiment</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>The run record goes in the database file <code>mlflow.db</code>, and each run's files go under <code>mlartifacts/&lt;run id&gt;/artifacts/</code>.</li>
+<li>Run again, and a new run is added to the same experiment. Two runs with the same settings and data give the same scores, and only the run ids differ.</li>
+</ul>
+<h3 id="what-is-logged-for-each-run">What Is Logged for Each Run?</h3>
+<p>This is the second half of <code>log_run</code>.</p>
+<div class="highlight"><pre><span></span><code>    <span class="n">start_season</span><span class="p">,</span> <span class="n">train_end_season</span><span class="p">,</span> <span class="n">validation_season</span><span class="p">,</span> <span class="n">test_season</span> <span class="o">=</span> <span class="n">split_seasons</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"model"</span><span class="p">]</span>
+    <span class="n">logistic</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">"logistic_regression"</span><span class="p">]</span>
+    <span class="n">run_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"LogisticRegression-</span><span class="si">{</span><span class="n">model</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+    <span class="c1"># A run that fails partway is closed by `with` and marked as failed, so it is never left open.</span>
+    <span class="k">with</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span><span class="p">):</span>
+        <span class="c1"># MLflow keeps every parameter as text. Scores below are numbers, so they can be charted.</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_params</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"model_version"</span><span class="p">:</span> <span class="n">model</span><span class="p">[</span><span class="s2">"version"</span><span class="p">],</span>
+                <span class="s2">"random_seed"</span><span class="p">:</span> <span class="n">model</span><span class="p">[</span><span class="s2">"random_seed"</span><span class="p">],</span>
+                <span class="s2">"C"</span><span class="p">:</span> <span class="n">logistic</span><span class="p">[</span><span class="s2">"C"</span><span class="p">],</span>
+                <span class="s2">"solver"</span><span class="p">:</span> <span class="n">logistic</span><span class="p">[</span><span class="s2">"solver"</span><span class="p">],</span>
+                <span class="s2">"max_iter"</span><span class="p">:</span> <span class="n">logistic</span><span class="p">[</span><span class="s2">"max_iter"</span><span class="p">],</span>
+                <span class="s2">"feature_names"</span><span class="p">:</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">INPUT_COLUMNS</span><span class="p">),</span>
+                <span class="s2">"train_start_season"</span><span class="p">:</span> <span class="n">start_season</span><span class="p">,</span>
+                <span class="s2">"train_end_season"</span><span class="p">:</span> <span class="n">train_end_season</span><span class="p">,</span>
+                <span class="s2">"validation_season"</span><span class="p">:</span> <span class="n">validation_season</span><span class="p">,</span>
+                <span class="s2">"test_season"</span><span class="p">:</span> <span class="n">test_season</span><span class="p">,</span>
+                <span class="s2">"n_train"</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="s2">"training"</span><span class="p">][</span><span class="s2">"games"</span><span class="p">],</span>
+                <span class="s2">"n_validation"</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="s2">"validation"</span><span class="p">][</span><span class="s2">"games"</span><span class="p">],</span>
+                <span class="s2">"n_test"</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="s2">"test"</span><span class="p">][</span><span class="s2">"games"</span><span class="p">],</span>
+                <span class="s2">"scikit_learn_version"</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+                <span class="s2">"data_sha256"</span><span class="p">:</span> <span class="n">file_fingerprint</span><span class="p">(</span><span class="n">data_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">"from_s3_path"</span><span class="p">)),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">({</span><span class="o">...</span><span class="p">})</span>  <span class="c1"># the 8 scores listed below</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s2">"model"</span><span class="p">]),</span> <span class="n">artifact_path</span><span class="o">=</span><span class="s2">"model"</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s2">"plot"</span><span class="p">]),</span> <span class="n">artifact_path</span><span class="o">=</span><span class="s2">"plots"</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s2">"config"</span><span class="p">]),</span> <span class="n">artifact_path</span><span class="o">=</span><span class="s2">"config"</span><span class="p">)</span>
+        <span class="n">mlflow</span><span class="o">.</span><span class="n">sklearn</span><span class="o">.</span><span class="n">log_model</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">MLFLOW_MODEL_NAME</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">run_name</span>
+</code></pre></div>
+<ul>
+<li><strong>Run name:</strong> <code>LogisticRegression-v1.0</code>, the model type and the version label.</li>
+<li><strong>Settings (parameters), 15 in all:</strong> <code>model_version</code>, <code>random_seed</code>, <code>C</code>, <code>solver</code>, <code>max_iter</code>, <code>feature_names</code>, <code>train_start_season</code>, <code>train_end_season</code>, <code>validation_season</code>, <code>test_season</code>, <code>n_train</code> (1339), <code>n_validation</code> (271), <code>n_test</code> (149), <code>scikit_learn_version</code> (1.9.1), and <code>data_sha256</code>.</li>
+<li><strong><code>data_sha256</code>:</strong> a fingerprint of the downloaded table, worked out from every byte of the file by <code>file_fingerprint</code>. If one byte of the data changes, the code changes, so two runs with the same fingerprint used the same data. For the current table it is <code>7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb</code>.</li>
+<li><strong>Scores (metrics), 8 in all, stored as fractions:</strong> <code>train_accuracy</code>, <code>validation_accuracy</code>, <code>test_accuracy</code>, <code>validation_log_loss</code>, <code>test_log_loss</code>, <code>baseline_train</code>, <code>baseline_validation</code>, and <code>baseline_test</code>. Training log loss is left out, because the model is fit by pushing that number down.</li>
+<li><strong>Files (artifacts), 3 in all:</strong> <code>model/model.joblib</code>, <code>plots/confusion_matrix_validation.png</code>, and <code>config/config.yaml</code>, a copy of the settings used.</li>
+<li><strong>Logged model, 1:</strong> an MLflow-format copy of the pipeline, named <code>pipeline-mlflow-format</code>. See the next section.</li>
+<li><strong>Automatic tags:</strong> MLflow also records the git commit, branch, and repository address on every run.</li>
+<li><strong>Read back from the real run:</strong> the one recorded run shows 15 parameters, 8 metrics, the 3 files, and 1 logged model.</li>
+</ul>
+<h3 id="why-is-the-model-stored-twice">Why Is the Model Stored Twice?</h3>
+<p>Each run keeps the trained pipeline in two forms, for two different readers.</p>
+<ul>
+<li><strong><code>model/model.joblib</code> is the working copy.</strong> It is a plain file in the run's file list. It is what the API will load, and it carries the input names, the model version, the scikit-learn version, and the training seasons.</li>
+<li><strong>The MLflow-format copy</strong> lets MLflow's own screen and loader open the model with one call (<code>mlflow.sklearn.load_model</code>). No project code loads it. Only its test does.</li>
+<li><strong>Where the MLflow copy lives:</strong> MLflow 3 records it as a separate logged model linked to the run, not in the run's file list. Its files are in <code>mlartifacts/models/m-&lt;id&gt;/artifacts/</code>: <code>MLmodel</code> (the description), <code>model.skops</code> (the model, about 25 KB), <code>conda.yaml</code>, <code>python_env.yaml</code>, and <code>requirements.txt</code> (the packages it needs).</li>
+<li><strong>Same model:</strong> both copies come from the same fitted pipeline in the same call, so they cannot disagree. The MLflow copy reloads with identical probabilities.</li>
+</ul>
+<h3 id="how-is-mlflow-kept-tidy">How Is MLflow Kept Tidy?</h3>
+<ul>
+<li><strong>Quiet start-up.</strong> MLflow prints a hint about its tracing helper when it is imported. This project does not use tracing, so <code>train.py</code> sets <code>MLFLOW_DISABLE_AGENT_HINT</code> before the import and the command prints nothing extra.</li>
+<li><strong>No leftovers from tests.</strong> The tests point MLflow at a temporary database and artifact folder, and each test puts the earlier tracking address back afterward, so no test affects the next one or writes into the project.</li>
+<li><strong>One hidden warning.</strong> MLflow's own database code uses a SQLAlchemy option that SQLAlchemy plans to remove. <code>pytest.ini</code> hides that single warning, because it comes from inside MLflow and not from this project.</li>
+<li><strong>Where records are kept.</strong> See <a href="../implementation-part-1/#where-does-mlflow-keep-its-records">Where Does MLflow Keep Its Records?</a>.</li>
+</ul>
+<p>To browse the recorded runs, start the MLflow viewer and open the address it prints:</p>
+<div class="highlight"><pre><span></span><code>mlflow<span class="w"> </span>ui<span class="w"> </span>--backend-store-uri<span class="w"> </span>sqlite:///mlflow.db
+</code></pre></div>
+<h2 id="step-7-save-the-final-pipeline">Step 7: Save the Final Pipeline</h2>
+<div class="admonition abstract">
+<p class="admonition-title">Purpose</p>
+<p><strong>Goal:</strong> Write the trained pipeline to <code>models/model.joblib</code>, with the facts the API needs to load it safely.</p>
+<p><strong>Why:</strong> Phase 3 serves this file. It must load on its own and say which model it is.</p>
+<p><strong>If skipped:</strong> The API would have nothing to serve.</p>
+</div>
+<h3 id="what-is-saved">What Is Saved?</h3>
+<p>One Python dictionary, written with <code>joblib.dump</code>:</p>
+<ul>
+<li><code>pipeline</code>: the fitted scaler and model.</li>
+<li><code>feature_names</code>: the two input column names, in order.</li>
+<li><code>model_version</code>: the <code>model.version</code> setting (<code>v1.0</code>).</li>
+<li><code>scikit_learn_version</code>: the installed version at training time (1.9.1). The API compares it with its own, because a saved model may fail to load, or answer differently, under another version.</li>
+<li><code>train_start_season</code> and <code>train_end_season</code>: 2020 and 2024.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_model</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">start_season</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">train_end_season</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Write the fitted pipeline beside the facts needed to load it later."""</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"model"</span><span class="p">][</span><span class="s2">"output_path"</span><span class="p">])</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">bundle</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"pipeline"</span><span class="p">:</span> <span class="n">pipeline</span><span class="p">,</span>
+        <span class="s2">"feature_names"</span><span class="p">:</span> <span class="n">INPUT_COLUMNS</span><span class="p">,</span>
+        <span class="s2">"model_version"</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">"model"</span><span class="p">][</span><span class="s2">"version"</span><span class="p">],</span>
+        <span class="s2">"scikit_learn_version"</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="s2">"train_start_season"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_season</span><span class="p">),</span>
+        <span class="s2">"train_end_season"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_end_season</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="c1"># Write beside the real file and swap only after the write finishes, so a failed run</span>
+    <span class="c1"># cannot leave a half-written model in place of a good one.</span>
+    <span class="n">partial</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">".partial"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">bundle</span><span class="p">,</span> <span class="n">partial</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">partial</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">partial</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="k">return</span> <span class="n">output</span>
+</code></pre></div>
+<ul>
+<li><strong>Size:</strong> 1,902 bytes, so it is small enough to copy into the Docker image.</li>
+<li><strong>Round trip:</strong> the saved file loads with the six keys above, and a fresh fit gives the same probabilities as the loaded pipeline.</li>
+<li><strong>A failed save keeps the old file.</strong> If the write fails, the half-written <code>.partial</code> file is removed and the earlier model is left as it was.</li>
+<li><strong>The file extension</strong> <code>.joblib</code> is a convention. joblib writes to any file name.</li>
+<li><strong>Local only:</strong> <code>models/</code>, <code>mlflow.db</code>, and <code>mlartifacts/</code> are in <code>.gitignore</code>, so the saved model and the MLflow records are not committed. <code>results/run-summary.json</code> is committed, and it is the readable record of the latest run.</li>
+</ul>
+<h3 id="what-is-the-run-summary-file">What Is the Run Summary File?</h3>
+<p>Each training run also writes <code>results/run-summary.json</code>, a small readable record of the run. A reader can open it without MLflow and without loading the saved model.</p>
+<ul>
+<li><strong>What it holds:</strong> the settings, the scikit-learn version, the data file and its fingerprint, the scores for each group, and the values the model learned.</li>
+<li><strong>Learned values:</strong> the scaler's averages and spreads, the two weights, and the intercept. They let a reader check a prediction by hand: standardize each input with the average and spread, multiply by its weight, add the intercept, and pass the total through the logistic function.</li>
+<li><strong>Committed to git.</strong> The file is overwritten on every run, so it always describes the latest run, and MLflow keeps the full history on your machine.</li>
+<li><strong>Stable on purpose.</strong> It has no run ID, no timestamp, no git commit, and no machine paths, because each of those changes on every run or commit. Decimals are rounded to 6 places. A rerun with the same settings and data writes the identical bytes, so the file shows a change in git only when something real changed.</li>
+<li><strong>Written safely.</strong> It is written to a <code>.partial</code> file and swapped into place, like the model file.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>    <span class="c1"># Rounding to six places keeps this file identical when the run itself did not change.</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"tracking"</span><span class="p">][</span><span class="s2">"summary_path"</span><span class="p">])</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">partial</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">".partial"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">partial</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">partial</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">partial</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">raise</span>
+</code></pre></div>
+<p>The file from the real run, 1,174 bytes:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"model_version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v1.0"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LogisticRegression"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"random_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"C"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"solver"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lbfgs"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"max_iter"</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"scikit_learn_version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.9.1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"win_pct_differential"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"point_diff_per_game_differential"</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"train_start_season"</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"train_end_season"</span><span class="p">:</span><span class="w"> </span><span class="mi">2024</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"validation_season"</span><span class="p">:</span><span class="w"> </span><span class="mi">2025</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"test_season"</span><span class="p">:</span><span class="w"> </span><span class="mi">2026</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"data_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"data/from-s3/nfl_matchups_2020_2026.csv"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"data_sha256"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"scores"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"training"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"games"</span><span class="p">:</span><span class="w"> </span><span class="mi">1339</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"correct"</span><span class="p">:</span><span class="w"> </span><span class="mi">820</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"accuracy"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.612397</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"baseline"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.533234</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"validation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"games"</span><span class="p">:</span><span class="w"> </span><span class="mi">271</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"correct"</span><span class="p">:</span><span class="w"> </span><span class="mi">171</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"accuracy"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.630996</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"baseline"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.538745</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"log_loss"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.64507</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"games"</span><span class="p">:</span><span class="w"> </span><span class="mi">149</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"correct"</span><span class="p">:</span><span class="w"> </span><span class="mi">88</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"accuracy"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.590604</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"baseline"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.47651</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"log_loss"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.681518</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"learned"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"scaler_mean"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="mf">-0.000438</span><span class="p">,</span>
+<span class="w">      </span><span class="mf">-0.176192</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"scaler_scale"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="mf">0.347597</span><span class="p">,</span>
+<span class="w">      </span><span class="mf">10.111656</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"weights"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="mf">0.213767</span><span class="p">,</span>
+<span class="w">      </span><span class="mf">0.30814</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"intercept"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.140264</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="run-it">Run It</h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>src.model.train
+</code></pre></div>
+<p>Output (the second run printed the same eight lines):</p>
+<div class="highlight"><pre><span></span><code>training: 820 of 1339 correct (61.24%), always-home 53.32%
+validation: 171 of 271 correct (63.10%), always-home 53.87%
+test: 88 of 149 correct (59.06%), always-home 47.65%
+validation log loss 0.6451
+test log loss 0.6815
+saved: models/model.joblib
+summary: results/run-summary.json
+MLflow run: LogisticRegression-v1.0
+</code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.top", "navigation.sections", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
