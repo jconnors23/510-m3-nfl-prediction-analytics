@@ -71,7 +71,7 @@ The full picture is on [Cloud Architecture](./docs/implementation/extras/archite
 
 ## Setup and Usage
 
-You need Python 3.13, `make`, and Docker Desktop. For the web app, Node.js 22.12 or later. AWS CLI version 2 is only for deploying. Packages are pinned in `requirements.txt`. The same steps, in order, are on [Running Locally](./docs/implementation/extras/development/running-locally.md).
+Run these commands in macOS Terminal, or in a Linux shell such as Ubuntu on WSL. Windows PowerShell is not supported: the commands use `make` and Unix paths. You need Python 3.13, `make`, and Docker Desktop. For the web app, Node.js 22.12 or later. AWS CLI version 2 is only for deploying. Packages are pinned in `requirements.txt`. The same steps, in order, are on [Running Locally](./docs/implementation/extras/development/running-locally.md).
 
 ### Set Up
 
@@ -85,7 +85,7 @@ python3.13 -m venv .venv
 
 Run both commands. If a `.venv` folder is already there, delete it and run them again. Python 3.13 is the interpreter the Docker image and Lambda use.
 
-Start Docker Desktop. On Windows, turn on WSL integration for this distro (Settings, Resources, WSL Integration) and open a new terminal. `docker version` should print a Client section and a Server section.
+Start Docker Desktop. `docker version` should print a Client section and a Server section. On Windows, use the Ubuntu terminal, not PowerShell. Turn on WSL integration for that distro (Settings, Resources, WSL Integration) and open a new terminal there.
 
 ### Train the Model
 

@@ -5,7 +5,7 @@ hide:
 
 # Running Locally
 
-Do these steps in order, from the project folder. When they are done, the model is trained, the API has answered on this computer, and a Docker container has returned the same prediction. The sections after that are for changing one part of the project. Each command is described on [Makefile](./makefile.md). Tool versions are on the [Tooling Guide](./tooling-guide.md).
+Do these steps in order, from the project folder, in macOS Terminal or a Linux shell such as Ubuntu on WSL. Windows PowerShell is not supported. When they are done, the model is trained, the API has answered on this computer, and a Docker container has returned the same prediction. The sections after that are for changing one part of the project. Each command is described on [Makefile](./makefile.md). Tool versions are on the [Tooling Guide](./tooling-guide.md).
 
 ## Set Up
 
@@ -21,7 +21,7 @@ python3.13 -m venv .venv
 
 Run both. The second command installs the packages. If a `.venv` folder is already there, delete it and run both again.
 
-Start Docker Desktop. On Windows, turn on WSL integration for this distro (Docker Desktop: Settings, Resources, WSL Integration) and open a new terminal. This check should print a Client section and a Server section:
+Start Docker Desktop. On Windows, use the Ubuntu terminal, not PowerShell, and turn on WSL integration for that distro (Docker Desktop: Settings, Resources, WSL Integration). Open a new terminal there. This check should print a Client section and a Server section:
 
 ```bash
 docker version
