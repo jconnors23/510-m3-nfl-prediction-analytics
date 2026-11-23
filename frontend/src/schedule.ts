@@ -8,7 +8,7 @@ import type { PredictRequest, PredictResponse, Season, SeasonGame, SeasonWeek, S
 // Month names by position, so the label needs no Date object and no locale.
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Team code to full name, such as a code to its city and team name.
+// Team code to full name, for example a three-letter code to the city and team name.
 export type TeamNames = Record<string, string>;
 
 // The date is read from the text, so the visitor's time zone cannot move it to the day before.
@@ -55,9 +55,9 @@ export function profileFor(team: string, before: StandingRow[], names: TeamNames
   return { team: row.team, name: names[team], games: row.games, wins: row.wins, win_pct: row.win_pct, point_diff_per_game: row.point_diff_per_game };
 }
 
-// The week's standings_before_week picks the standings set. Only games through week 10 are
-// finished, so weeks 12 to 18 reuse the week 11 standings (games through week 10) and no
-// later result is guessed. The week number is read from the second part of the game id.
+// The week's standings_before_week picks the standings set. In the current file only games
+// through week 10 are finished, so weeks 11 to 18 all use the week 11 standings (games
+// through week 10) and no later result is guessed. The week number is read from the second part of the game id.
 export function requestForGame(game: SeasonGame, season: Season, names: TeamNames): PredictRequest {
   const weekNumber = Number(game.game_id.split("_")[1]);
   const week = season.weeks.find((item) => item.week === weekNumber);

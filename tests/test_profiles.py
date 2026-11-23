@@ -1,9 +1,11 @@
 """Tests for the team profiles file the frontend reads.
 
-Most tests read the downloaded games table and the saved run summary on disk, and they are
-skipped when the table is missing. Each expected number is recounted from the games table
-with plain sums, not by the code under test. The two tests that write use pytest's temporary
-folder, so the committed profiles file is never changed.
+Five tests read the downloaded games table from disk and are skipped when it is missing. One
+test reads the saved run summary and needs no games table. The last two tests make up
+settings and a stand-in for the file swap, so they need neither. Each expected number is
+recounted from the games table with plain sums, not by the code under test. The two tests
+that write use pytest's temporary folder, so the committed profiles file is never changed.
+The tests need no AWS account and no internet.
 """
 
 import json
@@ -19,7 +21,8 @@ from src.profiles import TEAM_NAMES, build_profiles, write_profiles
 GAMES = Path(__file__).resolve().parents[1] / "data" / "from-s3" / "nfl_matchups_2020_2026.csv"
 # The profiles file that is committed for the frontend to import.
 PROFILES = Path(__file__).resolve().parents[1] / "frontend" / "src" / "data" / "team-profiles.json"
-# The games table is downloaded from S3 and is not committed, so a fresh checkout skips these tests.
+# The games table downloaded from S3 is committed, so these tests run on a fresh checkout. They
+# are skipped only if that file has been deleted.
 needs_games = pytest.mark.skipif(not GAMES.is_file(), reason="the downloaded games table is not on disk")
 
 
@@ -120,7 +123,7 @@ def test_no_blank_or_non_finite_value():
 
 @needs_games
 def test_the_same_input_writes_the_same_bytes(tmp_path):
-    """Writing the file twice produces the same text as the committed profiles file."""
+    """Two writes give identical text, ending in one newline, equal to the committed profiles file."""
     config = load_config()
     # Write into the temporary folder, so the committed profiles file is not overwritten.
     config["frontend"] = {"profiles_path": str(tmp_path / "team-profiles.json")}

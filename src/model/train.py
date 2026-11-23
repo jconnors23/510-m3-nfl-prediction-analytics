@@ -81,7 +81,7 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
     """Write the fitted pipeline beside the facts needed to load it later."""
     output = resolve_path(config["model"]["output_path"])
     output.parent.mkdir(parents=True, exist_ok=True)
-    # The model travels with the facts the API will need to use it safely: the input names in
+    # The model travels with the facts the API needs to use it safely: the input names in
     # order, which version it is, and which scikit-learn built it (a model saved by one version
     # may fail to load, or answer differently, under another).
     bundle = {
@@ -163,6 +163,8 @@ def write_run_summary(config: dict, scores: dict, pipeline) -> Path:
     text = json.dumps(summary, indent=2) + "\n"
     output = resolve_path(config["tracking"]["summary_path"])
     output.parent.mkdir(parents=True, exist_ok=True)
+    # Write beside the real file and swap it in, as save_model does, so a failed run cannot
+    # leave a half-written summary.
     partial = output.with_name(output.name + ".partial")
     try:
         partial.write_text(text, encoding="utf-8")
@@ -234,8 +236,9 @@ def log_run(config: dict, scores: dict, files: dict, pipeline) -> str:
         mlflow.log_artifact(str(files["model"]), artifact_path="model")
         mlflow.log_artifact(str(files["plot"]), artifact_path="plots")
         mlflow.log_artifact(str(files["config"]), artifact_path="config")
-        # model/model.joblib is the working copy. It is what the API will load, and it carries
-        # the input names, the version, the scikit-learn version, and the training seasons.
+        # model.joblib (saved at models/model.joblib, and copied above into the run's model
+        # folder) is the working copy. It is what the API loads, and it carries the input
+        # names, the version, the scikit-learn version, and the training seasons.
         # The MLflow-format copy exists so MLflow's screen and loader can open the model.
         # No project code loads it. Only its test does.
         mlflow.sklearn.log_model(pipeline, name=MLFLOW_MODEL_NAME)
@@ -246,7 +249,8 @@ def main() -> None:
     """Command for Phase 2: fit, score, save the model file, and record one MLflow run."""
     try:
         config = load_config()
-        # Same table and split as `python -m src.model.features`, so the two commands agree.
+        # Same table, checks, and split as `python -m src.model.features`, so both commands use
+        # the same rows in each group.
         table = build_model_table(load_games(config))
         check_model_table(table)
         groups = split_games(table, config)

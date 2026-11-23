@@ -95,7 +95,7 @@ def test_drops_tie_playoff_and_out_of_window_season():
 def test_week_cut_drops_unplayed_games_and_ties():
     """Unplayed weeks of the last season are cut without stopping the step, and ties still go.
 
-    Covers cleaning rule 3. The week cut must run before the blank-score check, because
+    Covers cleaning rules 3 and 4. The week cut must run before the blank-score check, because
     unplayed games have blank scores. If the order were swapped, this test would raise an error.
     """
     # Three made-up 2026 games (2026 is the last season in the window, so the week cap applies):

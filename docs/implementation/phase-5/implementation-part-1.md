@@ -393,7 +393,7 @@ Paths are inside `frontend/`.
 
 ## How Is the Page Hosted?
 
-The page is a set of static files that run in the visitor's browser, so there is no server to run. The commands are on the [Deployment Guide](./deployment-guide.md). For why CloudFront was chosen over Streamlit, Gradio, and free hosts, see [Decisions](../decisions.md#deployment-and-front-end).
+The page is a set of static files that run in the visitor's browser, so there is no server to run. The commands are on the [Deployment Guide](./deployment-guide.md). For why CloudFront was chosen over Streamlit, Gradio, and free hosts, see [Design Manifest](../design-manifest.md#phase-5-web-app-and-hosting).
 
 ```mermaid
 flowchart LR
@@ -431,7 +431,7 @@ Every name follows the pattern of the data bucket, `510-m3-nfl-dataset`: lowerca
 
 ## How Does a Change Reach the Live Page?
 
-A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, tests, builds, and redeploys the page when a change under `frontend/` reaches `main`, signing in to AWS without a stored key. Its first run, on the merge of `phase-five` into `main`, passed. The workflow serves every phase, so its steps and its AWS role are explained in [How Does a Change Reach the Live Web App?](../extras/developer-tools.md#how-does-a-change-reach-the-live-web-app).
+A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, tests, builds, and redeploys the page when a change under `frontend/` reaches `main`, signing in to AWS without a stored key. Its first run, on the merge of `phase-five` into `main`, passed. The workflow serves every phase, so its steps and its AWS role are explained in [How Does a Change Reach the Live Web App?](../extras/github-workflows.md#how-does-a-change-reach-the-live-web-app).
 
 ## Which Tests Pin These Contracts?
 
@@ -451,7 +451,7 @@ Each literal below was computed in Python and confirmed in Node.
 ### App: Vitest (35 Tests in 6 Files)
 
 - **`matchup.test.ts` (11):** the two display helpers: `chanceTenths` gives 638 and 362 for 0.6376 and 500 and 500 for both 0.4999 and 0.5, and agrees with `formatChances` for every row of the display table; `describeRecord` gives the NE, SF, and TEN strings above, and `0.0` with no sign for margins of 0 and -0.04. Also: the request for home SF, away MIA (`0.7777777777777777` and `17.88888888888889`, and the exact JSON text); the signs flip when the teams swap; the request for home NE, away TEN (`0.3888888888888889` and `5.9`, and the exact JSON text); the same team twice, a non-finite value, and an out-of-range value each throw; `formatChances` for every row of the display table; the winner comes from `prediction` even when both sides show 50.0%; and the inputs are described with 3 and 1 decimals.
-- **`api.test.ts` (8):** the exact request (address, method, one header, body, no `credentials` or `mode`); `ok` for a valid answer; `http-error` with the first message for a 422; `http-error` for the gateway's 404; `unreachable` when `fetch` rejects or the caller cancels; `timeout` when the timer cancels; `unexpected-body` for five broken answers; and `isPredictResponse` accepts the three real answers.
+- **`api.test.ts` (8):** the exact request (address, method, one header, body, no `credentials` or `mode`); `ok` for a valid answer; `http-error` with the first message for a 422; `http-error` for the gateway's 404; `unreachable` when `fetch` rejects or the caller cancels; `timeout` when the timer cancels; `unexpected-body` for five broken answers; and `isPredictResponse` accepts three well-formed answers.
 - **`config.test.ts` (4):** one trailing slash removed, an empty value allowed outside production, and an empty or `http://` value refused in production.
 - **`profiles.test.ts` (2):** the imported file has 32 sorted teams with finite numbers and a name each, and the `as_of` and `model` blocks. This catches a hand edit of the file.
 - **`App.test.tsx` (8),** run in a simulated browser (jsdom): the same team twice sends no request; home NE, away TEN shows the Patriots, 63.8% in the home row, 36.2% in the away row, both inputs, and the validation scores, and the call carries the exact body; home MIA, away SF names the 49ers; an unreachable API shows the message and no result; changing a team clears the result; a different `model_version` changes the scores sentence; each chosen team's record shows; and the disclaimer, the footer line, and the standings date show before anything is chosen. A last test checks the theme button: it starts with `aria-pressed="false"`, one click sets the dark theme, and a second sets the light theme.
@@ -474,7 +474,7 @@ Two local scripts in `build/`, which is not committed, compare the live API with
 - **The build:** `index.html` (1,105 bytes), `assets/index-KSsdwuOf.js` (233,372 bytes), `assets/index-yAxaDZ6u.css` (10,307 bytes), and 12 font files (313,620 bytes together), with no source map. Building twice gives the same bytes. The only web addresses in the build are the live API, `www.w3.org` (SVG name text), and `react.dev` (text in React's error messages). Neither of the last two is a request.
 - **The hosting:** all 16 files CloudFront serves (`/`, `/index.html`, the script, the stylesheet, and the 12 fonts) have the same SHA-256 as the local build. The fonts are served as `font/woff2`. Both direct S3 addresses return 403. HTTP returns 301 to HTTPS, and a `POST` returns 403.
 - **The deploy role:** read back from AWS, it trusts only `main` of this repository, has exactly the one inline policy above, and has no attached policies. The secret `AWS_WEB_APP_DEPLOY_ROLE_ARN` is set in the repository.
-- **The workflow's two checks** (no outside address, and the served bytes) were run by hand against the live site and passed. The workflow itself has not run.
+- **The workflow's two checks** (no outside address, and the served bytes) were run manually against the live site and passed. The workflow itself has not run.
 - **Screenshots of the page** at 360 and 390 pixels wide and at 1280, in both themes: nothing overlaps, nothing scrolls sideways, every band lines up on the same column, and the footer reaches the bottom of the window.
 - **A real prediction in a real browser.** Headless Chrome opened the live page, chose New England Patriots as home and Tennessee Titans as away, and clicked Predict, once on a 1280-pixel screen in the light theme and once on a 390-pixel phone screen in the dark theme. Both showed "Predicted winner: New England Patriots", 63.8% and 36.2%, a bar split 63.8% to 36.2%, and the two record lines. The browser sent one preflight (`OPTIONS`) and then the `POST` to the API, and cached the preflight for the second run. It contacted only two hosts, CloudFront and the API, loaded both bundled fonts, and logged no console error, no warning, and no failed request. This is the check that proves CORS works from the CloudFront page, which `curl` cannot.
 - **CORS:** the preflight from the CloudFront address and from `http://localhost:5173` is allowed, and from `http://example.com` it is not.

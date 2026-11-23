@@ -93,7 +93,7 @@ def plot_confusion_matrix(pipeline, group, path) -> Path:
     home_wins = int((happened == 1).sum())
     figure, axes = plt.subplots(figsize=(8.4, 6.6))
     # The grid is drawn by hand in a 2 by 2 space, one unit per cell, so the color can mean right
-    # or wrong. scikit-learn's standard drawing colors a cell by the size of its count.
+    # or wrong rather than the size of the count.
     axes.set_xlim(0, 2)
     axes.set_ylim(0, 2)
     # Square cells, whatever the figure's shape.
@@ -115,6 +115,8 @@ def plot_confusion_matrix(pipeline, group, path) -> Path:
                 )
             )
             center_x = column_index + 0.5
+            # Three lines of text at fixed heights inside the one-unit cell: the count above the
+            # middle (0.62), then the row share (0.40) and the word Correct or Wrong (0.24).
             axes.text(
                 center_x,
                 bottom + 0.62,

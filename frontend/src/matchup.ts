@@ -18,7 +18,8 @@ export function buildPredictRequest(home: TeamProfile, away: TeamProfile): Predi
   if (!Number.isFinite(request.win_pct_differential) || !Number.isFinite(request.point_diff_per_game_differential)) {
     throw new Error("The matchup has a value that is not a number.");
   }
-  // The API rejects values outside these bounds, so refuse them before the call.
+  // The API rejects values outside these bounds (-1 to 1 for win percentage, -100 to 100 for
+// points per game, set in src/api/schemas.py), so refuse them before the call.
   if (
     request.win_pct_differential < -1 ||
     request.win_pct_differential > 1 ||

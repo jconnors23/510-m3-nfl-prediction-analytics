@@ -50,7 +50,7 @@ shasum -a 256 build/docker/results/run-summary.json results/run-summary.json
 docker run --rm 510-m3-nfl-train python -m pytest
 ```
 
-Expected: **88 passed, 2 skipped**. The two skipped tests need a saved model, and the train image has none until a container trains.
+Expected: **93 passed, 2 skipped**. The two skipped tests need a saved model, and the train image has none until a container trains.
 
 ## How Do I Run the API in a Container?
 
@@ -99,7 +99,7 @@ Press `Ctrl+C` in the terminal where it runs. The log shows `Shutting down`, the
 docker run --rm 510-m3-nfl-serve python -m pytest
 ```
 
-Expected: **90 passed**, because this image holds a model.
+Expected: **95 passed**, because this image holds a model.
 
 ## How Do I Change the Image?
 

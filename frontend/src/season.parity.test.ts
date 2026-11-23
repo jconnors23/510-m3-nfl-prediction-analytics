@@ -1,6 +1,6 @@
 // Checks that the browser code builds the same inputs as the Python code for every 2026 game.
 // It reads the real committed season and profile JSON files and the expected numbers that a local Python script
-// writes. No network is used.
+// writes to build/expected-season.json. No network is used. The test is skipped when that file is missing.
 import fs from "node:fs";
 import path from "node:path";
 
@@ -15,7 +15,7 @@ const season = rawSeason as Season;
 const profiles = rawProfiles as TeamProfiles;
 const names = Object.fromEntries(profiles.teams.map((team) => [team.team, team.name]));
 
-// npm test is run from frontend/, so this path is the project build folder the Python script writes.
+// npm test is run from frontend/, so ../build is the project-level build folder, not a folder inside frontend/.
 const expectedPath = path.resolve(process.cwd(), "../build/expected-season.json");
 
 interface ExpectedGame {
@@ -24,9 +24,10 @@ interface ExpectedGame {
   point_diff_per_game_differential: number;
 }
 
-// The expected file lives in the gitignored build folder and is made by a local Python script, so a fresh checkout
-// does not have it. The test skips in that case instead of failing. toBe is used, not toBeCloseTo, because the
-// browser must produce the exact same 64-bit number as Python.
+// The expected file is written by build/season_expected.py, a local script. Both live in the gitignored
+// build folder, so a fresh checkout does not have them. The test is skipped in that case, which the test
+// run reports as skipped and not as passed. toBe is used, not toBeCloseTo, because the browser must
+// produce the exact same 64-bit number as Python.
 it.skipIf(!fs.existsSync(expectedPath))("matches the Python number for every 2026 game", () => {
   const expected = JSON.parse(fs.readFileSync(expectedPath, "utf8")) as ExpectedGame[];
   const games = season.weeks.flatMap((week) => week.games);
@@ -43,7 +44,7 @@ it.skipIf(!fs.existsSync(expectedPath))("matches the Python number for every 202
     expect(request.point_diff_per_game_differential).toBe(entry.point_diff_per_game_differential);
     bodies.push(JSON.stringify(request));
   }
-  // Saves the exact JSON text of each request for the Python side to compare. Text is compared, not parsed numbers,
-  // because the body the API receives must be byte for byte what was checked.
+  // Note: this writes build/season-bodies.json each time the test runs. The Python side compares the exact
+  // JSON text, not parsed numbers, because the body the API receives must be byte for byte what was checked.
   fs.writeFileSync(path.resolve(process.cwd(), "../build/season-bodies.json"), JSON.stringify(bodies));
 });

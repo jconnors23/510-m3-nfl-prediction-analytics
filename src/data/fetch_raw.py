@@ -11,7 +11,8 @@ import requests
 
 from src.config import data_file, load_config
 
-# Cleaning reads these columns. The downloaded file may have more, and that is fine.
+# Cleaning reads the first eight. src/season.py reads the last four. A downloaded file may have
+# more columns, and a file missing any of these is refused before it replaces the saved copy.
 NEEDED_COLUMNS = [
     "game_id",
     "season",
@@ -21,6 +22,10 @@ NEEDED_COLUMNS = [
     "away_team",
     "home_score",
     "away_score",
+    "gameday",
+    "weekday",
+    "gametime",
+    "location",
 ]
 
 
@@ -30,7 +35,8 @@ def fetch_raw(url: str, dest) -> int:
     # A failed download must not replace a good file, so write beside it and rename after the checks.
     tmp = dest.with_name(dest.name + ".partial")
     try:
-        # timeout stops the step instead of hanging forever if GitHub does not answer.
+        # The 120-second timeout stops the step instead of hanging forever if GitHub does not
+        # answer. The file is about 2 MB, so a working connection finishes well inside it.
         response = requests.get(url, timeout=120)
         # Stops on a 404 or a server error, so an error page is never saved as data.
         response.raise_for_status()

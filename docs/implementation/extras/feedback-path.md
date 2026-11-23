@@ -3,7 +3,7 @@ hide:
   - toc
 ---
 
-# The Feedback Form
+# Feedback Path
 
 The web app's Feedback tab lets a visitor send a short message about the site or its predictions. Each message is saved in a DynamoDB table by a small AWS Lambda function of its own, on the route `POST /feedback` of the same API address the predictions use. The prediction function is not touched. The form was built with the five-tab site in [Phase 5 Part 2](../phase-5/implementation-part-2.md), and it is not one of the assignment's requirements, so it is kept here.
 
@@ -16,7 +16,7 @@ The web app's Feedback tab lets a visitor send a short message about the site or
 - **Message (required):** 10 to 1,000 characters.
 - **No personal details are asked for,** and the form says not to include any. Nothing identifies the visitor: no name, email, address, or cookie.
 - **After sending:** "Thanks. Your feedback was saved." A failure shows a readable message, as the predictions do.
-- **A hidden field catches simple spam bots.** It is invisible to people. A submission that fills it gets the same thanks message, but nothing is saved.
+- **An invisible field catches simple spam bots.** It is invisible to people. A submission that fills it gets the same thanks message, but nothing is saved.
 
 ## Why Does It Need Its Own Route?
 
@@ -32,12 +32,12 @@ sequenceDiagram
     participant G as API Gateway<br/>(same address)
     participant L as Feedback function
     participant D as DynamoDB table
-    B->>G: POST /feedback with category, rating, message
-    G->>L: the request (route throttled)
+    B->>G: POST /feedback with<br/>category, rating, message
+    G->>L: the request<br/>(route throttled)
     L->>L: check every field
-    L->>D: PutItem with a new id and the time
+    L->>D: PutItem with a new id<br/>and the time
     L->>G: 201 and the id
-    G->>B: 201, so the form says thanks
+    G->>B: 201, so the form<br/>says thanks
 ```
 
 ### The Request and the Answer
@@ -46,11 +46,11 @@ sequenceDiagram
     - `category`: one of `general`, `predictions`, `site`, `broken`.
     - `rating`: a whole number from 1 to 5, or `null`.
     - `message`: text, 10 to 1,000 characters after trimming spaces.
-    - `website`: the hidden field. It must be an empty string.
+    - `website`: the invisible field. It must be an empty string.
 - **Answer when saved:** status 201 and `{"status":"received","feedback_id":"<id>"}`.
 - **Answer when a field is wrong:** status 422 and `{"detail":"<what is wrong>"}`, such as "The message must be 10 to 1,000 characters."
 - **A body over 4,096 bytes, or one that is not JSON:** status 400.
-- **The hidden field filled in:** status 201 with the same answer, and nothing is saved.
+- **The invisible field filled in:** status 201 with the same answer, and nothing is saved.
 - **CORS:** the API's setting already allows `POST` with the `content-type` header from the CloudFront address, for every route.
 
 ### What Is Saved
@@ -85,7 +85,7 @@ All in `us-east-1`, tagged `project=510-m3`, with names that follow the project'
 ## What Was Checked?
 
 - One test submission was saved, read back, and deleted. The table then held 0 items.
-- A filled hidden field saved nothing.
+- A filled invisible field saved nothing.
 - A 5-character message got 422 with "The message must be 10 to 1,000 characters." In the browser, the same message shows the length message and sends nothing.
 - A preflight from the CloudFront address got 204.
 - The stage's only route limit is `POST /feedback` (1 a second, bursts of 5).

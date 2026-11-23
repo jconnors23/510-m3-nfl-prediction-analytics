@@ -153,7 +153,8 @@ def split_games(table: pd.DataFrame, config: dict) -> dict[str, pd.DataFrame]:
     # ids in the table, with none repeated.
     game_ids = [set(group["game_id"]) for group in groups.values()]
     combined = set.union(*game_ids)
-    # A season that falls in a gap, or a game id that lands in two groups, would make the sizes disagree.
+    # A game id in two groups makes the summed group sizes larger than the number of distinct ids.
+    # A season that falls in a gap between groups makes the distinct ids fewer than the table's rows.
     if sum(len(ids) for ids in game_ids) != len(combined) or len(combined) != len(table):
         raise ValueError("every game must be in exactly one split group")
     return groups

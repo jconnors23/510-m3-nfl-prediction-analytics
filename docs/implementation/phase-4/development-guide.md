@@ -23,7 +23,7 @@ python -m pytest tests/test_lambda_handler.py
 
 Expected: **6 passed**. Five use a made-up model and made-up API Gateway events. The sixth calls the real `handler` function with the real `models/model.joblib`, and it is skipped if that file is missing.
 
-### Step 2: Call the Real Handler by Hand
+### Step 2: Call the Real Handler Manually
 
 The handler is the function AWS Lambda calls. It takes an event, which is the dictionary API Gateway builds from a web request. The [Deployment Guide](./deployment-guide.md#stage-the-zip-and-create-the-function) writes three test events into `build/` (step 13), and this command calls the handler with the first of them:
 
@@ -65,7 +65,7 @@ The build commands in the Deployment Guide's [Build the Zip](./deployment-guide.
 python -m pytest
 ```
 
-Expected: **90 passed** with no warnings: 3 from Phase 1, 29 from Phase 2, 17 from Phase 3, 6 from Phase 4, and 35 from Phase 5. Without `models/model.joblib`, 88 pass and 2 are skipped.
+Expected: **95 passed** with no warnings: 8 from Phase 1, 29 from Phase 2, 17 from Phase 3, 6 from Phase 4, and 35 from Phase 5. Without `models/model.joblib`, 93 pass and 2 are skipped.
 
 ### How Do I Change a Package Version?
 

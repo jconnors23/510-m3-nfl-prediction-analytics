@@ -21,6 +21,8 @@ export default defineConfig({
     proxy: { "/predict": apiTarget, "/health": apiTarget, "/feedback": apiTarget },
   },
   build: { outDir: "dist" },
-  // The tests only run plain functions, so they need no browser environment.
+  // Most tests run plain functions, so the default environment is node, with no browser stand-in.
+  // App.test.tsx and Picker.test.tsx render React components, so each starts with the line
+  // "// @vitest-environment jsdom", which switches that one file to jsdom, a browser stand-in.
   test: { environment: "node", include: ["src/**/*.test.{ts,tsx}"] },
 });

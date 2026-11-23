@@ -1,8 +1,9 @@
 """Tests for the 2026 season file the frontend reads.
 
-Most tests build the season from the raw schedule and the downloaded games table on disk, and
-they are skipped when either file is missing. The two check_schedule tests use tiny made-up tables
-in memory. Nothing calls the network, and no test writes a file.
+Five tests build the season from the raw schedule and the downloaded games table on disk, and
+they are skipped when either file is missing. The two check_schedule tests use tiny made-up
+tables in memory, and the missing-file test uses made-up settings. Nothing calls AWS or the
+network, and no test writes a file.
 """
 
 import json
@@ -19,7 +20,8 @@ GAMES = Path(__file__).resolve().parents[1] / "data" / "from-s3" / "nfl_matchups
 RAW = Path(__file__).resolve().parents[1] / "data" / "raw" / "games.csv"
 SEASON_FILE = Path(__file__).resolve().parents[1] / "frontend" / "src" / "data" / "season-2026.json"
 PROFILES = Path(__file__).resolve().parents[1] / "frontend" / "src" / "data" / "team-profiles.json"
-# Both source files are downloaded rather than committed, so a fresh checkout skips these tests.
+# Both source files are committed, so these tests run on a fresh checkout. They are skipped only
+# if one of them has been deleted.
 needs_files = pytest.mark.skipif(
     not GAMES.is_file() or not RAW.is_file(),
     reason="the downloaded table or the raw schedule is not on disk",

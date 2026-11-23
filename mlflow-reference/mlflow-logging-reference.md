@@ -8,7 +8,7 @@ Training writes this folder by itself. `make train` (or `python -m src.model.tra
 2. **Writes the new run** to `latest-run/`.
 3. **Rebuilds `run-history.md` and `run-history.json`** from every run folder here.
 
-The folder grows by one run each time the model is trained, so it is a lasting log. The pictures in `screenshots/` are taken by hand and are not rewritten by training.
+The folder grows by one run each time the model is trained, so it is a lasting log. The pictures in `screenshots/` are taken manually and are not rewritten by training.
 
 ## Where Do I Start?
 
@@ -21,7 +21,7 @@ The folder grows by one run each time the model is trained, so it is a lasting l
 
 ```text
 mlflow-reference/
-  README.md                  this page, written by hand
+  mlflow-logging-reference.md  this page, written manually
   run-history.md             every run, newest first (generated)
   run-history.json           the same list, as data (generated)
   latest-run/                the newest run (generated)
@@ -46,7 +46,7 @@ mlflow-reference/
 ```
 
 - **A previous run's folder name** is the run's start time in UTC, then the first 8 characters of its run id, for example `2026-11-22T21-40-33Z_0086979f`. The `:` in the time is written as `-`, so the name works on every computer. The names sort in time order.
-- **Each run adds about 95 KB.** Most of that is the confusion-matrix picture (87 KB). Runs from before the picture was redrawn are about 40 KB each.
+- **Each run adds about 95 KB.** Most of that is the confusion-matrix picture (87 KB).
 - **The history is built from the folders here,** not from MLflow's database. It reads the same in any copy of the repository.
 - **Running the export twice on the same run changes nothing.** The run is archived only when a newer run replaces it.
 - **Runs from before the history began** are added once with `python -m src.model.export_mlflow --backfill`.

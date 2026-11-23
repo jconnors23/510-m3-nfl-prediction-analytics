@@ -14,6 +14,8 @@ PyYAML==6.0.3
 # (accuracy and log loss). The API in Phase 3 must use this same version, because a saved
 # model may fail to load, or answer differently, under another one.
 scikit-learn==1.9.1
+# scikit-learn's solver uses scipy while fitting, so an unpinned scipy could fit slightly different weights on another machine.
+scipy==1.18.1
 
 # Experiment tracking
 # mlflow records the settings, scores, and files of each training run (Phase 2).
@@ -29,8 +31,8 @@ joblib==1.6.0
 requests==2.34.2
 
 # Cloud storage access (Amazon S3)
-# boto3 is the Python library for talking to AWS from code. It is used to upload the cleaned
-# table and download it back (Phase 1).
+# boto3 is the Python library for talking to AWS from code. It uploads the cleaned table and
+# downloads it back (Phase 1), and the feedback handler uses it to write to DynamoDB.
 boto3==1.44.5
 
 # Model serving API (Phases 3 and 4)

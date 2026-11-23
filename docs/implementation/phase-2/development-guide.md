@@ -19,15 +19,15 @@ One command does a whole training run: `make train`, from the project folder. It
 
 ```mermaid
 flowchart TB
-    A["data/from-s3/<br/>nfl_matchups_2020_2026.csv"] --> C["make train<br/>(python -m src.model.train)"]
+    A["data/from-s3/"] --> C["make train"]
     S["config/config.yaml"] --> C
-    C --> D["models/model.joblib<br/>the model the API loads"]
+    C --> D["models/model.joblib<br/>(the API loads it)"]
     C --> E["results/run-summary.json<br/>committed"]
-    C --> F["mlflow.db and mlartifacts/<br/>local only"]
+    C --> F["mlflow.db and<br/>mlartifacts/<br/>(local only)"]
     F --> X["export to mlflow-reference/"]
-    X --> L["latest-run/<br/>the new run (committed)"]
-    X --> P["previous-runs/<br/>the run it replaced (committed)"]
-    X --> H["run-history.md<br/>one row per run (committed)"]
+    X --> L["latest-run/<br/>the new run<br/>(committed)"]
+    X --> P["previous-runs/<br/>the run it replaced<br/>(committed)"]
+    X --> H["run-history.md<br/>one row per run<br/>(committed)"]
 ```
 
 What one run does, in order:
@@ -36,7 +36,7 @@ What one run does, in order:
 2. **Saves the model** to `models/model.joblib`, the file the API loads.
 3. **Writes `results/run-summary.json`,** a short readable record of the settings, data fingerprint, scores, and learned weights.
 4. **Logs the run to MLflow** in the local `mlflow.db` and `mlartifacts/`: 15 parameters, 8 metrics, 3 files, and an MLflow-format copy of the model.
-5. **Updates `mlflow-reference/`.** The last run moves into `previous-runs/`, the new run is written to `latest-run/`, and `run-history.md` gains a row. This is the committed log of every training run. See [`mlflow-reference/README.md`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/mlflow-reference/README.md).
+5. **Updates `mlflow-reference/`.** The last run moves into `previous-runs/`, the new run is written to `latest-run/`, and `run-history.md` gains a row. This is the committed log of every training run. See [`mlflow-reference/mlflow-logging-reference.md`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/mlflow-reference/mlflow-logging-reference.md).
 
 The steps below run it, read the results, and say what to commit.
 
@@ -155,7 +155,7 @@ mlartifacts/
 - **Two copies of the model.** `model.joblib` is plain and carries the extra facts the API checks. The MLflow-format copy lets MLflow's own tools load the model in one call. Both come from the same fitted model. See [Why Is the Model Stored Twice?](./implementation-part-2.md#why-is-the-model-stored-twice).
 - **`joblib` and `skops` are two ways to write a model to disk.** joblib is the general way and works on any Python object. skops is the format MLflow's scikit-learn support uses.
 - **Where the settings go.** `config/config.yaml` is the input. The copy under `mlartifacts/` is a snapshot of what was used for that run.
-- **Why they are not committed.** The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See [Decisions](../decisions.md).
+- **Why they are not committed.** The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See [Design Manifest](../design-manifest.md).
 - **What is committed in their place.** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference) holds a readable copy of every run: its settings, scores, plot, and the logged model's text files, with no absolute paths. See [Step 3: Read the Run History](#step-3-read-the-run-history).
 - **Terms.** The [Glossary](../glossary.md) defines artifact, artifact store, logged model, and SQLite.
 
@@ -198,7 +198,7 @@ flowchart TB
     python -m pytest
     ```
 
-    Expected on a clean checkout: **88 passed and 2 skipped**. The two skipped tests use the saved model, which a clean checkout does not have yet. After training, the same command gives **90 passed**.
+    Expected on a clean checkout: **93 passed and 2 skipped**. The two skipped tests use the saved model, which a clean checkout does not have yet. After training, the same command gives **95 passed**.
 
 3. **Train** with `make train`. It prints the nine lines shown in [Step 2: Train the Model](#step-2-train-the-model).
 4. **Confirm nothing changed.** Training overwrites `results/run-summary.json`. If the rebuild matches, git shows no change to that file.

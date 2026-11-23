@@ -12,7 +12,7 @@ This page explains how the last four Phase 2 steps work: fitting the model, scor
 ## How Does the Data Flow?
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["Training 1,339<br/>Validation 271<br/>Test 149"] --> B["Step 4: fit scaler<br/>and model"]
     B --> C["Step 5: score<br/>and draw plot"]
     C --> D["Step 6: record<br/>in MLflow"]
@@ -218,7 +218,7 @@ The model picks the home team in 172 of 271 games (63.5%), more often than home 
 
 One image, `confusion_matrix_validation.png`, is drawn for the validation season by `plot_confusion_matrix` in `src/model/evaluate.py`. It uses matplotlib's non-window drawing mode (`Agg`), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.
 
-The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. It was redrawn after this phase. The picture, and what changed from the first version, are on [The Confusion-Matrix Picture](../extras/confusion-matrix.md).
+The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. The picture and how to read it are on [Confusion Matrix](../extras/confusion-matrix.md).
 
 ## Step 6: Record the Run in MLflow
 
@@ -378,7 +378,7 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
 Each training run also writes `results/run-summary.json`, a small readable record of the run. A reader can open it without MLflow and without loading the saved model.
 
 - **What it holds:** the settings, the scikit-learn version, the data file and its fingerprint, the scores for each group, and the values the model learned.
-- **Learned values:** the scaler's averages and spreads, the two weights, and the intercept. They let a reader check a prediction by hand: standardize each input with the average and spread, multiply by its weight, add the intercept, and pass the total through the logistic function.
+- **Learned values:** the scaler's averages and spreads, the two weights, and the intercept. They let a reader check a prediction manually: standardize each input with the average and spread, multiply by its weight, add the intercept, and pass the total through the logistic function.
 - **Committed to git.** The file is overwritten on every run, so it always describes the latest run, and MLflow keeps the full history on your machine.
 - **Stable on purpose.** It has no run ID, no timestamp, no git commit, and no machine paths, because each of those changes on every run or commit. Decimals are rounded to 6 places. A rerun with the same settings and data writes the identical bytes, so the file shows a change in git only when something real changed.
 - **Written safely.** It is written to a `.partial` file and swapped into place, like the model file.

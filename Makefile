@@ -24,8 +24,9 @@ web-test:
 start:
 	$(PYTHON) -m uvicorn src.api.app:app --port 8000
 
-# Start the web app's dev server at http://localhost:5173. It forwards /predict and /health to
-# the service started by `make start`. The port is fixed, because the live API's CORS list
+# Start the web app's dev server at http://localhost:5173. It forwards /predict, /health, and
+# /feedback to the service started by `make start`, which has no /feedback route, so the
+# Feedback tab works only on the live site. The port is fixed, because the live API's CORS list
 # allows only this local address.
 start-web:
 	cd frontend && $(NPM) run dev

@@ -57,8 +57,9 @@ jobs:
           npm test
           npm run build
 
-      # The built files may name the API, SVG namespace strings, and React's own
-      # error text. Any other host would be a request the page should not make.
+      # The built files may name only the API, SVG namespace strings (www.w3.org), React's own
+      # error text (react.dev), and the footer's links to the code repository (github.com) and the
+      # docs site (jconnors23.github.io). Any other host would be a request the page should not make.
       - name: Reject an outside address in the build
         run: |
           found=$(grep -rhoE 'https?://[a-zA-Z0-9.-]+' dist | sed -E 's#https?://##' | sort -u)
@@ -70,7 +71,8 @@ jobs:
             exit 1
           fi
 
-      # Trades the run's GitHub token for short-lived AWS credentials. Only the role name is stored.
+      # Trades the run's GitHub token for short-lived AWS credentials. No access key is stored. The
+      # role's address is the repository secret, because it holds the account number.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
@@ -78,7 +80,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-session-name: deploy-web-app-${{ github.run_id }}
 
-      # Hashed files go up first. index.html goes up last, and old hashed files stay.
+      # Hashed files go up first and index.html last, so a visitor who gets the new page never asks
+      # for a script or style that is not uploaded yet. Old hashed files are not deleted, so a
+      # visitor still on the old page can load its files. Hashed names never change content, so
+      # they are cached for a year. index.html is checked on every visit.
       - name: Upload the build
         run: |
           aws s3 cp dist/assets/ "s3://$BUCKET/assets/" --recursive --cache-control "public, max-age=31536000, immutable" --region "$AWS_REGION"

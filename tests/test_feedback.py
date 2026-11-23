@@ -85,7 +85,7 @@ def test_rating_is_left_out_when_empty(monkeypatch):
 
 
 def test_hidden_field_saves_nothing(monkeypatch):
-    """A filled hidden field still says received, and the table is not called."""
+    """A filled website field still says received, and the table is not called."""
     # The website field is not shown to people on the page, so only a bot fills it in. The bot
     # gets the same success answer, so it learns nothing, and nothing is stored.
     table = Table()
@@ -164,7 +164,7 @@ def test_base64_body_is_decoded(monkeypatch):
 
 
 def test_storage_error_gives_500(monkeypatch):
-    """A table error becomes the saved-error message and does not include the visitor's text."""
+    """A table error gives a 500 with a fixed message that does not repeat the visitor's text."""
     _use_table(monkeypatch, Table(fail=True))
     # The stand-in raises on put_item, as DynamoDB would on a throttle or an outage.
     answer = feedback_handler.handler(_event(_valid()), None)

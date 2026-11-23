@@ -5,94 +5,78 @@ hide:
 
 # Overview
 
-This project predicts the winner of an NFL game before kickoff. A user picks a home team and an away team in a web app, and the app shows a predicted winner and a win probability. **Try it at [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net).**
+A pre-game NFL winner predictor, built as a small, complete machine learning system: the data is stored in Amazon S3, a reproducible pipeline trains and tracks a model with MLflow, the model is served as an API on AWS Lambda, and a web app on CloudFront calls that API. Pick a home team and an away team, and the app shows the predicted winner and each team's chance of winning. This page is a condensed copy of the repository's [README](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#readme).
+
+- **Live web app:** [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)
+- **Live API:** `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` (`POST /predict`, `GET /health`)
+- **Code:** [github.com/jconnors23/510-m3-nfl-prediction-analytics](https://github.com/jconnors23/510-m3-nfl-prediction-analytics)
 
 !!! warning "Unofficial Coursework Project"
     **This project is not affiliated with or endorsed by the National Football League.** Team names are used only to identify the teams. The predictions are for reference only.
 
-## What Is the Idea?
+## Project Overview and Goals
 
-Teams that win more often, and outscore opponents by more, tend to win later games. The model compares the two teams on exactly two numbers, using only games already played earlier in the same season:
-
-- **Win percentage difference:** the home team's win percentage minus the away team's.
-- **Point margin difference:** the home team's average points scored minus points allowed per game, minus the away team's.
-
-A logistic regression turns those two numbers into a home win probability. The numbers start over every season. The project does not use play-by-play data, injuries, weather, or anything else beyond those two numbers. It is a small, complete example of a machine learning system, from data storage to a public web app.
-
-The data is the [nflverse](https://github.com/nflverse/nfldata/blob/master/data/games.csv) game results file, limited to regular-season games from 2020 through week 10 of 2026.
-
-## How Do the Pieces Fit Together?
+The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline. The goal is a clean, repeatable process, from cloud storage to a public web app, more than a high score. Why the project exists and how it was built phase by phase are on [Background](./background.md).
 
 ```mermaid
 flowchart TB
-    A[Download game results] --> B[Clean and store in S3]
-    B --> C[Build the two inputs<br/>and split by season]
-    C --> D[Train, score, and<br/>track with MLflow]
-    D --> E[Serve with a<br/>local API]
-    E --> F[Deploy on AWS Lambda<br/>behind API Gateway]
-    F --> G[Web app on CloudFront]
-    G --> H[Package in Docker]
-    H --> I[Write the README<br/>and finish the docs]
-    I --> J[Review against<br/>the requirements]
+    A["nflverse<br/>games file"] --> B["Clean, then<br/>store in S3"]
+    B --> C["Two inputs,<br/>split by season"]
+    C --> D["Train and track<br/>with MLflow"]
+    D --> E["FastAPI on<br/>AWS Lambda"]
+    E --> F["Web app on<br/>CloudFront"]
 ```
 
-## What Are the Phases and Steps?
+## Dataset
 
-Each phase ends with something that runs. Git commits and pull requests are done by the developer.
+- **Source:** the [nflverse games file](https://github.com/nflverse/nfldata/blob/master/data/games.csv), one row per NFL game since 1999.
+- **Games used:** regular-season games from 2020 through week 10 of 2026, without ties: **1,759 games**.
+- **Stored in S3,** downloaded back, and committed in `data/`, so the project trains with no download and no AWS account. See the [Phase 1 Brief](./implementation/phase-1/brief.md).
 
-**[Phase 1: Data Pipeline](./implementation/phase-1/brief.md)** (built)
+## Model and Evaluation
 
-- Fetch the raw game file and save it unchanged.
-- Clean it: regular season only, 2020 to 2026 week 10, no ties.
-- Upload the cleaned table to a private S3 bucket.
-- Download it back from S3, so later steps start from the cloud copy.
-- Run and change it with the [Development Guide](./implementation/phase-1/development-guide.md).
+- **Inputs:** the home team's win percentage minus the away team's, and the home team's point margin per game minus the away team's, each from earlier games of the same season only.
+- **Model:** a standard scaler and a logistic regression (scikit-learn), giving a home win probability. Above 0.5 picks the home team.
+- **Split by season:** training 2020 to 2024 (1,339 games), validation 2025 (271), test 2026 weeks 1 to 10 (149).
+- **Validation accuracy: 63.10%** (171 of 271), against 53.87% for always picking the home team. **Test accuracy: 59.06%** (88 of 149), against 47.65%.
+- **Every run is tracked in MLflow.** The path from data to a served prediction is on [ML Workflow](./implementation/extras/ml-workflow.md).
 
-**[Phase 2: Features, Training, and Tracking](./implementation/phase-2/brief.md)** (built)
+## Cloud Services
 
-- Build the two inputs and split games by season: train 2020 to 2024, validate 2025, test 2026.
-- Train the model and score it against the always-pick-home baseline.
-- Record every run in MLflow and save the trained model.
-- Train and change it with the [Development Guide](./implementation/phase-2/development-guide.md).
+S3 for the data and the web app, Lambda for the prediction and feedback functions, API Gateway for the public API, CloudFront for the web app, DynamoDB for feedback, and IAM and CloudWatch Logs, all in `us-east-1`. GitHub Actions runs the tests and publishes the docs to GitHub Pages and the web app to CloudFront. See [Cloud Architecture](./implementation/extras/cloud-architecture.md).
 
-**[Phase 3: Local Prediction API](./implementation/phase-3/brief.md)** (built)
+## Setup and Usage
 
-- Serve the model on your own computer with a FastAPI `/predict` route and a `/health` route.
-- Reject bad input with a clear error, and test with `curl`.
-- Run and change it with the [Development Guide](./implementation/phase-3/development-guide.md).
+You need Python 3.13 and `make`, and for the web app Node.js 22.12 or later.
 
-**[Phase 4: AWS Deployment](./implementation/phase-4/brief.md)** (built)
+```bash
+python3.13 -m venv .venv
+```
 
-- Deploy the API to AWS Lambda behind API Gateway, with a public address.
-- Check that all 1,759 games get the same answers from the deployed model as from the local one.
-- See the [implementation page](./implementation/phase-4/implementation.md) for the steps and the Lambda package size, and [Deployment Guide](./implementation/phase-4/deployment-guide.md) for the commands. To test it without AWS or change its code, use the [Development Guide](./implementation/phase-4/development-guide.md).
+```bash
+.venv/bin/python -m pip install -r requirements.txt
+```
 
-**[Phase 5: Web App and Hosting](./implementation/phase-5/brief.md)** (built)
+```bash
+make train
+```
 
-- Pick a home team and an away team in a small Vite web app that calls the live API and shows the predicted winner and each team's chance of winning.
-- Host the built files in a private S3 bucket, served over HTTPS through CloudFront, at **[https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)**.
-- Check that all 992 home-and-away pairs of teams get the same answers from the live API as from the local model.
-- Give the page a light and a dark theme, bundled fonts, and bold disclaimers. A GitHub Actions workflow redeploys it whenever the app changes on `main`.
-- See the [implementation page](./implementation/phase-5/implementation-part-1.md) for the contracts and the hosting, the [Development Guide](./implementation/phase-5/development-guide.md) to run and change the app, and the [Deployment Guide](./implementation/phase-5/deployment-guide.md) for the AWS commands.
+```bash
+make start
+```
 
-**[Phase 6: Docker](./implementation/phase-6/brief.md)** (built)
+The API then answers at `http://127.0.0.1:8000`. Every command is on [Makefile](./implementation/extras/makefile.md), and the local setup as a whole is on [Local Development Guide](./implementation/extras/local-development.md). Deploying is a set of written steps in the [Phase 4](./implementation/phase-4/deployment-guide.md) and [Phase 5](./implementation/phase-5/deployment-guide.md) Deployment Guides.
 
-- Package the project in one Dockerfile with a `train` target and a `serve` target, so it trains and serves from a container.
-- Check that the container writes the same run summary as the committed one, and answers the worked example with the same 0.3296 as the local API.
-- See the [implementation page](./implementation/phase-6/implementation.md) for what goes into the image and what was checked, and the [Development Guide](./implementation/phase-6/development-guide.md) to build and run it.
+## Limitations and Ethics
 
-**[Extras: Tools and Add-Ons](./implementation/extras/brief.md)** (built, README to come)
-
-- Work that belongs to no one phase: the [make commands and GitHub workflows](./implementation/extras/developer-tools.md), the [feedback form](./implementation/extras/feedback-form.md), the redrawn [confusion-matrix picture](./implementation/extras/confusion-matrix.md), the MLflow run history, the docs site, and the README.
-
-**[Remaining Phases](./implementation/remaining-phases.md)** (planned)
-
-- **Phase 7:** write the README and finish the documentation.
-- **Phase 8:** review the finished project against the requirements.
+- The model sees only two numbers, and is wrong on about 37% of the 2025 validation games and 41% of the 2026 test games.
+- It leans toward the home team, picking it in 172 of 271 games in 2025, while the home team won 146.
+- The web app collects no personal data, and the feedback form asks for no name or contact details.
+- Predictions are for reference only.
 
 ## Where Is Everything Else?
 
-- [Requirements Map](./implementation/requirements/requirements-map.md): where each finished requirement lives in the repository (files, functions, settings, and commands).
-- [Decisions](./implementation/decisions.md): choices made, why, and the open decisions waiting on the developer.
+- [Requirements Rubric](./implementation/requirements/requirements-rubric.md): every requirement of the assignment, linked to the code and docs that meet it.
+- [Design Manifest](./implementation/design-manifest.md): how the project was built with AI tools, and every choice and why.
+- [Future Considerations](./implementation/extras/future-considerations.md): what could come next.
 - [Glossary](./implementation/glossary.md): plain-language meaning of the terms used here.
-- [Assignment Brief](./implementation/requirements/assignment-brief.md) and [Project Requirements](./implementation/requirements/project-requirements.md): the original brief and the checkable requirements, kept unchanged.

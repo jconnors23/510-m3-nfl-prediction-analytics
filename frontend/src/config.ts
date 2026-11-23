@@ -9,7 +9,8 @@ export function readApiBaseUrl(raw: string | undefined, isProduction: boolean): 
     value = value.slice(0, -1);
   }
   // A production page has no dev server to forward calls, so an empty address would call the
-  // site's own host. Fail the build setup instead.
+  // site's own host. The build still finishes. The error is thrown when the page loads, and App
+  // shows "This page is not configured" instead of calling the wrong address.
   if (isProduction && value === "") {
     throw new Error("VITE_API_BASE_URL is not set.");
   }

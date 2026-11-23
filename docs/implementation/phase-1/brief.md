@@ -13,7 +13,7 @@ Phase 1 gets the data into the cloud and back. It downloads a public file of NFL
 
 - [x] **Step 1. Fetch the raw data and save it.** `src/data/fetch_raw.py` saves the nflverse file unchanged as `data/raw/games.csv`.
 - [x] **Step 2. Clean it and save the cleaned table.** `src/data/clean.py` writes `data/processed/nfl_matchups_2020_2026.csv`.
-- [x] **Step 3. Upload the cleaned table to S3.** `src/data/upload_to_s3.py`, into the private bucket created by hand.
+- [x] **Step 3. Upload the cleaned table to S3.** `src/data/upload_to_s3.py`, into the private bucket created manually.
 - [x] **Step 4. Download it from S3 and save a local copy.** `src/data/download_from_s3.py` writes `data/from-s3/nfl_matchups_2020_2026.csv`.
 
 ## Results

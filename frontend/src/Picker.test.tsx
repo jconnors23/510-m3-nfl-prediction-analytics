@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+// The first line above is a Vitest setting, not a note: it runs this file in jsdom, a browser stand-in,
+// because the config's default environment is node and has no page to render into.
 // Drives the page-drawn picker with the mouse and the keyboard, and checks the roles a screen
 // reader reads. Each test renders the picker alone with made-up options, so nothing uses the network.
 import { cleanup, render, screen } from "@testing-library/react";
@@ -66,7 +68,7 @@ it("follows the keyboard pattern", async () => {
   expect(button.getAttribute("aria-activedescendant")).toBe("fruit-option-3");
   await user.keyboard("{Home}");
   expect(button.getAttribute("aria-activedescendant")).toBe("fruit-option-0");
-  // Typing a letter jumps to the first option that starts with it.
+  // Typing a letter jumps to the next option after the highlighted one that starts with it.
   await user.keyboard("M");
   expect(button.getAttribute("aria-activedescendant")).toBe("fruit-option-2");
   await user.keyboard("{Enter}");
