@@ -202,3 +202,10 @@ Every make command is explained on [Makefile](./docs/implementation/extras/devel
 - [Cloud Architecture](./docs/implementation/extras/architecture/cloud-architecture.md): every AWS resource, with its exact name and settings, how they connect, and who can reach what.
 - [ML Workflow](./docs/implementation/extras/architecture/ml-workflow.md): the path from the raw nflverse file to a served prediction, step by step, with the command and code for each step.
 - [Running Locally](./docs/implementation/extras/development/running-locally.md): everything that runs on a laptop (the API, the web app, MLflow, the docs, and Docker), the ports each uses, and how to work on each part.
+
+### Related Work
+
+Two earlier Duke AIPI 510 projects by the same developer, also built on nflverse data. This project uses none of their code, data, or results. More about each is on [Background](./docs/background.md).
+
+- [Module 1: NFL Data Storytelling](https://github.com/jconnors23/510-m1-nfl-data-storytelling): ranks the 32 teams by record and by point differential for the 2024 regular season, and compares the two rankings.
+- [Module 2: NFL Statistical Analysis](https://github.com/jconnors23/510-m2-nfl-statistical-analysis): a pilot study of one week's 13 games and the published pre-game win chances.
