@@ -4,7 +4,8 @@ Every training run of this project, newest first. Each row links to that run's f
 
 | Started (UTC) | Run | Commit | Validation accuracy | Test accuracy | Validation log loss | Folder |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-11-22T22:08:38Z | 89548904 | 4f29575 | 63.10% | 59.06% | 0.6451 | [latest-run](latest-run/) |
+| 2026-11-23T00:07:23Z | cf80ea42 | 944e230 | 63.10% | 59.06% | 0.6451 | [latest-run](latest-run/) |
+| 2026-11-22T22:08:38Z | 89548904 | 4f29575 | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-22T22-08-38Z_89548904](previous-runs/2026-11-22T22-08-38Z_89548904/) |
 | 2026-11-22T21:40:33Z | 0086979f | 4f29575 | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-22T21-40-33Z_0086979f](previous-runs/2026-11-22T21-40-33Z_0086979f/) |
 | 2026-11-21T17:36:45Z | 7762443f | 273c8b2 | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-21T17-36-45Z_7762443f](previous-runs/2026-11-21T17-36-45Z_7762443f/) |
 

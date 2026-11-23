@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.model.evaluate import plot_confusion_matrix, score_group
+from src.model.evaluate import confusion_cell_labels, plot_confusion_matrix, score_group
 from src.model.features import INPUT_COLUMNS
 
 
@@ -82,3 +82,28 @@ def test_plot_writes_a_png_without_a_window(tmp_path):
     assert destination.stat().st_size > 0
     # Agg draws to a file only. A window-based backend would fail on a computer with no display.
     assert matplotlib.get_backend().lower() == "agg"
+
+
+def test_cell_labels_give_counts_row_shares_and_right_or_wrong():
+    """The 2025 validation counts name each cell's share and whether the pick was right."""
+    labels = confusion_cell_labels([[62, 63], [37, 109]])
+    assert labels == [
+        [
+            {"count": "62", "share": "49.6% of away wins", "verdict": "Correct"},
+            {"count": "63", "share": "50.4% of away wins", "verdict": "Wrong"},
+        ],
+        [
+            {"count": "37", "share": "25.3% of home wins", "verdict": "Wrong"},
+            {"count": "109", "share": "74.7% of home wins", "verdict": "Correct"},
+        ],
+    ]
+
+
+def test_cell_labels_handle_a_row_with_no_games():
+    """A row with no games says so, and the other row still gives its shares."""
+    # A small group can have no away wins at all. Its share would divide by zero, so it reads
+    # "no games" instead.
+    labels = confusion_cell_labels([[0, 0], [1, 1]])
+    assert [cell["share"] for cell in labels[0]] == ["no games", "no games"]
+    assert [cell["share"] for cell in labels[1]] == ["50.0% of home wins", "50.0% of home wins"]
+    assert [cell["verdict"] for row in labels for cell in row] == ["Correct", "Wrong", "Wrong", "Correct"]

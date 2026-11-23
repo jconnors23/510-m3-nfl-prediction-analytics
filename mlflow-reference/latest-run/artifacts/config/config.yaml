@@ -67,7 +67,7 @@ tracking:
   # A small readable summary of the latest run (settings, data fingerprint, scores, and the
   # learned weights). It is committed to git. MLflow keeps the full history of runs.
   summary_path: results/run-summary.json
-  # A readable copy of the latest MLflow run, committed to git, so the logging can be seen without
+  # A readable log of every MLflow run, committed to git, so the logging can be seen without
   # running anything. mlflow.db and mlartifacts/ stay local, because they store absolute paths.
   reference_folder: mlflow-reference
 
