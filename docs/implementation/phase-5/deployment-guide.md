@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Deployment Guide
 
-This guide holds every AWS command for the Phase 5 web app: the commands that put it online, in order, the commands that let GitHub Actions redeploy it, the commands to redeploy by hand, and the commands that remove it. How the hosting works, and why, is on the [Implementation](./implementation-part-1.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
+This guide holds every AWS command for the Phase 5 web app: the commands that put it online, in order, the commands that let GitHub Actions redeploy it, the commands to redeploy manually, and the commands that remove it. How the hosting works, and why, is on the [Implementation](./implementation-part-1.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
 
 ## How Do the Sections Fit Together?
 
@@ -19,7 +19,7 @@ flowchart TB
     F --> G["Add the CloudFront Address<br/>to the API's CORS List"]
     G --> J["Let GitHub Actions Deploy<br/>sign-in provider, role, secret"]
     J --> K["Add the Feedback Route<br/>table, role, function, route, limit<br/>(Part 2)"]
-    K -.-> H["Redeploy After a Change<br/>(the workflow, or by hand)"]
+    K -.-> H["Redeploy After a Change<br/>(the workflow, or manually)"]
     K -.-> L["Read the Feedback"]
     K -.-> I["Remove Everything<br/>(written, not run)"]
 ```
@@ -49,7 +49,7 @@ What must be true first:
 
 ## Check the Account
 
-1. Run both test suites with `make pytest` and `make web-test`. The Python tests give **90 passed**. The app tests give **62 passed**, or **60 passed and 2 skipped** without the expected files in `build/`.
+1. Run both test suites with `make pytest` and `make web-test`. The Python tests give **95 passed**. The app tests give **62 passed**, or **60 passed and 2 skipped** without the expected files in `build/`.
 
 ```bash
 python -m pytest -q
@@ -403,7 +403,7 @@ curl -sS -D - -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/pre
 
 ## Let GitHub Actions Deploy
 
-These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/developer-tools.md#how-does-a-change-reach-the-live-web-app). Write the two policy files with the real account number, under `build/`, which git ignores.
+These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/github-workflows.md#how-does-a-change-reach-the-live-web-app). Write the two policy files with the real account number, under `build/`, which git ignores.
 
 29. Confirm there is no GitHub sign-in provider and no role with this name yet. The second command should fail with `NoSuchEntity`.
 
@@ -421,7 +421,7 @@ aws iam get-role --role-name 510-m3-nfl-web-app-deploy-role --region us-east-1
 aws iam create-open-id-connect-provider --url https://token.actions.githubusercontent.com --client-id-list sts.amazonaws.com --tags Key=project,Value=510-m3 --region us-east-1
 ```
 
-31. Write the trust policy. It lets only runs on `main` of this repository use the role.
+31. Write the trust policy. It lets only runs on `main` of this repository use the role. The subject has GitHub's owner id and repository id after each name, which is the form the live role uses.
 
 ```bash
 cat > build/web-app-deploy-trust.json <<'EOF'
@@ -435,7 +435,7 @@ cat > build/web-app-deploy-trust.json <<'EOF'
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:jconnors23/510-m3-nfl-prediction-analytics:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:jconnors23@59714706/510-m3-nfl-prediction-analytics@1458181148:ref:refs/heads/main"
         }
       }
     }
@@ -502,7 +502,7 @@ gh secret set AWS_WEB_APP_DEPLOY_ROLE_ARN --repo jconnors23/510-m3-nfl-predictio
 
 ## Add the Feedback Route
 
-These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [The Feedback Form](../extras/feedback-form.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
+These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [Feedback Path](../extras/feedback-path.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
 
 37. Confirm nothing exists yet. The first three commands should fail with "not found", and the last should list only `POST /predict` and `GET /health`.
 
@@ -661,7 +661,7 @@ aws lambda update-function-code --function-name 510-m3-nfl-feedback-api --zip-fi
 
 ## Redeploy After a Change
 
-**The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below are the same thing by hand, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are.
+**The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below do the same thing manually, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are.
 
 1. From `frontend/`, install, test, and build. The new script and stylesheet get new hashed names.
 

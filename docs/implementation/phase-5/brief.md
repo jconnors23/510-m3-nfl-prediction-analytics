@@ -9,7 +9,7 @@ hide:
 
 **Needs first:** Phase 4, whose output is the public API at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`, and Node.js with npm (Node 22.12 or later, or 24; this computer has 24.17.0 and npm 11.13.0).
 
-Phase 5 builds the part a person uses and puts it on the internet. A visitor picks a home team and an away team in a small web app. The app looks up the two teams' standings, turns them into the model's two inputs, sends them to the live API, and shows the predicted winner and each team's chance of winning. The app's files sit in a private Amazon S3 bucket and are served over HTTPS through CloudFront. The README link to the page comes in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme).
+Phase 5 builds the part a person uses and puts it on the internet. A visitor picks a home team and an away team in a small web app. The app looks up the two teams' standings, turns them into the model's two inputs, sends them to the live API, and shows the predicted winner and each team's chance of winning. The app's files sit in a private Amazon S3 bucket and are served over HTTPS through CloudFront. The README link to the page comes in [Phase 7](../phase-7/brief.md).
 
 ## How Do the Pieces Fit Together?
 
@@ -39,12 +39,12 @@ sequenceDiagram
     participant U as Visitor
     participant W as Web app
     participant A as API (Phase 4)
-    U->>W: choose home team and away team
-    W->>W: look up both profiles in the app
-    W->>W: subtract: home minus away, for win percentage and for point margin per game
-    W->>A: POST /predict with the two numbers
-    A->>W: prediction, label, home win probability
-    W->>U: winner, both teams' chances, and the two numbers used
+    U->>W: choose home team<br/>and away team
+    W->>W: look up both profiles<br/>in the app
+    W->>W: subtract home minus away,<br/>for win percentage and<br/>for point margin per game
+    W->>A: POST /predict with<br/>the two numbers
+    A->>W: prediction, label,<br/>home win probability
+    W->>U: winner, both teams' chances,<br/>and the two numbers used
 ```
 
 ## What Does the Page Show?
@@ -92,15 +92,15 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 - [x] **Step 14. Build the season file** with `python -m src.season`: every 2026 game, with the standings before each week and each team's totals.
 - [x] **Step 15. Rename the site and tidy the header:** NFL Prediction Analytics, the disclaimer and the model version once each at the top, and an "Analyze" button.
 - [x] **Step 16. Add the tabs:** Overview, Games by Week, Custom Matchup (with a week list), Team Stats, and Feedback.
-- [x] **Step 17. Add the feedback route:** a DynamoDB table, a small function, and `POST /feedback` on the same API. The prediction function is not changed. See [The Feedback Form](../extras/feedback-form.md).
-- [x] **Step 18. Add a Makefile** with the local commands. It now has nine, listed in [Which Make Commands Are There?](../extras/developer-tools.md#which-make-commands-are-there).
+- [x] **Step 17. Add the feedback route:** a DynamoDB table, a small function, and `POST /feedback` on the same API. The prediction function is not changed. See [Feedback Path](../extras/feedback-path.md).
+- [x] **Step 18. Add a Makefile** with the local commands. It now has nine, each explained on [Makefile](../extras/makefile.md).
 - [x] **Step 19. Check every game,** all 272, in the browser's arithmetic and through the live API, then redeploy.
 - [x] **Step 21. Keep a log of every training run** in `mlflow-reference/`: `make train` moves the last run into `previous-runs/`, writes the new one to `latest-run/`, and adds a row to `run-history.md`. See [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run).
 - [x] **Step 20. Fix what review found:** the phone width, the cramped forms, the see-through lists, two hand-typed weeks, and the wording. See [What Was Fixed After Review?](./implementation-part-2.md#what-was-fixed-after-review).
 
 ## Results
 
-- **Python tests:** **88 passed** for the whole project. Part 1 added 8 for the profiles file, and Part 2 added 8 for the season file, 9 for the feedback function, and 10 for the MLflow export and its run history.
+- **Python tests:** **95 passed** for the whole project once a model is trained, or 93 passed and 2 skipped before. Part 1 added 8 for the profiles file, and Part 2 added 8 for the season file, 9 for the feedback function, and 10 for the MLflow export and its run history. The other 7 came later: 2 for the confusion-matrix picture, and 5 for the fetch and download steps.
 - **App tests:** **62 passed**, across 12 test files.
 - **Part 2, every game:** all 272 games of 2026 sent to the live API, every pick and probability equal to the local model.
 - **Part 2, feedback:** a test submission saved, read back, and deleted. The prediction function is unchanged.
@@ -112,7 +112,7 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 
 - **React with TypeScript,** not plain TypeScript, because React makes the page's state easier to read and test.
 - **One standings snapshot after 2026 week 10,** not a week picker.
-- **The model's scores are copied into the profiles file** from `results/run-summary.json`, so the page never shows a number typed by hand.
+- **The model's scores are copied into the profiles file** from `results/run-summary.json`, so the page never shows a number typed in manually.
 - **The folder is `frontend/`.** It was built as `web/` and renamed.
 - **The bucket name `510-m3-nfl-web-app` was free** and is used as proposed.
 - **TypeScript 7.0.2** works with the Vite template, so the template's older version was not needed.
@@ -132,8 +132,8 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 
 ## What Is Not in This Phase
 
-- Docker, in [Phase 6](../remaining-phases.md#phase-6-docker).
-- The README and its link to the live page, in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme), and the review, in [Phase 8](../remaining-phases.md#phase-8-review).
+- Docker, built in [Phase 6](../phase-6/brief.md).
+- The README and its link to the live page, and the final review, in [Phase 7](../phase-7/brief.md).
 - A custom domain, protection rules, analytics, and a week picker.
 
 ## Where to Read More
@@ -143,4 +143,4 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 - [Phase 5 Development Guide](./development-guide.md) shows how to run, test, and change the app on your own computer.
 - [Phase 5 Deployment Guide](./deployment-guide.md) lists every AWS command, for the first deployment, a redeploy, and removal.
 - [Phase 3 Development Guide](../phase-3/development-guide.md#how-do-i-ask-for-a-prediction) explains the two numbers, the request, and the response fields.
-- [Decisions](../decisions.md#deployment-and-front-end) lists the hosting and front-end choices and why.
+- [Design Manifest](../design-manifest.md#phase-5-web-app-and-hosting) lists the hosting and front-end choices and why.

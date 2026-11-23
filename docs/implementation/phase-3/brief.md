@@ -22,29 +22,13 @@ python -m uvicorn src.api.app:app --port 8000
 Everything runs on one computer. The model file is read once when the service starts, and each request is then answered from memory.
 
 ```mermaid
-flowchart LR
-    subgraph Caller["Caller"]
-        A["curl or Postman"]
-    end
-    subgraph Service["Local API (run by uvicorn)"]
-        B["POST /predict"]
-        C["Check the input<br/>(Pydantic)"]
-        D["Model in memory<br/>scaler + logistic regression"]
-        E["GET /health"]
-    end
-    subgraph Disk["Files on disk"]
-        G["config/config.yaml<br/>model.output_path"]
-        F["models/model.joblib"]
-    end
-    A -->|"JSON with the two inputs"| B
-    B --> C
-    C -->|"valid"| D
-    C -->|"invalid: error JSON"| A
-    D -->|"prediction and probability as JSON"| A
-    A -->|"health check"| E
-    E -->|"model version"| A
-    G -->|"path"| F
-    F -->|"loaded once at start-up"| D
+flowchart TB
+    A["Caller<br/>(curl or Postman)"] -->|"POST /predict<br/>JSON with the two inputs"| C["Check the input<br/>(Pydantic)"]
+    A -->|"GET /health"| E["Health check:<br/>status and model version"]
+    C -->|"invalid"| X["422 with error JSON<br/>that names the problem"]
+    C -->|"valid"| D["Model in memory:<br/>scaler + logistic regression"]
+    D --> R["200 with the prediction<br/>and probability as JSON"]
+    F["models/model.joblib<br/>(path from config/config.yaml)"] -->|"loaded once<br/>at start-up"| D
 ```
 
 ## Steps in Order
@@ -70,7 +54,7 @@ flowchart LR
 - **Valid ranges:** win percentage difference from -1 to 1, which is the full possible range. Point margin difference from -100 to 100, which is a loose guard, because the real data runs about -49 to 39.
 - **Unknown fields are rejected,** so a misspelled name fails loudly and is not ignored.
 - **The scaler is inside the model file,** so the API sends raw inputs. The API never standardizes anything itself.
-- **FastAPI, not Flask.** Both can serve this model. FastAPI does the input checks (missing field, extra field, wrong type, out-of-range number) from one request definition, and it gives a test page at `/docs` with no extra code. In Flask, those checks would be written by hand. FastAPI also pairs with the Mangum adapter already pinned for Lambda in Phase 4, while Flask would need a different adapter. Flask is a little shorter for a route with no checks, which is the one place it is simpler.
+- **FastAPI, not Flask.** Both can serve this model. FastAPI does the input checks (missing field, extra field, wrong type, out-of-range number) from one request definition, and it gives a test page at `/docs` with no extra code. In Flask, those checks would be written manually. FastAPI also pairs with the Mangum adapter already pinned for Lambda in Phase 4, while Flask would need a different adapter. Flask is a little shorter for a route with no checks, which is the one place it is simpler.
 - **No cloud code yet.** The adapter that lets AWS Lambda run the same app (Mangum) is added in Phase 4. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
 - **Built so Lambda can reuse it.** Phase 4 runs this same app in Lambda, so Phase 3 keeps four things true:
     - The app is one object named `app`, importable from the module `src/api/app.py`, with no code that reads the command line when it is imported.
@@ -89,7 +73,7 @@ flowchart LR
 
 ## What Is Not in This Phase
 
-- Docker, in [Phase 6](../remaining-phases.md#phase-6-docker).
+- Docker, built in [Phase 6](../phase-6/brief.md).
 - AWS Lambda, API Gateway, and CORS, in [Phase 4](../phase-4/brief.md).
 - The web app, in [Phase 5](../phase-5/brief.md).
 
@@ -98,4 +82,4 @@ flowchart LR
 - [Phase 3 Implementation](./implementation.md) explains each step in detail: start-up, the request and response, the routes, the input checks, and the tests.
 - [Development Guide](./development-guide.md) shows how to run the service, send it requests with `curl`, read the errors, and change it.
 - [Phase 2 Implementation, Part 2](../phase-2/implementation-part-2.md) explains what is inside `models/model.joblib` and how the model scores a game.
-- [Decisions](../decisions.md#the-api) lists the API choices already made.
+- [Design Manifest](../design-manifest.md#phase-3-local-prediction-api) lists the API choices already made.

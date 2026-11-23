@@ -20,6 +20,7 @@ Mangum is a small Python library that lets a FastAPI app run inside AWS Lambda. 
 - **In code,** the wrapper is one call, `Mangum(app, lifespan="off")`. See [Step 1](#step-1-add-the-lambda-entry-point) for why the start-up step is turned off.
 
 ```mermaid
+%%{init: {"sequence": {"width": 120, "actorMargin": 30}}}%%
 sequenceDiagram
     participant B as Browser
     participant G as API Gateway
@@ -27,14 +28,14 @@ sequenceDiagram
     participant F as FastAPI app
     participant P as Saved model
     B->>G: POST /predict (JSON)
-    G->>M: Lambda event (dictionary)
+    G->>M: Lambda event<br/>(dictionary)
     M->>F: HTTP-style request
     F->>F: check the input
-    F->>P: predict with the two inputs
+    F->>P: predict with<br/>the two inputs
     P->>F: probability
     F->>M: JSON answer
-    M->>G: Lambda response (dictionary)
-    G->>B: HTTP response (JSON)
+    M->>G: Lambda response<br/>(dictionary)
+    G->>B: HTTP response<br/>(JSON)
 ```
 
 The two setups run the same app. Only the front part changes:
@@ -42,16 +43,16 @@ The two setups run the same app. Only the front part changes:
 ```mermaid
 flowchart TB
     subgraph Local["On a laptop (Phase 3)"]
-        direction LR
+        direction TB
         L1["curl"] --> L2["uvicorn"] --> L3["FastAPI app"]
     end
     subgraph Cloud["On AWS (Phase 4)"]
-        direction LR
+        direction TB
         C1["Browser"] --> C2["API Gateway"] --> C3["Lambda function"] --> C4["Mangum"] --> C5["FastAPI app<br/>(same code)"]
     end
 ```
 
-- **Why this and not a separate Lambda function:** a hand-written function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Decisions](../decisions.md#deployment-and-front-end).
+- **Why this and not a separate Lambda function:** a manually written function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
 - **What Mangum does not do:** it does not deliver requests to Lambda, set permissions, or make the public address. API Gateway and AWS permissions do those.
 
 ## What Was Deployed?
@@ -294,7 +295,7 @@ find build/lambda -type f -exec cat {} + | wc -c
 
 ### What Is the Memory Setting?
 
-Lambda gives a function CPU in proportion to its memory. The function runs at 1769 MB. Accuracy is the only priority for this deployment. Latency and cost are not concerns, so the memory may be changed if that helps, but it is not a priority. See [Decisions](../decisions.md#deployment-and-front-end).
+Lambda gives a function CPU in proportion to its memory. The function runs at 1769 MB. Accuracy is the only priority for this deployment. Latency and cost are not concerns, so the memory may be changed if that helps, but it is not a priority. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
 
 ## Step 6: Test the Function in AWS
 
@@ -410,11 +411,11 @@ The deployed model and the local model are the same at the 4-decimal precision t
 ## Step 11: Write the Steps Down
 
 !!! abstract "Purpose"
-    **Goal:** Make the deployment repeatable by hand.
+    **Goal:** Make the deployment repeatable manually.
 
     **Why:** Written steps mean the deployment does not depend on anyone's memory, and they show exactly what was created, so it can be removed again.
 
     **If skipped:** Nobody could rebuild or remove the deployment without redoing the work from scratch.
 
 - **[Deployment Guide](./deployment-guide.md)** lists every command of Steps 4 to 10, in order, with placeholders such as `<account-id>` and `<api-id>` for values that differ between accounts. It ends with the commands that remove everything this phase created. Those removal commands are written, and not run.
-- **No `deploy.yml` workflow.** The steps are run by hand. See [Decisions](../decisions.md#deployment-and-front-end).
+- **No `deploy.yml` workflow.** The steps are run manually. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).

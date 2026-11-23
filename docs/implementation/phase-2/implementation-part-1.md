@@ -12,7 +12,7 @@ This page explains how the first three Phase 2 steps work: feature engineering (
 ## How Does the Data Flow?
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["data/from-s3/<br/>1,759 games"] --> B["Step 1: standings<br/>before each week"]
     B --> C["Step 1: two inputs<br/>and home_win"]
     C --> D["Step 2: split<br/>by season"]
@@ -172,7 +172,7 @@ Game `2025_07_NE_TEN` is New England at Tennessee in week 7 of 2025. From the st
 - The two inputs are 0.1667 - 0.6667 = **-0.5** and -13.0 - 5.0 = **-18.0**. Both are negative, so the away team looks stronger.
 - Tennessee lost, so `home_win` is 0.
 
-### What Is a Small Example Worked by Hand?
+### What Is a Small Example Worked Out Manually?
 
 Four teams (A, B, C, D) play two games each week for three weeks. This is the league the tests use.
 

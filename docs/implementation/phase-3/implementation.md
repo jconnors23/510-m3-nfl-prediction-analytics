@@ -19,14 +19,14 @@ The model file is read once, in the app's start-up step, and kept in memory. Eve
 flowchart TB
     A["Service starts"] --> B["Read model.output_path<br/>from config.yaml"]
     B --> C{"models/model.joblib<br/>exists?"}
-    C -->|"no"| X1["Stop with a message:<br/>run python -m src.model.train"]
+    C -->|"no"| X1["Stop: run<br/>make train first"]
     C -->|"yes"| D["Load the saved file"]
     D --> E{"File readable, with the<br/>four required keys?"}
-    E -->|"no"| X3["Stop with a message that<br/>names the problem"]
+    E -->|"no"| X3["Stop: name<br/>the problem"]
     E -->|"yes"| F{"Saved scikit-learn version<br/>equals the installed one?"}
-    F -->|"no"| X2["Stop with a message that<br/>names both versions"]
+    F -->|"no"| X2["Stop: name<br/>both versions"]
     F -->|"yes"| H{"Saved input names match<br/>the two request fields?"}
-    H -->|"no"| X4["Stop with a message that<br/>names the input names"]
+    H -->|"no"| X4["Stop: name<br/>the input names"]
     H -->|"yes"| G["Ready for requests"]
 ```
 
@@ -39,13 +39,13 @@ sequenceDiagram
     participant V as Input check
     participant M as Model in memory
     C->>A: POST /predict with JSON
-    A->>V: check fields, types, ranges
+    A->>V: check fields,<br/>types, ranges
     alt input is not valid
-        V->>C: 422 and error JSON that names the problem
+        V->>C: 422 and error JSON<br/>that names the problem
     else input is valid
-        V->>M: the two numbers, in the saved order
+        V->>M: the two numbers,<br/>in the saved order
         M->>A: home win probability
-        A->>C: 200 with prediction, label, probability, model version
+        A->>C: 200 with prediction, label,<br/>probability, model version
     end
 ```
 
@@ -97,7 +97,7 @@ ERROR:    Application startup failed. Exiting.
 
     **Why:** One definition gives the input checks, the error messages, and the `/docs` test page together.
 
-    **If skipped:** The checks would be written by hand in each route.
+    **If skipped:** The checks would be written manually in each route.
 
 The request, from `src/api/schemas.py`:
 

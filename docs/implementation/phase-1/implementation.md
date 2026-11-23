@@ -10,7 +10,7 @@ This page explains how the Phase 1 data pipeline works, what it creates, and why
 ## How Does the Data Flow?
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["nflverse games.csv<br/>(GitHub)"] --> B["Step 1: fetch<br/>src/data/fetch_raw.py"]
     B --> C["data/raw/games.csv<br/>7,548 rows, 46 columns"]
     C --> D["Step 2: clean<br/>src/data/clean.py"]
@@ -35,7 +35,7 @@ This is the one place the environment is stated. Other pages refer to it.
 - **Python packages:** installed from `requirements.txt`, pinned to exact versions.
 - **AWS:** an account, AWS CLI version 2, and credentials configured on the machine. Steps 3 and 4 need them.
 - **Network:** access to GitHub (Step 1) and S3 (Steps 3 and 4).
-- **Later phases:** Node.js with npm for the Phase 5 web app, and Docker Desktop for Phase 6.
+- **Other tools:** Node.js with npm for the Phase 5 web app, and Docker Desktop for the Phase 6 images.
 - **Docs:** MkDocs with the Material theme, kept out of the project dependency files.
 
 ## What Is the Prediction Task?
@@ -45,7 +45,7 @@ The first design choice is the prediction task: classification or regression. It
 - **Supervised learning:** the model learns from past games where the answer is known, then predicts games where it is not.
 - **Classification** predicts one of a fixed set of labels. **Regression** predicts a number on a scale, such as a score margin.
 - **This project uses binary classification** (two labels): did the home team win? The answer is 1 (home win) or 0 (away win). That answer is the target, in a column called `home_win`.
-- **Why not regression:** the web app shows a predicted winner and a win probability. A classifier gives both directly. A margin model would need an extra step to turn a margin into a probability. The full reasoning, with the numbers, is in [Decisions](../decisions.md#why-binary-classification-and-not-regression).
+- **Why not regression:** the web app shows a predicted winner and a win probability. A classifier gives both directly. A margin model would need an extra step to turn a margin into a probability. The full reasoning, with the numbers, is in [Design Manifest](../design-manifest.md#why-binary-classification-and-not-regression).
 - **What the task needs from the data:**
     - Exactly two outcomes. A tie has neither, so the 6 tied games are removed.
     - Both final scores. `home_win` is 1 when `home_score` is greater than `away_score`. It is built in Phase 2, so the saved table holds only facts from the source file.
@@ -128,7 +128,7 @@ The week cut is `window.test_through_week` (10) in `config/config.yaml`, applied
 
 The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/processed/nfl_matchups_2020_2026.csv`. Both come from `config.yaml`. Only the cleaned table is uploaded.
 
-- **The bucket was created by hand,** in the AWS console, with all four public-access blocks on. No script creates it, because only an upload script and a download script are needed. S3 encrypts new objects with AES-256 by default.
+- **The bucket was created manually,** in the AWS console, with all four public-access blocks on. No script creates it, because only an upload script and a download script are needed. S3 encrypts new objects with AES-256 by default.
 - `src/data/upload_to_s3.py` uploads the file, then asks S3 for the object's size and compares it with the local file (63,908 bytes). A difference stops the step.
 - A failed AWS call (missing credentials, a wrong bucket name, or no permission) ends the step with boto3's own error message and no traceback.
 
@@ -137,7 +137,7 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 !!! abstract "Purpose"
     **Goal:** Download the cleaned table and save it as `data/from-s3/nfl_matchups_2020_2026.csv`.
 
-    **Why:** Every later run must start from the S3 copy and not from a file someone saved by hand.
+    **Why:** Every later run must start from the S3 copy and not from a file someone saved manually.
 
     **If skipped:** A run could use an old or edited local file without anyone knowing.
 
@@ -148,7 +148,7 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 - **Code:** `src/config.py` reads `config/config.yaml`, so no script hard-codes a season, path, or bucket. The four steps live in `src/data/`, one file per step, in run order: `fetch_raw.py`, `clean.py`, `upload_to_s3.py`, and `download_from_s3.py`. Later phases add their own folders next to it.
 - **Run commands:** `python -m src.data.fetch_raw`, `python -m src.data.clean`, `python -m src.data.upload_to_s3`, and `python -m src.data.download_from_s3`.
 - **Settings:** `config/config.yaml` has a `data` block (source address, the three file paths, bucket, S3 key, region) and a `window` block (`start_season` 2020, `end_season` 2026, `test_through_week` 10).
-- **Other files:** `requirements.txt` (exact versions), `pytest.ini`, and tests in `tests/test_clean.py` and `tests/test_upload.py`.
+- **Other files:** `requirements.txt` (exact versions), `pytest.ini`, and tests in `tests/test_fetch_raw.py`, `tests/test_clean.py`, `tests/test_upload.py`, and `tests/test_download_from_s3.py`. The fetch and download tests were added after Phase 1.
 - **Local data files:** `data/raw/games.csv` (7,548 rows, 46 columns), `data/processed/nfl_matchups_2020_2026.csv` (1,759 rows, 7 columns), and `data/from-s3/nfl_matchups_2020_2026.csv` (identical to the cleaned table).
 - **In AWS:** the bucket `510-m3-nfl-dataset` in `us-east-1`. It is private, has all four public-access blocks on, uses AES-256 encryption, and holds one object (63,908 bytes).
 
@@ -158,8 +158,8 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 - **Training always starts from the S3 copy.** The download step fetches again and never reuses an earlier local copy.
 - **AWS only.** Turned down: Google Cloud and Azure.
 - **Two small S3 scripts:** upload (checks the object size) and download. Each ends with a short message on an AWS error. Turned down: a shared file that sorted AWS errors into named causes. boto3's own messages already say the same thing.
-- **The bucket is created by hand, not by code.** Turned down: a setup script. A script that creates AWS resources adds risk for no benefit.
-- **Binary classification, not regression.** Turned down: predicting the score margin. See [Why Binary Classification and Not Regression?](../decisions.md#why-binary-classification-and-not-regression).
+- **The bucket is created manually, not by code.** Turned down: a setup script. A script that creates AWS resources adds risk for no benefit.
+- **Binary classification, not regression.** Turned down: predicting the score margin. See [Why Binary Classification and Not Regression?](../design-manifest.md#why-binary-classification-and-not-regression).
 - **Ties are removed (6 games).** Turned down: labeling a tie as an away win, and counting a tie as half a win.
 - **Playoffs and unplayed games are removed,** and the week cap is a setting, not a code edit.
 - **Dependencies are pinned to exact versions.**

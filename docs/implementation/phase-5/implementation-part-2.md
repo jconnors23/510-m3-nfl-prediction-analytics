@@ -12,8 +12,8 @@ Part 2 turns the one-page app into a small site called **NFL Prediction Analytic
 ## What Does the Site Look Like?
 
 ```mermaid
-flowchart TB
-    H["Header: NFL Prediction Analytics<br/>model v1.0, standings through 2026 week 10,<br/>the one disclaimer, theme button"]
+flowchart LR
+    H["Header: the site name,<br/>model version and<br/>standings date,<br/>the disclaimer,<br/>the theme button"]
     H --> T{"Tabs"}
     T --> O["Overview<br/>(the default)"]
     T --> G["Games by Week"]
@@ -22,7 +22,7 @@ flowchart TB
     T --> F["Feedback"]
     G -->|"Analyze"| API["POST /predict<br/>(unchanged)"]
     M -->|"Analyze"| API
-    F -->|"Send"| FB["POST /feedback<br/>(new route, new function)"]
+    F -->|"Send"| FB["POST /feedback<br/>(new route and<br/>new function)"]
 ```
 
 - **The name** is NFL Prediction Analytics, in the page title and the header.
@@ -78,7 +78,7 @@ A table of every team's 2026 games through week 10, with only the numbers the mo
 
 ### Feedback
 
-A short form (a category, an optional rating, and a message) whose answers are saved in a DynamoDB table by a function of its own. The form goes beyond the assignment, so it is explained in full on [The Feedback Form](../extras/feedback-form.md).
+A short form (a category, an optional rating, and a message) whose answers are saved in a DynamoDB table by a function of its own. The form goes beyond the assignment, so it is explained in full on [Feedback Path](../extras/feedback-path.md).
 
 ## Does the API Need to Change?
 
@@ -88,7 +88,7 @@ A short form (a category, an optional rating, and a message) whose answers are s
 - **Custom Matchup:** the same, for any week.
 - **Already checked against the live API:** every upcoming game uses the week 10 standings, so each of the 122 upcoming games is one of the 992 ordered pairs checked in Part 1. Each of the 149 finished games was sent through the live API in Phase 4, which checked all 1,759 games.
 
-**The feedback form needs a new route,** `POST /feedback`, on the same API address, handled by a separate small function, so the prediction function is not touched. See [Why Does It Need Its Own Route?](../extras/feedback-form.md#why-does-it-need-its-own-route).
+**The feedback form needs a new route,** `POST /feedback`, on the same API address, handled by a separate small function, so the prediction function is not touched. See [Why Does It Need Its Own Route?](../extras/feedback-path.md#why-does-it-need-its-own-route).
 
 ## Where Do the Season's Games Come From?
 
@@ -180,12 +180,12 @@ Paths are inside `frontend/`.
 
 The tests cover the season file and the feedback function in Python, using a stand-in for DynamoDB so no AWS account is needed. On the app side they cover the tabs, the labels, the inputs for a game, the result lines, the team table's sorting and formatting, the feedback check, and each tab's page.
 
-- **The tests:** 88 Python tests and 62 app tests pass. On GitHub, or on a fresh checkout, the app gives 60 passed and 2 skipped, because the two every-game checks need files in the ignored `build/` folder. A fresh checkout with no saved model gives 86 Python tests passed and 2 skipped.
+- **The tests:** 95 Python tests and 62 app tests pass. On GitHub, or on a fresh checkout, the app gives 60 passed and 2 skipped, because the two every-game checks need files in the ignored `build/` folder. A fresh checkout with no saved model gives 93 Python tests passed and 2 skipped.
 - **The season file:** 272 games (150 finished or tied, 122 upcoming), 18 weeks, 11 sets of standings, and 32 team rows. It is 157,894 bytes, SHA-256 `9c2acb0bb239cbeb86cf9425c113deeecfe86dee68381a55a8b8291a710b6525`, and rebuilding it gives the same bytes.
 - **Finished games:** for all 149 with a winner, the browser's inputs equal `build_model_table`'s exactly.
 - **Every game through the live API:** all 272 sent, 272 answers with status 200, every pick and every probability equal to the local model, 0 retries, and 0 mismatches.
 - **The prediction function is unchanged.** Its code fingerprint is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=` before and after.
-- **The feedback route:** saved, read back, and deleted a test submission, and refused a short message. See [What Was Checked?](../extras/feedback-form.md#what-was-checked) on the feedback page.
+- **The feedback route:** saved, read back, and deleted a test submission, and refused a short message. See [What Was Checked?](../extras/feedback-path.md#what-was-checked) on the feedback page.
 - **The served files:** all 16 (the page, the script, the stylesheet, and 12 fonts) match the local build byte for byte.
 - **The live site in a real browser.** Headless Chrome visited every tab on the live site:
     - **The header:** the title and heading are "NFL Prediction Analytics", the disclaimer appears once, and the model version appears once, in the header chip.
@@ -201,7 +201,7 @@ The tests cover the season file and the feedback function in Python, using a sta
 - **The page was wider than a phone screen.** At 390 pixels wide, every tab's page was 802 pixels wide. The tab bar was centered with automatic margins inside a flex column, which made it as wide as its row of tabs. It now has a set width, and its tabs scroll inside it. Checked on all five tabs, locally and live: the page is 390 pixels wide.
 - **The forms were cramped.** Labels sat inline, the message box was a tiny default box beside its label, and nothing spaced one field from the next. Every label and its control now sit in one field style: the label on its own line, space between fields, and a full-width message box about 6 lines tall.
 - **An open list showed the button through it.** A native drop-down opens a list the operating system draws, and on macOS that list is translucent, so the orange Analyze button showed through. All seven lists now use `src/Picker.tsx`, a list the page draws itself, built to the standard select-only combobox pattern: the arrow keys, Home and End, Enter, Escape, and jumping to a typed letter. Checked: the open list is fully opaque, and it covers the button.
-- **Two week numbers were typed by hand.** Custom Matchup's starting week and the last-week fallback now come from the season file.
+- **Two week numbers were typed in manually.** Custom Matchup's starting week and the last-week fallback now come from the season file.
 - **The site mentioned betting.** The banner now reads "**Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Predictions are for reference only." No page text mentions betting, and a test checks every tab.
 
 ## What Part 2 Does Not Do

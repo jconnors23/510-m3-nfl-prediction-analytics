@@ -102,7 +102,7 @@ curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -
 {"prediction":0,"predicted_label":"away win","home_win_probability":0.3296,"model_version":"v1.0"}
 ```
 
-The model gives the home team a **32.96%** chance, which is below 50%, so the pick is an away win. New England won this game, so the pick was correct. This is the same game worked by hand in [Part 2](../phase-2/implementation-part-2.md#what-is-a-worked-example).
+The model gives the home team a **32.96%** chance, which is below 50%, so the pick is an away win. New England won this game, so the pick was correct. This is the same game worked out manually in [Part 2](../phase-2/implementation-part-2.md#what-is-a-worked-example).
 
 What the pieces of the command mean:
 

@@ -13,8 +13,7 @@ Key terms and tools, grouped by the phase where they first matter, followed by g
 - [Phase 4: AWS Deployment](#phase-4-aws-deployment)
 - [Phase 5: Web App and Hosting](#phase-5-web-app-and-hosting)
 - [Phase 6: Docker](#phase-6-docker)
-- [Phase 7: Documentation and README](#phase-7-documentation-and-readme)
-- [Phase 8: Review](#phase-8-review)
+- [Phase 7: Review](#phase-7-review)
 - [General Machine Learning Ideas](#general-machine-learning-ideas)
 - [General Tooling and Reproducibility](#general-tooling-and-reproducibility)
 
@@ -122,7 +121,7 @@ Built. See the [Phase 5 Brief](./phase-5/brief.md).
 - **npm and the lock file:** npm installs the app's JavaScript packages. `package-lock.json` records the exact version of every package, and `npm ci` installs exactly those versions, the way the pinned versions in `requirements.txt` do for Python.
 - **Vitest:** the test runner that works with Vite. It does for the web app's code what pytest does for the Python code.
 - **`VITE_` variables:** Vite copies only the variables whose names start with `VITE_` into the browser code, and writes their values into the built files, so nothing secret belongs in them. See [Env Variables and Modes](https://vite.dev/guide/env-and-mode).
-- **Dev server proxy:** while developing, the Vite server can forward some requests (here `/predict` and `/health`) to another address (here the local API). The browser talks only to the dev server. See [server options](https://vite.dev/config/server-options).
+- **Dev server proxy:** while developing, the Vite server can forward some requests (here `/predict`, `/health`, and `/feedback`) to another address (here the local API). The browser talks only to the dev server. See [server options](https://vite.dev/config/server-options).
 - **CloudFront:** serves the built web app's files over HTTPS from a private S3 bucket.
 - **Origin access control:** the setting that lets CloudFront, and only CloudFront, read a private S3 bucket. See [restricting access to an S3 origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html).
 - **Default root object:** the file CloudFront returns when the address has no path. Here it is `index.html`. See [specifying a default root object](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DefaultRootObject.html).
@@ -147,15 +146,15 @@ Built. See the [Phase 6 Brief](./phase-6/brief.md) and the [Phase 6 Implementati
     - **How it differs from a virtual environment:** a virtual environment (`.venv/`) keeps only the Python packages separate, and still uses this computer's Python and system. A container also brings its own Python and system, so it runs the same on any computer with Docker.
 - **Dockerfile:** the text file that lists the steps for building an image: which base image to start from, which packages to install, which files to copy in, and which command to run when a container starts.
 - **Build target (multi-stage build):** one Dockerfile can define several named stages, and `docker build --target <name>` builds the image up to that stage. Here a shared `base` stage installs everything once, and the `train` and `serve` targets start from it, so both use the same Python and the same pins.
-- **Base image:** the image a Dockerfile starts from. Here it is the official `python:3.13-slim` image, a small Linux system with Python already installed, pinned to an exact patch version.
+- **Base image:** the image a Dockerfile starts from. Here it is the official `python:3.13.14-slim` image, a small Linux system with Python already installed, pinned to an exact patch version.
 - **`.dockerignore`:** lists which files may be copied into an image. This project's file leaves everything out unless it is named, so keys, local databases, and `.git/` never enter the image.
 - **Bind mount:** connects a folder on this computer to a folder inside a container, so what the container writes there is kept after it stops. `make docker-train` mounts `build/docker/results/` over the container's `results/`, so its run summary can be compared with the committed one.
 - **Published port:** a port on this computer that forwards to a port inside a container. `make docker-serve` publishes `127.0.0.1:8000`, so `curl http://127.0.0.1:8000/health` on the laptop reaches the API inside the container, and nobody else on the network can.
 - **Non-root user:** the image runs the code as an ordinary user named `app`, not as the all-powerful `root` user, so a problem in the code cannot change the image's system files.
 
-## Phase 7: Documentation and README
+## Phase 7: Review
 
-Planned. See [Remaining Phases](./remaining-phases.md#phase-7-documentation-and-readme).
+Not started. See the [Phase 7 Brief](./phase-7/brief.md). The review uses no new tools.
 
 **Docs:** [MkDocs](https://www.mkdocs.org/), [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [Mermaid](https://mermaid.js.org/), [GitHub Pages](https://docs.github.com/en/pages), [GitHub Actions](https://docs.github.com/en/actions).
 
@@ -163,17 +162,13 @@ Planned. See [Remaining Phases](./remaining-phases.md#phase-7-documentation-and-
 - **Material for MkDocs:** the theme that gives the site its layout, navigation, and diagram support.
 - **Mermaid:** a text format for diagrams, written inside a code block in a page and drawn by the site.
 - **GitHub Pages:** a GitHub feature that serves a built site from a repository. `mkdocs gh-deploy` builds the docs and pushes the result to a branch named `gh-pages`, and Pages serves that branch. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
-- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). What both workflows do is on [Make Commands and GitHub Workflows](./extras/developer-tools.md). See the [documentation](https://docs.github.com/en/actions).
+- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). A third workflow, `test-python.yml`, runs the Python tests on each pull request. What all three do is on [GitHub Workflows](./extras/github-workflows.md). See the [documentation](https://docs.github.com/en/actions).
 - **README:** the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.
-
-## Phase 8: Review
-
-Planned. See [Remaining Phases](./remaining-phases.md#phase-8-review). This phase uses no new tools.
 
 ## General Machine Learning Ideas
 
 - **Supervised learning:** learning from examples that come with known answers. Every game has a known winner, so the model can be checked against answers it has not seen.
-- **Binary classification:** a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale. See [Why Binary Classification and Not Regression?](./decisions.md#why-binary-classification-and-not-regression).
+- **Binary classification:** a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale. See [Why Binary Classification and Not Regression?](./design-manifest.md#why-binary-classification-and-not-regression).
 - **Training, validation, and test sets:** training data fits the model, validation data gives the score to report, and test data is a final check on games the model never touched.
 - **Data leakage:** a feature that uses information from after the thing being predicted, which inflates scores. Using only earlier weeks prevents it, and a check stops the run if a week-1 feature is not 0.
 - **Overfitting:** memorizing the training games instead of learning a pattern that carries over, so the training score is high and the score on unseen games is lower.

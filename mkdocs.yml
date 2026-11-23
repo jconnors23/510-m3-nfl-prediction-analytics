@@ -4,11 +4,18 @@ site_name: NFL Prediction Analytics
 site_url: https://jconnors23.github.io/510-m3-nfl-prediction-analytics/
 repo_url: https://github.com/jconnors23/510-m3-nfl-prediction-analytics
 repo_name: 510-m3-nfl-prediction-analytics
+# The header shows two plain links, to the repository and to the live web app, from
+# overrides/partials/source.html. It replaces the theme's repository box, which also fetched and
+# showed the star and fork counts.
+extra:
+  web_app_url: https://d1nubiunzfwm0q.cloudfront.net
 site_description: Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.
 copyright: NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
 
 theme:
   name: material
+  # Template overrides. Only partials/source.html, the header links, is replaced.
+  custom_dir: overrides
   # A light and a dark scheme in the web app's colors (white, black, purple,
   # orange, gold, silver, and amber). The site starts in the reader's system
   # setting, and the toggle in the header switches between the two. The exact
@@ -63,12 +70,15 @@ validation:
   links:
     anchors: warn
 
-# The home page is the overview. The original brief, the project requirements, and the
-# requirements map sit in docs/implementation/requirements/, at the bottom of the
-# Implementation section.
+# The design manifest comes first: how the project was built with AI tools, and every decision.
+# Then the background, and the Implementation section, which opens with the overview (a
+# condensed copy of the README) before each phase. Then the Extras in priority order, and last
+# the requirements rubric, the original brief, and the project requirements.
 nav:
-  - Overview: index.md
+  - Design Manifest: implementation/design-manifest.md
+  - Background: background.md
   - Implementation:
+      - Overview: index.md
       - "Phase 1: Data Pipeline":
           - Brief: implementation/phase-1/brief.md
           - Implementation: implementation/phase-1/implementation.md
@@ -97,15 +107,24 @@ nav:
           - Brief: implementation/phase-6/brief.md
           - Implementation: implementation/phase-6/implementation.md
           - Development Guide: implementation/phase-6/development-guide.md
-      - "Extras: Tools and Add-Ons":
-          - Brief: implementation/extras/brief.md
-          - Make Commands and Workflows: implementation/extras/developer-tools.md
-          - Feedback Form: implementation/extras/feedback-form.md
-          - Confusion-Matrix Picture: implementation/extras/confusion-matrix.md
-      - "Remaining Phases (Planned)": implementation/remaining-phases.md
-      - Decisions: implementation/decisions.md
-      - Glossary: implementation/glossary.md
-      - Requirements:
-          - Assignment Brief: implementation/requirements/assignment-brief.md
-          - Project Requirements: implementation/requirements/project-requirements.md
-          - Requirements Map: implementation/requirements/requirements-map.md
+      - "Phase 7: Review":
+          - Brief: implementation/phase-7/brief.md
+  # Pages that belong to no one phase: how the whole system fits together, how to work on it
+  # locally, the tools, and what could come next.
+  - Extras:
+      - Cloud Architecture: implementation/extras/cloud-architecture.md
+      - ML Workflow: implementation/extras/ml-workflow.md
+      - Frontend and Backend Connection: implementation/extras/frontend-backend-connection.md
+      - Local Development Guide: implementation/extras/local-development.md
+      - Makefile: implementation/extras/makefile.md
+      - Testing Guide: implementation/extras/testing-guide.md
+      - GitHub Workflows: implementation/extras/github-workflows.md
+      - Tooling Guide: implementation/extras/tooling-guide.md
+      - Feedback Path: implementation/extras/feedback-path.md
+      - Confusion Matrix: implementation/extras/confusion-matrix.md
+      - Future Considerations: implementation/extras/future-considerations.md
+  - Glossary: implementation/glossary.md
+  - Requirements:
+      - Requirements Rubric: implementation/requirements/requirements-rubric.md
+      - Assignment Brief: implementation/requirements/assignment-brief.md
+      - Project Requirements: implementation/requirements/project-requirements.md

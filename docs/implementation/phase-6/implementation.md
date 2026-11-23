@@ -55,7 +55,7 @@ flowchart TB
 
 ## Which Make Commands Run It?
 
-Two commands were added to the `Makefile`: `make docker-train` and `make docker-serve`. What each one runs is in the [Phase 6 Development Guide](./development-guide.md). The full list of make commands is on [Make Commands and GitHub Workflows](../extras/developer-tools.md#which-make-commands-are-there).
+Two commands were added to the `Makefile`: `make docker-train` and `make docker-serve`. What each one runs is in the [Phase 6 Development Guide](./development-guide.md). The full list of make commands is on [Makefile](../extras/makefile.md).
 
 ## What Was Checked?
 
@@ -64,8 +64,8 @@ Two commands were added to the `Makefile`: `make docker-train` and `make docker-
     - `build/docker/results/run-summary.json` is byte for byte `results/run-summary.json` (SHA-256 `bd14becd53dc68dc59da97addb67102e3f2e5a9051b8805ba40537d4d4d56112`). The summary rounds every number to 6 places, so it is the check to rely on. The model file is not compared byte for byte, because the container runs Linux and this computer runs macOS. The service's answers are checked instead.
     - The export to the container's own `mlflow-reference/` finishes without `.git/`.
 - **Tests in the container:**
-    - The `train` image, with no saved model: **88 passed, 2 skipped**. The skipped tests are the last test in `tests/test_api.py` and the last in `tests/test_lambda_handler.py`, which need `models/model.joblib`.
-    - The `serve` image, which holds a model: **90 passed**.
+    - The `train` image, with no saved model: **93 passed, 2 skipped**. The skipped tests are the last test in `tests/test_api.py` and the last in `tests/test_lambda_handler.py`, which need `models/model.joblib`.
+    - The `serve` image, which holds a model: **95 passed**.
 - **The service in the container:**
     - `GET /health` returns `{"status":"ok","model_version":"v1.0","scikit_learn_version":"1.9.1"}`.
     - The worked example (`-0.5`, `-18.0`) returns `home_win_probability` **0.3296**, an away win.
@@ -77,7 +77,7 @@ Two commands were added to the `Makefile`: `make docker-train` and `make docker-
     - `510-m3-nfl-train` is 1.42 GB on disk and `510-m3-nfl-serve` is 1.43 GB. Both are 317 MB of compressed content, and the base image is 203 MB.
     - The first `make docker-train` took 57.9 seconds, 32.7 of them installing packages. A second build with no change took 0.6 seconds, because every step came from the cache.
     - The serve build took 6.4 seconds after the train build, 5.7 of them training.
-- **On this computer:** `make pytest` gives 90 passed, `make web-test` 62 passed, and `results/run-summary.json` and `models/model.joblib` kept their bytes.
+- **On this computer:** `make pytest` gives 95 passed, `make web-test` 62 passed, and `results/run-summary.json` and `models/model.joblib` kept their bytes.
 
 ## What Is Left Out
 

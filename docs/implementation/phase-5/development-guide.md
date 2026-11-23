@@ -23,17 +23,17 @@ Run every `npm` command from `frontend/`, and every `python` command from the pr
 
 ## Which Make Commands Are There?
 
-This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, and the port each one uses, is listed in [Which Make Commands Are There?](../extras/developer-tools.md#which-make-commands-are-there).
+This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, what it needs, and the port it uses are on [Makefile](../extras/makefile.md).
 
 For a local run, use two terminals: `make start` in one, then `make start-web` in the other. The steps below explain each one and what to check.
 
 - **Port 8000 must be free for `make start`.** If `mkdocs serve` is running with its default port, it holds 8000. Use `make docs` instead, which serves the docs on 8001.
-- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [The Feedback Form](../extras/feedback-form.md).
+- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [Feedback Path](../extras/feedback-path.md).
 
 ## How Do I Run It Locally?
 
 ```mermaid
-flowchart LR
+flowchart TB
     B["Browser<br/>localhost:5173"] -->|"/predict, /health"| V["Vite dev server<br/>(proxy)"]
     V -->|"API_PROXY_TARGET"| L["Local API<br/>uvicorn, port 8000"]
     B -.->|"or, with VITE_API_BASE_URL set"| P["Live API<br/>on AWS"]
@@ -57,7 +57,7 @@ From `frontend/`:
 npm run dev
 ```
 
-Open `http://localhost:5173`. The page calls its own address, and the dev server forwards `/predict` and `/health` to `http://127.0.0.1:8000`, so no CORS is involved. If the API is on another port, tell the dev server where it is:
+Open `http://localhost:5173`. The page calls its own address, and the dev server forwards `/predict`, `/health`, and `/feedback` to `http://127.0.0.1:8000`, so no CORS is involved. The local API has no `/feedback` route, so the Feedback tab gets status 404 here. If the API is on another port, tell the dev server where it is:
 
 ```bash
 API_PROXY_TARGET=http://127.0.0.1:8001 npm run dev
@@ -101,7 +101,7 @@ From the project folder:
 python -m pytest tests/test_profiles.py
 ```
 
-Expected: **8 passed**. The whole project gives **90 passed** with `make pytest`. `tests/test_season.py` (8), `tests/test_feedback.py` (9), and `tests/test_export_mlflow.py` (10) cover the Part 2 Python code.
+Expected: **8 passed**. The whole project gives **95 passed** with `make pytest`. `tests/test_season.py` (8), `tests/test_feedback.py` (9), and `tests/test_export_mlflow.py` (10) cover the Part 2 Python code.
 
 ## How Do I Build and Preview the Site?
 
@@ -124,7 +124,7 @@ Open the address it prints (`http://localhost:4173`). The preview calls the live
 This repeats the Phase 5 accuracy check: every one of the 992 ordered pairs of teams, sent to the live API, compared with the local model. Run it after any change to the profiles file, the matchup logic, the model, or the API.
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["build/matchups_expected.py<br/>local model, no profiles file"] --> B["build/expected-matchups.json"]
     B --> C["npm test<br/>parity test"]
     C --> D["build/js-bodies.json"]
@@ -145,7 +145,7 @@ It prints `pairs: 992`. Then, from `frontend/`:
 npm test
 ```
 
-All 35 tests must pass, including the parity test. Then, from the project folder:
+No test may fail, and the every-matchup parity test must now run instead of being skipped, because its expected file exists. Then, from the project folder:
 
 ```bash
 python build/matchups_live.py
@@ -178,7 +178,7 @@ It sends 992 requests, one at a time, and exits with an error on any mismatch. O
 - **Every color pair stays readable in both themes:** at least 4.5 to 1 for text, and 3 to 1 for the bar and the focus ring. Check a new color in both themes.
 - **Text a test looks for stays in one piece.** Testing Library matches the text directly inside an element, so a `<strong>` or `<span>` in the middle of a tested sentence breaks the test.
 - **Nothing secret goes in a `VITE_` variable,** because Vite writes those values into the built files.
-- **The profiles file is never edited by hand.** `tests/test_profiles.py` and `profiles.test.ts` catch an edit.
+- **The profiles file is never edited manually.** `tests/test_profiles.py` and `profiles.test.ts` catch an edit.
 
 ### How Do I Rebuild the Profiles File?
 
@@ -195,7 +195,7 @@ It prints `teams: 32`, `as of: 2026 week 10`, and `saved: frontend/src/data/team
 1. Edit `frontend/src/App.tsx` or `frontend/src/index.css`, with the dev server running. Check the change in both themes, with the "Dark theme" button, and at a phone width, with the browser's device view.
 2. If you change any text a test looks for, update `frontend/src/App.test.tsx` to match.
 3. Run `npm test` and `npm run build`.
-4. Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy by hand instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
+4. Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy manually instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
 
 ### How Do I Point the App at a Different API?
 
