@@ -1,42 +1,42 @@
 [
   {
     "copied": true,
-    "path": "cbe558d3a28143838db5e93869f31b8f/artifacts/config/config.yaml",
+    "path": "49a0841f8ae94ac0b8c5acabbd62c3d0/artifacts/config/config.yaml",
     "size": 4178
   },
   {
     "copied": false,
-    "path": "cbe558d3a28143838db5e93869f31b8f/artifacts/model/model.joblib",
+    "path": "49a0841f8ae94ac0b8c5acabbd62c3d0/artifacts/model/model.joblib",
     "size": 1902
   },
   {
     "copied": true,
-    "path": "cbe558d3a28143838db5e93869f31b8f/artifacts/plots/confusion_matrix_validation.png",
-    "size": 87311
+    "path": "49a0841f8ae94ac0b8c5acabbd62c3d0/artifacts/plots/confusion_matrix_validation.png",
+    "size": 89020
   },
   {
     "copied": true,
-    "path": "models/m-22fabb32de0147a89ea845ee8464bf2b/artifacts/MLmodel",
+    "path": "models/m-f996e96bcc9144859582183128e7f9d9/artifacts/MLmodel",
     "size": 710
   },
   {
     "copied": true,
-    "path": "models/m-22fabb32de0147a89ea845ee8464bf2b/artifacts/conda.yaml",
+    "path": "models/m-f996e96bcc9144859582183128e7f9d9/artifacts/conda.yaml",
     "size": 241
   },
   {
     "copied": false,
-    "path": "models/m-22fabb32de0147a89ea845ee8464bf2b/artifacts/model.skops",
+    "path": "models/m-f996e96bcc9144859582183128e7f9d9/artifacts/model.skops",
     "size": 25098
   },
   {
     "copied": true,
-    "path": "models/m-22fabb32de0147a89ea845ee8464bf2b/artifacts/python_env.yaml",
+    "path": "models/m-f996e96bcc9144859582183128e7f9d9/artifacts/python_env.yaml",
     "size": 105
   },
   {
     "copied": true,
-    "path": "models/m-22fabb32de0147a89ea845ee8464bf2b/artifacts/requirements.txt",
+    "path": "models/m-f996e96bcc9144859582183128e7f9d9/artifacts/requirements.txt",
     "size": 117
   }
 ]

@@ -23,12 +23,12 @@ Run every `npm` command from `frontend/`, and every `python` command from the pr
 
 ## Which Make Commands Are There?
 
-This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, what it needs, and the port it uses are on [Makefile](../extras/makefile.md).
+This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, what it needs, and the port it uses are on [Makefile](../extras/development/makefile.md).
 
 For a local run, use two terminals: `make start` in one, then `make start-web` in the other. The steps below explain each one and what to check.
 
 - **Port 8000 must be free for `make start`.** If `mkdocs serve` is running with its default port, it holds 8000. Use `make docs` instead, which serves the docs on 8001.
-- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [Feedback Path](../extras/feedback-path.md).
+- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [Feedback Path](../extras/features/feedback-path.md).
 
 ## How Do I Run It Locally?
 
@@ -125,18 +125,18 @@ This repeats the Phase 5 accuracy check: every one of the 992 ordered pairs of t
 
 ```mermaid
 flowchart TB
-    A["build/matchups_expected.py<br/>local model, no profiles file"] --> B["build/expected-matchups.json"]
+    A["scripts/checks/matchups_expected.py<br/>local model, no profiles file"] --> B["build/expected-matchups.json"]
     B --> C["npm test<br/>parity test"]
     C --> D["build/js-bodies.json"]
-    D --> E["build/matchups_live.py<br/>live API"]
+    D --> E["scripts/checks/matchups_live.py<br/>live API"]
     B --> E
     E --> F["build/matchups-results.json"]
 ```
 
-The two scripts live in `build/`, which git ignores, like the Phase 4 parity script. From the project folder:
+The two scripts are committed in `scripts/checks/`, next to the Phase 4 parity script. They write their files into `build/`, which git ignores, and need `models/model.joblib` from `make train`. From the project folder:
 
 ```bash
-python build/matchups_expected.py
+.venv/bin/python scripts/checks/matchups_expected.py
 ```
 
 It prints `pairs: 992`. Then, from `frontend/`:
@@ -148,7 +148,7 @@ npm test
 No test may fail, and the every-matchup parity test must now run instead of being skipped, because its expected file exists. Then, from the project folder:
 
 ```bash
-python build/matchups_live.py
+.venv/bin/python scripts/checks/matchups_live.py
 ```
 
 It sends 992 requests, one at a time, and exits with an error on any mismatch. On the current data it prints 992 requests, 0 retries, 992 status 200 answers, 992 matching picks, 992 matching probabilities, 601 home picks and 391 away picks, and `mismatches: 0`.

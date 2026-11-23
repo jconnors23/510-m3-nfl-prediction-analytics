@@ -4,7 +4,8 @@ Every training run of this project, newest first. Each row links to that run's f
 
 | Started (UTC) | Run | Commit | Validation accuracy | Test accuracy | Validation log loss | Folder |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-11-23T00:45:42Z | cbe558d3 | 07ca6ce | 63.10% | 59.06% | 0.6451 | [latest-run](latest-run/) |
+| 2026-11-23T17:08:36Z | 49a0841f | 9562f88 | 63.10% | 59.06% | 0.6451 | [latest-run](latest-run/) |
+| 2026-11-23T00:45:42Z | cbe558d3 | 07ca6ce | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-23T00-45-42Z_cbe558d3](previous-runs/2026-11-23T00-45-42Z_cbe558d3/) |
 | 2026-11-23T00:07:23Z | cf80ea42 | 944e230 | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-23T00-07-23Z_cf80ea42](previous-runs/2026-11-23T00-07-23Z_cf80ea42/) |
 | 2026-11-22T22:08:38Z | 89548904 | 4f29575 | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-22T22-08-38Z_89548904](previous-runs/2026-11-22T22-08-38Z_89548904/) |
 | 2026-11-22T21:40:33Z | 0086979f | 4f29575 | 63.10% | 59.06% | 0.6451 | [previous-runs/2026-11-22T21-40-33Z_0086979f](previous-runs/2026-11-22T21-40-33Z_0086979f/) |

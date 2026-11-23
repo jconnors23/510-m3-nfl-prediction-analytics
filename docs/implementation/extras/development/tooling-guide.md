@@ -63,7 +63,7 @@ The web app needs Node.js **`^22.12.0 || ^24.0.0 || >=26.0.0`** (the `engines` r
 | @types/react | ^19.3.0 | 19.3.0 | Type definitions for React |
 | @types/react-dom | ^19.3.0 | 19.3.0 | Type definitions for React DOM |
 
-The four scripts in `package.json` are `dev` (`vite`), `build` (`tsc -b && vite build`), `preview` (`vite preview`), and `test` (`vitest run`). For how to change a package version, see [How Do I Change a Package Version?](../phase-5/development-guide.md#how-do-i-change-a-package-version). The Glossary entry is [Phase 5: Web App and Hosting](../glossary.md#phase-5-web-app-and-hosting).
+The four scripts in `package.json` are `dev` (`vite`), `build` (`tsc -b && vite build`), `preview` (`vite preview`), and `test` (`vitest run`). For how to change a package version, see [How Do I Change a Package Version?](../../phase-5/development-guide.md#how-do-i-change-a-package-version). The Glossary entry is [Phase 5: Web App and Hosting](../glossary.md#phase-5-web-app-and-hosting).
 
 ## Which Container Tools Are Used?
 
@@ -77,7 +77,7 @@ The Glossary entries are in [Phase 6: Docker](../glossary.md#phase-6-docker).
 - **AWS CLI version 2,** used to deploy the Lambda function, the API gateway, the S3 bucket, and the CloudFront site. The laptop the project was built on has 2.35.9. Credentials for the owning account must be configured, with `us-east-1` as the region.
 - **boto3,** for S3 and DynamoDB calls from Python code (see the package table above).
 
-See the [Phase 4](../phase-4/deployment-guide.md) and [Phase 5](../phase-5/deployment-guide.md) Deployment Guides.
+See the [Phase 4](../../phase-4/deployment-guide.md) and [Phase 5](../../phase-5/deployment-guide.md) Deployment Guides.
 
 ## Which Docs Tools Are Used?
 
@@ -93,10 +93,11 @@ MkDocs is not in `requirements.txt`. Install the three packages with the version
 ## Which Automation Tools Are Used?
 
 - **GNU Make,** which reads the `Makefile`. The laptop the project was built on has 3.81. Every command is in [Makefile](./makefile.md).
-- **GitHub Actions,** which runs the three workflows in `.github/workflows/`. See [GitHub Workflows](./github-workflows.md).
+- **GitHub Actions,** which runs the four workflows in `.github/workflows/`. See [GitHub Workflows](./github-workflows.md).
 
 | Workflow | File | Actions and versions used | Runtime set up |
 | :--- | :--- | :--- | :--- |
 | Test Python | `test-python.yml` | `actions/checkout@v7`, `actions/setup-python@v7` | Python 3.13 |
+| Test Web App | `test-web.yml` | `actions/checkout@v7`, `actions/setup-node@v7` | Node 24 |
 | Deploy Docs | `deploy-docs.yml` | `actions/checkout@v7`, `actions/setup-python@v7`, `actions/upload-pages-artifact@v5`, `actions/deploy-pages@v5` | Python 3.13 |
 | Deploy Web App | `deploy-web-app.yml` | `actions/checkout@v7`, `actions/setup-node@v7`, `aws-actions/configure-aws-credentials@v6` | Node 24 |

@@ -403,7 +403,7 @@ curl -sS -D - -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/pre
 
 ## Let GitHub Actions Deploy
 
-These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/github-workflows.md#how-does-a-change-reach-the-live-web-app). Write the two policy files with the real account number, under `build/`, which git ignores.
+These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/development/github-workflows.md#how-does-a-change-reach-the-live-web-app). Write the two policy files with the real account number, under `build/`, which git ignores.
 
 29. Confirm there is no GitHub sign-in provider and no role with this name yet. The second command should fail with `NoSuchEntity`.
 
@@ -502,7 +502,7 @@ gh secret set AWS_WEB_APP_DEPLOY_ROLE_ARN --repo jconnors23/510-m3-nfl-predictio
 
 ## Add the Feedback Route
 
-These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [Feedback Path](../extras/feedback-path.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
+These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [Feedback Path](../extras/features/feedback-path.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
 
 37. Confirm nothing exists yet. The first three commands should fail with "not found", and the last should list only `POST /predict` and `GET /health`.
 

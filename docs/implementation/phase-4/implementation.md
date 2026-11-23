@@ -13,7 +13,7 @@ This page explains how the Phase 4 deployment works, one step at a time, with th
 
 Mangum is a small Python library that lets a FastAPI app run inside AWS Lambda. It translates between two formats, and it does nothing else.
 
-- **A normal web server** ([`uvicorn`](https://uvicorn.dev/) on a laptop, see the [Glossary](../glossary.md#phase-3-local-prediction-api)) listens on a port and receives HTTP requests.
+- **A normal web server** ([`uvicorn`](https://uvicorn.dev/) on a laptop, see the [Glossary](../extras/glossary.md#phase-3-local-prediction-api)) listens on a port and receives HTTP requests.
 - **Lambda has no port.** It runs a function once per request. The function receives a dictionary (called an event) and returns a dictionary.
 - **API Gateway** is what receives the browser's HTTP request, builds the event, and calls the Lambda function. This happens with or without Mangum.
 - **Mangum** runs inside the function. It turns the event into a request that FastAPI understands, calls the app, and turns FastAPI's answer back into the dictionary Lambda returns.
@@ -391,7 +391,7 @@ HTTP 200
 - **The model file:** the SHA-256 of `models/model.joblib` and of the copy inside the zip are both `8fff766505a925218eae2484ae56a8ba7baed06b62ce3413ea33c8eb15e8ea4b`.
 - **The data:** the SHA-256 of `data/from-s3/nfl_matchups_2020_2026.csv` equals `data_sha256` in `results/run-summary.json` (`7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`).
 
-**Then, every game through the public API.** A local script (`build/parity_check.py`, kept on the developer's machine and not committed) builds the local answers with the saved model, and sends each of the 1,759 games to `POST /predict`, one at a time, then compares each answer.
+**Then, every game through the public API.** A script (`scripts/checks/parity_check.py`, which writes its results to the git-ignored `build/` folder) builds the local answers with the saved model, and sends each of the 1,759 games to `POST /predict`, one at a time, then compares each answer.
 
 - **Requests sent:** 1,759 (1,339 training, 271 validation, 149 test).
 - **Retries:** 0.

@@ -218,7 +218,7 @@ The model picks the home team in 172 of 271 games (63.5%), more often than home 
 
 One image, `confusion_matrix_validation.png`, is drawn for the validation season by `plot_confusion_matrix` in `src/model/evaluate.py`. It uses matplotlib's non-window drawing mode (`Agg`), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.
 
-The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. The picture and how to read it are on [Confusion Matrix](../extras/confusion-matrix.md).
+The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. The picture and how to read it are on [Confusion Matrix](../extras/features/confusion-matrix.md).
 
 ## Step 6: Record the Run in MLflow
 

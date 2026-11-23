@@ -43,7 +43,7 @@ flowchart TB
 
 - **Runs:** `uvicorn src.api.app:app` on port 8000 inside the container, listening on every address the container has, so Docker can forward a port to it.
 - **Published only to this computer:** the run command maps `127.0.0.1:8000` to the container, so nobody else on the network can reach it, as in Phase 3.
-- **Routes:** `POST /predict` and `GET /health`, the Phase 3 service unchanged. The [feedback route](../extras/feedback-path.md) stays on AWS only, because it writes to a DynamoDB table.
+- **Routes:** `POST /predict` and `GET /health`, the Phase 3 service unchanged. The [feedback route](../extras/features/feedback-path.md) stays on AWS only, because it writes to a DynamoDB table.
 
 ## Steps in Order
 
@@ -71,7 +71,7 @@ flowchart TB
 - **Pin the base image** to `python:3.13.14-slim`, so a rebuild months later uses the same Python. Python 3.13 matches this computer and the Lambda function.
 - **Build for this computer's chip only.** This Mac uses `arm64`. Building for other chips is not needed for a laptop image.
 - **Accept that a container run records no git commit.** `.git/` is left out of the image, and the export still finishes without it.
-- **Two make commands,** `make docker-train` and `make docker-serve`. See [Makefile](../extras/makefile.md).
+- **Two make commands,** `make docker-train` and `make docker-serve`. See [Makefile](../extras/development/makefile.md).
 
 ## What Was Created
 

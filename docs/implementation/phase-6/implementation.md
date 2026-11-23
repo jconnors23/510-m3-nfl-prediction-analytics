@@ -55,7 +55,7 @@ flowchart TB
 
 ## Which Make Commands Run It?
 
-Two commands were added to the `Makefile`: `make docker-train` and `make docker-serve`. What each one runs is in the [Phase 6 Development Guide](./development-guide.md). The full list of make commands is on [Makefile](../extras/makefile.md).
+Two commands were added to the `Makefile`: `make docker-train` and `make docker-serve`. What each one runs is in the [Phase 6 Development Guide](./development-guide.md). The full list of make commands is on [Makefile](../extras/development/makefile.md).
 
 ## What Was Checked?
 

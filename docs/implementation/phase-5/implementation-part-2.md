@@ -78,7 +78,7 @@ A table of every team's 2026 games through week 10, with only the numbers the mo
 
 ### Feedback
 
-A short form (a category, an optional rating, and a message) whose answers are saved in a DynamoDB table by a function of its own. The form goes beyond the assignment, so it is explained in full on [Feedback Path](../extras/feedback-path.md).
+A short form (a category, an optional rating, and a message) whose answers are saved in a DynamoDB table by a function of its own. The form goes beyond the assignment, so it is explained in full on [Feedback Path](../extras/features/feedback-path.md).
 
 ## Does the API Need to Change?
 
@@ -88,7 +88,7 @@ A short form (a category, an optional rating, and a message) whose answers are s
 - **Custom Matchup:** the same, for any week.
 - **Already checked against the live API:** every upcoming game uses the week 10 standings, so each of the 122 upcoming games is one of the 992 ordered pairs checked in Part 1. Each of the 149 finished games was sent through the live API in Phase 4, which checked all 1,759 games.
 
-**The feedback form needs a new route,** `POST /feedback`, on the same API address, handled by a separate small function, so the prediction function is not touched. See [Why Does It Need Its Own Route?](../extras/feedback-path.md#why-does-it-need-its-own-route).
+**The feedback form needs a new route,** `POST /feedback`, on the same API address, handled by a separate small function, so the prediction function is not touched. See [Why Does It Need Its Own Route?](../extras/features/feedback-path.md#why-does-it-need-its-own-route).
 
 ## Where Do the Season's Games Come From?
 
@@ -185,7 +185,7 @@ The tests cover the season file and the feedback function in Python, using a sta
 - **Finished games:** for all 149 with a winner, the browser's inputs equal `build_model_table`'s exactly.
 - **Every game through the live API:** all 272 sent, 272 answers with status 200, every pick and every probability equal to the local model, 0 retries, and 0 mismatches.
 - **The prediction function is unchanged.** Its code fingerprint is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=` before and after.
-- **The feedback route:** saved, read back, and deleted a test submission, and refused a short message. See [What Was Checked?](../extras/feedback-path.md#what-was-checked) on the feedback page.
+- **The feedback route:** saved, read back, and deleted a test submission, and refused a short message. See [What Was Checked?](../extras/features/feedback-path.md#what-was-checked) on the feedback page.
 - **The served files:** all 16 (the page, the script, the stylesheet, and 12 fonts) match the local build byte for byte.
 - **The live site in a real browser.** Headless Chrome visited every tab on the live site:
     - **The header:** the title and heading are "NFL Prediction Analytics", the disclaimer appears once, and the model version appears once, in the header chip.

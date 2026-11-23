@@ -157,7 +157,7 @@ mlartifacts/
 - **Where the settings go.** `config/config.yaml` is the input. The copy under `mlartifacts/` is a snapshot of what was used for that run.
 - **Why they are not committed.** The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See [Design Manifest](../design-manifest.md).
 - **What is committed in their place.** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference) holds a readable copy of every run: its settings, scores, plot, and the logged model's text files, with no absolute paths. See [Step 3: Read the Run History](#step-3-read-the-run-history).
-- **Terms.** The [Glossary](../glossary.md) defines artifact, artifact store, logged model, and SQLite.
+- **Terms.** The [Glossary](../extras/glossary.md) defines artifact, artifact store, logged model, and SQLite.
 
 ## How Do I Reproduce the Result From a Clean Checkout?
 

@@ -5,7 +5,7 @@ hide:
 
 # Phase 7 Brief: Review
 
-**Status: In progress.** Phases 1 to 6 are built. The README draft is written (Step 1), the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement of the assignment, and the end-to-end check found and fixed five problems. The clean rebuild from the README, the live checks, and the final pull request remain.
+**Status: Built.** Merged into `main` as pull request #8. The README is written, the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement of the assignment to the code and docs that meet it, and two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed five problems. All three GitHub workflows of that time passed on the merge. The small items left over were done after the merge, and are listed at the end of this page.
 
 Phase 7 finishes the project and checks it before it is handed in. It writes the README, the front page of the repository and the one requirement still open. Then it checks the docs and comments against the finished code, rebuilds the project from a clean copy using only the README, and walks the assignment's acceptance checklist with evidence for each item. It combines what were planned as two phases, the documentation (Phase 7) and the review (Phase 8), because both read the finished project and neither adds code.
 
@@ -48,63 +48,70 @@ The README is `README.md` in the project folder. It must hold everything in [10.
 
 ### Step 2: Check the Docs and Comments
 
-- [ ] **Every page describes what exists now.** Each column, command, output file, and chart caption matches the current code. Anything the code no longer does is removed.
-- [ ] **Every number is recomputed** from the data or the code: test totals, scores, game counts, file sizes, and hashes. Where a number appears on more than one page, every copy matches.
-- [ ] **One page owns each explanation.** Other pages link to it instead of repeating it.
+- [x] **Every page describes what exists now.** Each column, command, output file, and chart caption matches the current code. Anything the code no longer does is removed.
+- [x] **Every number is recomputed** from the data or the code: test totals, scores, game counts, file sizes, and hashes. Where a number appears on more than one page, every copy matches.
+- [x] **One page owns each explanation.** Other pages link to it instead of repeating it.
 - [x] **The Requirements Rubric covers every requirement,** each quoted from the brief, with its file, function, setting, or command, and the page that explains it.
-- [ ] **The comments and docstrings** read plainly, explain why rather than repeat the code, and match what the code does. A comment-only edit is checked to leave the code unchanged.
-- [ ] **The docs site builds** with `mkdocs build --strict`, and the published site on GitHub Pages shows the latest pages.
+- [x] **The comments and docstrings** read plainly, explain why rather than repeat the code, and match what the code does. A comment-only edit is checked to leave the code unchanged.
+- [x] **The docs site builds** with `mkdocs build --strict`, and the published site on GitHub Pages shows the latest pages.
 - [x] **The Design Manifest page** has no empty "Open Decisions" section.
 
 ### Step 3: Rebuild From a Clean Copy
 
-Clone the repository into a new folder and follow only the README. Write down every step the README does not cover, and add it.
+Done in the end-to-end checks, on a copy of exactly the files git commits (no virtual environment, no installed packages, no trained model, and no MLflow records), following the README's setup steps. Nothing the copy needed was missing from the README.
 
-- [ ] Create the virtual environment and install `requirements.txt`.
-- [ ] `make pytest` gives **93 passed, 2 skipped** before training (the two skipped tests need a saved model).
-- [ ] `make train` prints the expected scores, and `results/run-summary.json` stays byte for byte the committed one.
-- [ ] `make pytest` gives **95 passed** after training.
-- [ ] `make start` and the worked example return **0.3296**.
-- [ ] `make web-test` gives **60 passed, 2 skipped** (the two every-game checks need files in the ignored `build/` folder).
-- [ ] `make docker-train` and `make docker-serve` build and give the same numbers.
-- [ ] `make start-web-ml` shows the runs, and `make docs` shows the site.
+- [x] Create the virtual environment and install `requirements.txt`.
+- [x] `make pytest` gives **93 passed, 2 skipped** before training (the two skipped tests need a saved model).
+- [x] `make train` prints the expected scores, and `results/run-summary.json` stays byte for byte the committed one.
+- [x] `make pytest` gives **95 passed** after training.
+- [x] `make start` and the worked example return **0.3296**.
+- [x] `make web-test` gives **60 passed, 2 skipped** (the two every-game checks need files in the ignored `build/` folder).
+- [x] `make docker-train` and `make docker-serve` build and give the same numbers.
+- [x] `make start-web-ml` shows the runs, and `make docs` shows the site.
 
 ### Step 4: Check the Live Services
 
-- [ ] `GET /health` on the live API returns status 200 with model `v1.0`.
-- [ ] `POST /predict` on the live API with the worked example returns **0.3296**.
-- [ ] The live web app loads every tab. Custom Matchup with home New England Patriots and away Tennessee Titans gives **63.8%**.
-- [ ] The browser contacts only CloudFront and the API, and logs no error.
-- [ ] The latest runs of all three GitHub workflows passed, including the first run of Test Python.
+Done in the end-to-end checks, against the live API and the live web app. The workflow runs are from the merge of pull request #8.
+
+- [x] `GET /health` on the live API returns status 200 with model `v1.0`.
+- [x] `POST /predict` on the live API with the worked example returns **0.3296**.
+- [x] The live web app loads every tab. Custom Matchup with home New England Patriots and away Tennessee Titans gives **63.8%**.
+- [x] The browser contacts only CloudFront and the API, and no tab shows an error. The headless browser did not keep a console log, so a console warning with no visible effect would not have been recorded.
+- [x] The latest runs of all three GitHub workflows passed on the merge of pull request #8. Test Python's first run, on the pull request itself, also passed.
 
 ### Step 5: Walk the Acceptance Checklist
 
-For each item in the [Acceptance Checklist](../requirements/project-requirements.md#acceptance-checklist), write down the evidence: the file, the command, and its result.
+The evidence for each item (the file, the command, and its result) is on the [Requirements Rubric](../requirements/requirements-rubric.md).
 
-- [ ] **1. Problem and dataset:** public dataset, task, target, and metric named.
-- [ ] **2. Cloud storage:** cleaned data in S3, and a script that downloads it.
-- [ ] **3. Pipeline:** ingestion, preprocessing, split, training, and evaluation, driven by `config.yaml`.
-- [ ] **4. Tracking:** runs, parameters, metrics, and artifacts logged to MLflow.
-- [ ] **5. Docker:** the image builds and runs locally, with training and serving entry points.
-- [ ] **6. API:** `/predict` returns a prediction from JSON input, checked locally.
-- [ ] **7. Deployment:** the API on Lambda behind API Gateway, publicly reachable, with CORS allowing the web app.
-- [ ] **8. Front-end:** the Vite app on S3 and CloudFront calls the live API and shows predictions.
-- [ ] **9. Repository:** every required file present, and work merged through pull requests (#1 to #7 so far).
-- [ ] **10. README:** overview, dataset, model, cloud services, setup and usage, and both live links.
+- [x] **1. Problem and dataset:** public dataset, task, target, and metric named.
+- [x] **2. Cloud storage:** cleaned data in S3, and a script that downloads it.
+- [x] **3. Pipeline:** ingestion, preprocessing, split, training, and evaluation, driven by `config.yaml`.
+- [x] **4. Tracking:** runs, parameters, metrics, and artifacts logged to MLflow.
+- [x] **5. Docker:** the image builds and runs locally, with training and serving entry points.
+- [x] **6. API:** `/predict` returns a prediction from JSON input, checked locally.
+- [x] **7. Deployment:** the API on Lambda behind API Gateway, publicly reachable, with CORS allowing the web app.
+- [x] **8. Front-end:** the Vite app on S3 and CloudFront calls the live API and shows predictions.
+- [x] **9. Repository:** every required file present, and work merged through pull requests #1 to #8.
+- [x] **10. README:** overview, dataset, model, cloud services, setup and usage, and both live links.
 
 ### Step 6: Pre-Commit Checks and the Final Pull Request
 
-- [ ] **No secrets or generated files are tracked:** no `.env`, `*.pem`, or credentials file, and `build/`, `site/`, `models/`, `mlflow.db`, `mlartifacts/`, `node_modules/`, `frontend/dist/`, `local/`, `local-docs/`, `specs/`, `.cursor/`, and `.kiro/` are ignored.
-- [ ] **No absolute path or user name** in any committed file, including `mlflow-reference/`.
-- [ ] **Every relative link resolves** in `README.md` and `docs/`.
-- [ ] **An independent review** of the code and settings, with each finding fixed or noted.
-- [ ] **The final pull request** is opened and merged by the developer.
+- [x] **No secrets or generated files are tracked:** no `.env`, `*.pem`, or credentials file, and `build/`, `site/`, `models/`, `mlflow.db`, `mlartifacts/`, `node_modules/`, `frontend/dist/`, `local/`, `local-docs/`, `specs/`, `.cursor/`, and `.kiro/` are ignored.
+- [x] **No absolute path or user name** in any committed file, including `mlflow-reference/`.
+- [x] **Every relative link resolves** in `README.md` and `docs/`.
+- [x] **An independent review** of the code and settings, with each finding fixed or noted: two end-to-end checks by Cursor (one report-only, one with fixes), and a review of the project's structure against the requirements.
+- [x] **The final pull request** is opened and merged by the developer: pull request #8.
 
 ### Small Items Left From Earlier Phases
 
-- [ ] **The confusion-matrix picture (optional):** the axis name "What the model picked" sits under the grid while its column labels sit above it, and there is a gap above the legend. Moving the axis name to the top and closing the gap is a small change in `plot_confusion_matrix`.
-- [ ] **The MLflow artifacts screenshot:** `mlflow-reference/screenshots/run-artifacts.png` shows the collapsed file list, because previewing the picture in MLflow shows an absolute path. Keep it, or crop a preview so no path shows.
-- [ ] **The latest MLflow run's commit tag:** after the last merge, one `make train` tags the run with a commit on `main`. The scores do not change.
+These are tidy-ups, not requirements. They were done after the merge of pull request #8.
+
+- [x] **The confusion-matrix picture:** the axis name "What the model picked" now sits above the grid with its column labels, and the legend sits just under the grid. See [Confusion Matrix](../extras/features/confusion-matrix.md).
+- [x] **The MLflow artifacts screenshot:** `mlflow-reference/screenshots/run-artifacts.png` now shows the picture's preview, cropped so no path shows.
+- [x] **The latest MLflow run's commit tag:** one `make train` after the merge tagged run `49a0841f` with commit `9562f88` on `main`. The scores did not change, and `results/run-summary.json` is byte for byte the same.
+- [x] **The every-game check scripts are committed** in `scripts/checks/`, so a fresh copy can rerun them. Their outputs stay in the git-ignored `build/` folder.
+- [x] **The web app's tests run on each pull request** that changes `frontend/`, through the new Test Web App workflow.
+- [x] **The data steps run in the train image.** See [Run the Data Steps in the Container](../phase-6/development-guide.md#run-the-data-steps-in-the-container).
 
 ## What Is Not in This Phase
 
@@ -115,4 +122,4 @@ For each item in the [Acceptance Checklist](../requirements/project-requirements
 
 - [Project Requirements](../requirements/project-requirements.md) lists every requirement and the acceptance checklist.
 - [Requirements Rubric](../requirements/requirements-rubric.md) shows where each finished requirement lives.
-- [Makefile](../extras/makefile.md) explains every command the README will use.
+- [Makefile](../extras/development/makefile.md) explains every command the README will use.

@@ -7,7 +7,7 @@ hide:
 
 This page explains how the project was built, then lists the key decisions behind it, grouped by phase. Each decision states what was chosen, why, and what was turned down. It is for anyone who wants to know who did what and why the project looks the way it does.
 
-## How Was This Project Built With AI?
+## AI-Driven Development
 
 **The developer drove the project from start to finish, and AI tools augmented the work.** The developer chose the problem, set the scope and the rules for every phase, made each design and configuration decision, reviewed every result, and ran every git command. Three AI tools helped along the way, each with its own job:
 
@@ -34,7 +34,7 @@ flowchart TB
     - **Sets the rules:** the requirements and constraints each phase must meet, the key thresholds, and which files each tool may edit.
     - **Decides each design and configuration choice:** for example, the season split, the Docker layout, the AWS setup, and what the web app shows. Where a tool proposed options, the developer picked one, changed it, or turned it down.
     - **Approves or rejects every spec, and reviews every result.**
-    - **Runs every git command** that changes the repository. Each phase has its own branch and pull request, and pull requests #1 to #7 are merged into `main`.
+    - **Runs every git command** that changes the repository. Each phase has its own branch and pull request, and pull requests #1 to #8 are merged into `main`.
 - **Gemini** was a working partner in conversation. With the developer, it helped generate and refine the project idea and its starting scope, and helped work through code and configuration approaches. The developer decided what to keep.
 - **Kiro** is an AI agent in the Kiro IDE. It turns the developer's request into a written spec for Cursor. It reviews Cursor's work against the spec by reading the code, rerunning the tests, recomputing the numbers, and checking the live services. It writes all of `docs/` and the code comments, and it writes the pull request notes. Its git access is read-only.
 - **Cursor** is an AI code editor. It implements each spec in `src/`, `tests/`, `frontend/`, and the config files, runs the commands, and fills in an implementation log from a template. It ends with a report of anything that differs from the spec, any choice the spec did not cover, and the real numbers beside the expected ones.
@@ -224,23 +224,24 @@ Extras is work that belongs to no one phase. Each phase's pages then describe on
 
 ### Make Commands
 
-- **The Makefile has nine commands:** `train`, `pytest`, `web-test`, `start`, `start-web`, `start-web-ml`, `docs`, `docker-train`, and `docker-serve`. Commands that are run rarely, such as rebuilding the data files, stay as the plain commands in the Development Guides. See [Makefile](./extras/makefile.md).
+- **The Makefile has nine commands:** `train`, `pytest`, `web-test`, `start`, `start-web`, `start-web-ml`, `docs`, `docker-train`, and `docker-serve`. Commands that are run rarely, such as rebuilding the data files, stay as the plain commands in the Development Guides. See [Makefile](./extras/development/makefile.md).
 
 ### GitHub Workflows
 
-There are three workflows. The docs workflow is in [Docs Site](#docs-site), and the other two are below. See [GitHub Workflows](./extras/github-workflows.md).
+There are four workflows. The docs workflow is in [Docs Site](#docs-site), and the other three are below. See [GitHub Workflows](./extras/development/github-workflows.md).
 
-- **GitHub Actions redeploys the web app with a short-lived AWS sign-in.** The workflow `deploy-web-app.yml` runs on a change under `frontend/` on `main`, and signs in to AWS through GitHub's OpenID Connect provider, as a role that only `main` of this repository can use. The role can only upload files to the web app bucket and invalidate its distribution. Turned down: an IAM user's access key saved as a GitHub secret, which never expires and would work from any branch or fork that got hold of it. See [How Does a Change Reach the Live Web App?](./extras/github-workflows.md#how-does-a-change-reach-the-live-web-app).
-- **A third workflow runs the Python tests on every pull request,** with no secrets and no AWS access. It runs `make pytest` before any model exists, so it expects 93 passed and 2 skipped. Turned down: training in the workflow, which would add a run to `mlflow-reference/` on every pull request. See [How Are the Python Tests Run?](./extras/github-workflows.md#how-are-the-python-tests-run).
+- **GitHub Actions redeploys the web app with a short-lived AWS sign-in.** The workflow `deploy-web-app.yml` runs on a change under `frontend/` on `main`, and signs in to AWS through GitHub's OpenID Connect provider, as a role that only `main` of this repository can use. The role can only upload files to the web app bucket and invalidate its distribution. Turned down: an IAM user's access key saved as a GitHub secret, which never expires and would work from any branch or fork that got hold of it. See [How Does a Change Reach the Live Web App?](./extras/development/github-workflows.md#how-does-a-change-reach-the-live-web-app).
+- **A third workflow runs the Python tests on every pull request,** with no secrets and no AWS access. It runs `make pytest` before any model exists, so it expects 93 passed and 2 skipped. Turned down: training in the workflow, which would add a run to `mlflow-reference/` on every pull request. See [How Are the Python Tests Run?](./extras/development/github-workflows.md#how-are-the-python-tests-run).
+- **A fourth workflow runs the web app's tests and build on each pull request that changes `frontend/`,** also with no secrets and no AWS access. Before it, the web tests ran only in Deploy Web App, after the change had reached `main`. Turned down: running it on every pull request, which would spend a runner on changes that cannot affect the web app. See [How Are the Web App's Tests Run on a Pull Request?](./extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request).
 
 ### Feedback Form
 
 - **Feedback goes to a DynamoDB table, through its own small function.** One item per message, written by `src/api/feedback_handler.py` on the route `POST /feedback`. That route alone has a request limit (1 a second, bursts of 5), because it writes. Turned down: an S3 bucket, which would store one file per message and give no simple way to count or list them. Also turned down: a feedback route in the prediction function, which would change the zip that every prediction runs.
-- See [Feedback Path](./extras/feedback-path.md).
+- See [Feedback Path](./extras/features/feedback-path.md).
 
 ### Confusion Matrix Picture
 
-- See [Confusion Matrix](./extras/confusion-matrix.md).
+- See [Confusion Matrix](./extras/features/confusion-matrix.md).
 
 ### MLflow Run History
 
@@ -250,5 +251,5 @@ There are three workflows. The docs workflow is in [Docs Site](#docs-site), and 
 
 - **The docs are published with GitHub Pages,** built by MkDocs with the Material theme from `mkdocs.yml`, which is committed. A GitHub Actions workflow (`.github/workflows/deploy-docs.yml`) builds the site in strict mode and publishes it whenever a change to the docs reaches `main`. Turned down: keeping the site local only. Publishing needs no extra service, and the README can link to the live pages.
 - **A phase starts with a brief,** and gets its implementation page and guides once it is built.
-- **Work that belongs to no one phase has its own Extras section:** the [make commands](./extras/makefile.md), the [GitHub workflows](./extras/github-workflows.md), the [feedback form](./extras/feedback-path.md), and the [confusion-matrix picture](./extras/confusion-matrix.md). Each phase's pages then describe only that phase's work.
+- **Work that belongs to no one phase has its own Extras section:** the [make commands](./extras/development/makefile.md), the [GitHub workflows](./extras/development/github-workflows.md), the [feedback form](./extras/features/feedback-path.md), and the [confusion-matrix picture](./extras/features/confusion-matrix.md). Each phase's pages then describe only that phase's work.
 - **The original brief and requirements are kept unchanged** in `docs/implementation/requirements/`, next to the requirements map.

@@ -5,9 +5,9 @@ hide:
 
 # Feedback Path
 
-The web app's Feedback tab lets a visitor send a short message about the site or its predictions. Each message is saved in a DynamoDB table by a small AWS Lambda function of its own, on the route `POST /feedback` of the same API address the predictions use. The prediction function is not touched. The form was built with the five-tab site in [Phase 5 Part 2](../phase-5/implementation-part-2.md), and it is not one of the assignment's requirements, so it is kept here.
+The web app's Feedback tab lets a visitor send a short message about the site or its predictions. Each message is saved in a DynamoDB table by a small AWS Lambda function of its own, on the route `POST /feedback` of the same API address the predictions use. The prediction function is not touched. The form was built with the five-tab site in [Phase 5 Part 2](../../phase-5/implementation-part-2.md), and it is not one of the assignment's requirements, so it is kept here.
 
-**Status: Built and live** at [https://d1nubiunzfwm0q.cloudfront.net/#feedback](https://d1nubiunzfwm0q.cloudfront.net/#feedback). The AWS commands that created it are in [Add the Feedback Route](../phase-5/deployment-guide.md#add-the-feedback-route).
+**Status: Built and live** at [https://d1nubiunzfwm0q.cloudfront.net/#feedback](https://d1nubiunzfwm0q.cloudfront.net/#feedback). The AWS commands that created it are in [Add the Feedback Route](../../phase-5/deployment-guide.md#add-the-feedback-route).
 
 ## What Does the Form Ask For?
 
@@ -92,4 +92,4 @@ All in `us-east-1`, tagged `project=510-m3`, with names that follow the project'
 - The function's role can only write logs and call `dynamodb:PutItem` on this one table.
 - The prediction function's code fingerprint is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=` before and after.
 
-To read the saved messages, see [Read the Feedback](../phase-5/deployment-guide.md#read-the-feedback).
+To read the saved messages, see [Read the Feedback](../../phase-5/deployment-guide.md#read-the-feedback).

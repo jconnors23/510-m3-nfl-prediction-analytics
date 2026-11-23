@@ -346,10 +346,10 @@ aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --r
 ```
 
 ```bash
-.venv/bin/python build/parity_check.py
+.venv/bin/python scripts/checks/parity_check.py
 ```
 
-The script `build/parity_check.py` is kept on the developer's machine and is not committed. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. The parity run sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
+The script `scripts/checks/parity_check.py` is committed and writes its results to `build/parity-results.json`, in the git-ignored `build/` folder. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. The parity run sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
 
 ## Redeploy After a Change
 

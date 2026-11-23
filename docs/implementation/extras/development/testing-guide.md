@@ -18,8 +18,8 @@ flowchart LR
     A --> D["Docker images"]
     A --> G1["GitHub: Test Python"]
     B --> L2["Laptop: make web-test"]
-    B --> G2["GitHub: Deploy Web App"]
-    C --> P["Local scripts in build/,<br/>not committed"]
+    B --> G2["GitHub: Test Web App,<br/>Deploy Web App"]
+    C --> P["Scripts in scripts/checks/,<br/>outputs in build/"]
 ```
 
 No test needs an AWS account, credentials, or the internet. Each one uses made-up data, a temporary folder, or a stand-in for the real thing (a replacement object that gives fixed answers).
@@ -90,12 +90,12 @@ When they run, the tests also write `build/js-bodies.json` (every ordered pair's
 
 ### How Are the Expected Files Made?
 
-Two local Python scripts write them. Both scripts are in the git-ignored `build/` folder, so they are not in the repository, and a fresh copy cannot rebuild the files.
+Two committed Python scripts in `scripts/checks/` write them into the git-ignored `build/` folder, creating the folder if needed. Both need `models/model.joblib`, so run `make train` first on a fresh copy.
 
-- **`build/matchups_expected.py`** loads `models/model.joblib` and the downloaded games table, takes the standings before week 11, and for each of the 992 ordered pairs of teams works out the two inputs and the model's probability. It does not read `team-profiles.json`, so the check does not compare that file with itself. It prints `pairs: 992`.
-- **`build/season_expected.py`** builds the season with the project's own `build_season`, works out the same two inputs and probability for each of the 272 games of 2026, and writes them in the season file's order. For the 149 finished games with a winner it also stops if the inputs differ from `build_model_table`'s. Its standings come from `build_season`, not from the browser's committed `season-2026.json`, so a difference between the two would fail the test. The tests in `tests/test_season.py` check the season file itself.
+- **`scripts/checks/matchups_expected.py`** loads `models/model.joblib` and the downloaded games table, takes the standings before week 11, and for each of the 992 ordered pairs of teams works out the two inputs and the model's probability. It does not read `team-profiles.json`, so the check does not compare that file with itself. It prints `pairs: 992`.
+- **`scripts/checks/season_expected.py`** builds the season with the project's own `build_season`, works out the same two inputs and probability for each of the 272 games of 2026, and writes them in the season file's order. For the 149 finished games with a winner it also stops if the inputs differ from `build_model_table`'s. Its standings come from `build_season`, not from the browser's committed `season-2026.json`, so a difference between the two would fail the test. The tests in `tests/test_season.py` check the season file itself.
 
-The steps to run them are in [How Do I Check Every Matchup?](../phase-5/development-guide.md#how-do-i-check-every-matchup).
+The steps to run them are in [How Do I Check Every Matchup?](../../phase-5/development-guide.md#how-do-i-check-every-matchup).
 
 ## Where Do the Tests Run?
 
@@ -105,21 +105,23 @@ The steps to run them are in [How Do I Check Every Matchup?](../phase-5/developm
 | Docker train image | `docker run --rm 510-m3-nfl-train python -m pytest` | 93 passed, 2 skipped | not run |
 | Docker serve image | `docker run --rm 510-m3-nfl-serve python -m pytest` | 95 passed | not run |
 | GitHub, Test Python workflow | `make pytest PYTHON=python` | 93 passed, 2 skipped | not run |
+| GitHub, Test Web App workflow | `npm test` | not run | 60 passed, 2 skipped |
 | GitHub, Deploy Web App workflow | `npm test` | not run | 60 passed, 2 skipped |
 
-- **The train image** has no saved model until a container trains, so the two model tests skip. The **serve image** trains one while it is built, so all 95 run. See [Run the Tests in the Container](../phase-6/development-guide.md#run-the-tests-in-the-container) and [Run the Tests in the Serve Image](../phase-6/development-guide.md#run-the-tests-in-the-serve-image).
+- **The train image** has no saved model until a container trains, so the two model tests skip. The **serve image** trains one while it is built, so all 95 run. See [Run the Tests in the Container](../../phase-6/development-guide.md#run-the-tests-in-the-container) and [Run the Tests in the Serve Image](../../phase-6/development-guide.md#run-the-tests-in-the-serve-image).
 - **The Test Python workflow** runs on each pull request, and on each change that reaches `main`. The runner has no model, so 2 tests skip.
+- **The Test Web App workflow** runs `npm ci`, `npm test`, and `npm run build` on each pull request that changes `frontend/`, so a failing test or type error shows on the pull request before the merge.
 - **The Deploy Web App workflow** runs `npm ci`, `npm test`, and `npm run build` before it uploads anything, so a failing test stops the deploy. The runner has no `build/` expected files, so 2 tests skip.
 
 How the workflows are set up is in [GitHub Workflows](./github-workflows.md).
 
 ## Which Larger Checks Were Run Against the Live API?
 
-These checks send many requests to the deployed API and compare each answer with the local model. They were run once, with local scripts in `build/`, and are repeated after a change to the model, the API, or the data. This page does not repeat their results.
+These checks send many requests to the deployed API and compare each answer with the local model. They use the committed scripts in `scripts/checks/`, which write their results to the git-ignored `build/` folder. They were last run on the final model, and are repeated after a change to the model, the API, or the data. This page does not repeat their results.
 
-- **Every game in Phase 4.** All 1,759 games in the model table, checked in [Step 10: Check the Deployed Model Against the Local Model](../phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
-- **Every matchup in Phase 5.** All 992 ordered pairs of teams, described in [The Every-Matchup Check Against the Live API](../phase-5/implementation-part-1.md#the-every-matchup-check-against-the-live-api), with the steps in [How Do I Check Every Matchup?](../phase-5/development-guide.md#how-do-i-check-every-matchup).
-- **Every 2026 game in Phase 5.** All 272 games, with the results in [What Was Checked?](../phase-5/implementation-part-2.md#what-was-checked).
+- **Every game in Phase 4.** All 1,759 games in the model table, checked in [Step 10: Check the Deployed Model Against the Local Model](../../phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
+- **Every matchup in Phase 5.** All 992 ordered pairs of teams, described in [The Every-Matchup Check Against the Live API](../../phase-5/implementation-part-1.md#the-every-matchup-check-against-the-live-api), with the steps in [How Do I Check Every Matchup?](../../phase-5/development-guide.md#how-do-i-check-every-matchup).
+- **Every 2026 game in Phase 5.** All 272 games, with the results in [What Was Checked?](../../phase-5/implementation-part-2.md#what-was-checked).
 
 ## How Do I Run One Test File or One Test?
 

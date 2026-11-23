@@ -146,10 +146,11 @@ def plot_confusion_matrix(pipeline, group, path) -> Path:
                 fontsize=9.5,
                 fontweight="bold",
             )
-    # Ticks at each cell's center. The column labels go above the grid, and the axis name below it.
+    # Ticks at each cell's center. The column labels and the axis name both sit above the grid.
     axes.set_xticks([0.5, 1.5])
     axes.set_xticklabels(["Picked away win", "Picked home win"])
     axes.xaxis.tick_top()
+    axes.xaxis.set_label_position("top")
     row_totals = [int(sum(row)) for row in matrix]
     axes.set_yticks([1.5, 0.5])
     axes.set_yticklabels(
@@ -161,25 +162,26 @@ def plot_confusion_matrix(pipeline, group, path) -> Path:
     axes.tick_params(length=0, labelsize=11)
     for spine in axes.spines.values():
         spine.set_visible(False)
-    axes.set_xlabel("What the model picked", fontweight="bold", labelpad=12)
+    axes.set_xlabel("What the model picked", fontweight="bold", labelpad=4)
     axes.set_ylabel("What actually happened", fontweight="bold")
-    # The legend sits under the axis name, in one row, and has no frame of its own.
+    # The legend sits just under the grid, in one row, and has no frame of its own.
     axes.legend(
         handles=[
             Patch(facecolor=CORRECT_COLOR, edgecolor="none", label="Correct pick"),
             Patch(facecolor=WRONG_COLOR, edgecolor="none", label="Wrong pick"),
         ],
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.16),
+        bbox_to_anchor=(0.5, -0.02),
         ncol=2,
         frameon=False,
         handlelength=1.4,
         handleheight=1.1,
     )
-    # The three title lines sit against each other, and the grid starts just below them. Figure
-    # text is placed in fractions of the figure (0 to 1). x=0.58 is halfway between left=0.18 and
-    # right=0.98, so the title is centered over the plot area and not over the row labels.
-    figure.subplots_adjust(top=0.84, bottom=0.16, left=0.18, right=0.98)
+    # The three title lines sit above the axis name, and the grid starts just below the column
+    # labels. Figure text is placed in fractions of the figure (0 to 1). x=0.58 is halfway
+    # between left=0.18 and right=0.98, so the title is centered over the plot area and not
+    # over the row labels.
+    figure.subplots_adjust(top=0.80, bottom=0.06, left=0.18, right=0.98)
     figure.text(
         0.58,
         0.99,

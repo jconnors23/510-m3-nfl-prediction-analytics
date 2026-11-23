@@ -431,7 +431,7 @@ Every name follows the pattern of the data bucket, `510-m3-nfl-dataset`: lowerca
 
 ## How Does a Change Reach the Live Page?
 
-A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, tests, builds, and redeploys the page when a change under `frontend/` reaches `main`, signing in to AWS without a stored key. Its first run, on the merge of `phase-five` into `main`, passed. The workflow serves every phase, so its steps and its AWS role are explained in [How Does a Change Reach the Live Web App?](../extras/github-workflows.md#how-does-a-change-reach-the-live-web-app).
+A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, tests, builds, and redeploys the page when a change under `frontend/` reaches `main`, signing in to AWS without a stored key. Its first run, on the merge of `phase-five` into `main`, passed. The workflow serves every phase, so its steps and its AWS role are explained in [How Does a Change Reach the Live Web App?](../extras/development/github-workflows.md#how-does-a-change-reach-the-live-web-app).
 
 ## Which Tests Pin These Contracts?
 
@@ -459,11 +459,11 @@ Each literal below was computed in Python and confirmed in Node.
 
 ### The Every-Matchup Check Against the Live API
 
-Two local scripts in `build/`, which is not committed, compare the live API with the local model for every ordered pair. The steps are in the [Development Guide](./development-guide.md#how-do-i-check-every-matchup).
+Two scripts in `scripts/checks/` compare the live API with the local model for every ordered pair. They write their files into the git-ignored `build/` folder. The steps are in the [Development Guide](./development-guide.md#how-do-i-check-every-matchup).
 
-- `build/matchups_expected.py` scores all 992 pairs with the saved model, without reading the profiles file, and writes `build/expected-matchups.json`.
+- `scripts/checks/matchups_expected.py` scores all 992 pairs with the saved model, without reading the profiles file, and writes `build/expected-matchups.json`.
 - The parity test above checks the browser's numbers against that file and writes the 992 request bodies to `build/js-bodies.json`.
-- `build/matchups_live.py` posts each body to the live API and compares the answer with the local model.
+- `scripts/checks/matchups_live.py` posts each body to the live API and compares the answer with the local model.
 
 ## What Was Checked?
 
