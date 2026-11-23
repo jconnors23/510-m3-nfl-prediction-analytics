@@ -5,73 +5,93 @@ hide:
 
 # Running Locally
 
-This page shows everything that can run on a laptop while working on the project, which port each piece uses, and which files each one reads. It also gives a short walk-through for each kind of work: the model, the API, the web app, the docs, and the Docker images. Use it to decide which pieces to start for a task. [Makefile](./makefile.md) owns the detail of each command, so this page links to it and does not repeat it.
+Do these steps in order, from the project folder. When they are done, the model is trained, the API has answered on this computer, and a Docker container has returned the same prediction. The sections after that are for changing one part of the project. Each command is described on [Makefile](./makefile.md). Tool versions are on the [Tooling Guide](./tooling-guide.md).
 
-## How Do the Local Pieces Fit Together?
+## Set Up
 
-Each box is a program that runs on the laptop. Arrows show which program calls which, and which files each one reads. The ports are the addresses a browser or `curl` uses.
-
-### The Web App and the API
-
-```mermaid
-flowchart TB
-    B["Browser<br/>localhost:5173"] --> VITE["Vite dev server<br/>make start-web"]
-    VITE -->|"reads"| DATA["frontend/src/data/"]
-    VITE -->|"forwards /predict,<br/>/health, /feedback"| API["FastAPI service<br/>make start, port 8000"]
-    API -->|"reads"| MODEL["models/model.joblib"]
-```
-
-### Training, MLflow, and the Docs
-
-```mermaid
-flowchart TB
-    TRAIN["make train<br/>(runs, then exits)"] -->|"writes"| MODEL["models/model.joblib"]
-    TRAIN -->|"writes"| DB["mlflow.db and<br/>mlartifacts/"]
-    ML["MLflow screen<br/>make start-web-ml, port 5001"] -->|"reads"| DB
-    DOCS["Docs preview<br/>make docs, port 8001"] -->|"reads"| MD["docs/ and mkdocs.yml"]
-```
-
-### The Docker Containers
-
-```mermaid
-flowchart TB
-    DT["Train container<br/>make docker-train"] -->|"reads its copy of"| S3["data/from-s3/"]
-    DT -->|"writes run-summary.json to"| RES["build/docker/results/"]
-    DS["Serve container<br/>make docker-serve<br/>127.0.0.1:8000"] -->|"reads its own"| OWN["models/model.joblib<br/>inside the image"]
-```
-
-- **`make start` and `make docker-serve` both use port 8000.** Run only one of them at a time.
-- **The production preview calls the live API,** not the local one, so its page can only check that the built files load. See [How Do I Build and Preview the Site?](../../phase-5/development-guide.md#how-do-i-build-and-preview-the-site).
-- **`make train` is not a running program.** It writes `models/model.joblib`, `mlflow.db`, and `mlartifacts/`, then exits. Both the API and the MLflow screen read what it wrote.
-
-## Which Port Does Each Piece Use?
-
-| Piece | Command | Port | Reads | Can run with `make start`? |
-| :--- | :--- | :--- | :--- | :--- |
-| FastAPI service | `make start` | 8000 | `models/model.joblib` | Is `make start` |
-| Vite dev server | `make start-web` | 5173 | `frontend/src/`, `frontend/src/data/` | Yes, and it needs it for predictions |
-| MLflow screen | `make start-web-ml` | 5001 | `mlflow.db` | Yes |
-| Docs preview | `make docs` | 8001 | `docs/`, `mkdocs.yml` | Yes |
-| Docker serve container | `make docker-serve` | 8000 | its own model, trained inside the image | No, same port |
-| Docker train container | `make docker-train` | none | its own copy of `data/from-s3/` | Yes |
-| Production preview | `npm run preview` | 4173 | `frontend/dist/` | Yes |
-
-## What Must Be Set Up First?
-
-Create the Python environment, install the web app's packages, and install MkDocs once. The steps are in [What Must Be Set Up First?](./makefile.md#what-must-be-set-up-first). Docker Desktop must be running for the two Docker commands only.
-
-The versions of every tool are on the [Tooling Guide](./tooling-guide.md).
-
-## Which Ports Clash?
-
-- **Port 8000** is the only clash between commands in this project. The FastAPI service (`make start`) and the Docker serve container (`make docker-serve`) both use it, so stop one before starting the other.
-- **Port 5173** is fixed. If another program holds it, Vite stops with `Port 5173 is already in use` and does not move. The live API's CORS list allows only that address.
-- **Ports 5001 and 8001** were chosen to avoid defaults that clash. macOS Control Center often holds MLflow's default, 5000, and MkDocs' default, 8000, is the API's port.
-- **To see what holds a port,** run this and read the program name in the output:
+Install Python 3.13, `make`, and Docker Desktop. For the web app, install Node.js 22.12 or later.
 
 ```bash
-lsof -i :8000
+python3.13 -m venv .venv
 ```
+
+```bash
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+Run both. The second command installs the packages. If a `.venv` folder is already there, delete it and run both again.
+
+Start Docker Desktop. On Windows, turn on WSL integration for this distro (Docker Desktop: Settings, Resources, WSL Integration) and open a new terminal. This check should print a Client section and a Server section:
+
+```bash
+docker version
+```
+
+If it says permission denied, run `wsl --shutdown` from Windows, then open a new terminal and run `docker version` again.
+
+From inside `frontend/`, install the web app's packages:
+
+```bash
+npm ci
+```
+
+## Train
+
+```bash
+make train
+```
+
+This writes `models/model.joblib`. The local API loads that file.
+
+## Test the API Locally
+
+The API requirement is a `/predict` route you can call on this computer. Leave this terminal running.
+
+```bash
+make start
+```
+
+In a second terminal, send the worked example:
+
+```bash
+curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'
+```
+
+The home win probability is **0.3296**. FastAPI's test page is `http://127.0.0.1:8000/docs`.
+
+## Test the Same API in Docker
+
+The Docker requirement is separate. The image installs its own packages and has entry points for training and serving, so it runs with no virtual environment. Its prediction has to match the local API.
+
+In the terminal where `make start` is running, press Ctrl+C. The container uses `http://127.0.0.1:8000` too.
+
+```bash
+make docker-train
+```
+
+```bash
+make docker-serve
+```
+
+`make docker-train` trains inside the image and writes `build/docker/results/run-summary.json`. `make docker-serve` serves the API from the image's own model. In the second terminal, send the same `curl` as above. The home win probability is **0.3296**.
+
+This prints nothing when the container's training summary matches the project's:
+
+```bash
+diff build/docker/results/run-summary.json results/run-summary.json
+```
+
+Press Ctrl+C in the serve terminal. The container stops and port 8000 is free.
+
+## Run the Web App
+
+Start the local API again with `make start`. In another terminal:
+
+```bash
+make start-web
+```
+
+Open `http://localhost:5173`. The page sends predictions to the local API.
 
 ## How Do I Work on the Model?
 
@@ -183,31 +203,4 @@ mkdocs build --strict
 
 ## How Do I Check the Container?
 
-Use this to confirm the packaged project trains and answers the same as the local one. [Phase 6 Development Guide](../../phase-6/development-guide.md) has the detail. Start Docker Desktop first.
-
-1. Train inside a container:
-
-```bash
-make docker-train
-```
-
-2. Compare its summary with the local one. No output means the two files are identical:
-
-```bash
-diff build/docker/results/run-summary.json results/run-summary.json
-```
-
-3. Stop `make start` if it is running, because the next step uses port 8000. Then start the serve container:
-
-```bash
-make docker-serve
-```
-
-4. In another terminal, send the worked example. The answer should match the local API's:
-
-```bash
-curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'
-```
-
-5. Press Ctrl+C in the serve terminal. The container is removed when it stops.
-6. To run the tests inside the images, see [Where Do the Tests Run?](./testing-guide.md#where-do-the-tests-run).
+Follow [Test the Same API in Docker](#test-the-same-api-in-docker). To run the tests inside the images, see [Where Do the Tests Run?](./testing-guide.md#where-do-the-tests-run). The image layout is in the [Phase 6 Development Guide](../../phase-6/development-guide.md).

@@ -71,7 +71,7 @@ The full picture is on [Cloud Architecture](./docs/implementation/extras/archite
 
 ## Setup and Usage
 
-You need Python 3.13, `make`, and for the web app Node.js 22.12 or later. Docker Desktop is needed only for the containers, and AWS CLI version 2 only for deploying. Every Python package is pinned to an exact version in `requirements.txt`.
+You need Python 3.13, `make`, and Docker Desktop. For the web app, Node.js 22.12 or later. AWS CLI version 2 is only for deploying. Packages are pinned in `requirements.txt`. The same steps, in order, are on [Running Locally](./docs/implementation/extras/development/running-locally.md).
 
 ### Set Up
 
@@ -83,17 +83,17 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
+Run both commands. If a `.venv` folder is already there, delete it and run them again. Python 3.13 is the interpreter the Docker image and Lambda use.
+
+Start Docker Desktop. On Windows, turn on WSL integration for this distro (Settings, Resources, WSL Integration) and open a new terminal. `docker version` should print a Client section and a Server section.
+
 ### Train the Model
 
 ```bash
 make train
 ```
 
-It fits the model, prints the scores above, saves `models/model.joblib`, logs the run to MLflow, and adds it to `mlflow-reference/`. To browse the runs in MLflow's own screen at `http://127.0.0.1:5001`:
-
-```bash
-make start-web-ml
-```
+It fits the model, prints the scores above, saves `models/model.joblib`, and logs the run to MLflow. To browse the runs at `http://127.0.0.1:5001`, run `make start-web-ml`.
 
 ### Run the Tests
 
@@ -103,13 +103,15 @@ make pytest
 
 Expected: **95 passed** after training, or 93 passed and 2 skipped before (two tests need the trained model).
 
-### Build and Test the API Locally
+### Test the API Locally
+
+The API has to answer on this computer. `make start` loads `models/model.joblib` and listens at `http://127.0.0.1:8000`.
 
 ```bash
 make start
 ```
 
-Then, in a second terminal, send the worked example:
+In a second terminal:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'
@@ -119,7 +121,9 @@ curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -
 {"prediction":0,"predicted_label":"away win","home_win_probability":0.3296,"model_version":"v1.0"}
 ```
 
-### Run It in Docker
+### Test the Same API in Docker
+
+The image has to train and serve on its own, and the prediction has to match the local API. Stop `make start` with Ctrl+C. The container uses the same address, `http://127.0.0.1:8000`.
 
 ```bash
 make docker-train
@@ -129,7 +133,7 @@ make docker-train
 make docker-serve
 ```
 
-The first trains inside a container and checks the run summary. The second serves the same API at `http://127.0.0.1:8000`.
+Send the same `curl` as above. The home win probability is 0.3296. Ctrl+C stops the container.
 
 ### Run the Web App Locally
 
@@ -139,7 +143,7 @@ Install the web app's packages once, from inside `frontend/`:
 npm ci
 ```
 
-Then, with `make start` running, from the project folder:
+Start the local API again with `make start` (the container was using port 8000). From the project folder:
 
 ```bash
 make start-web
