@@ -1,6 +1,6 @@
 # Builds the documentation site and publishes it to GitHub Pages.
 # It runs when a change to the docs or the site settings reaches the main branch,
-# and it can also be started by hand from the repository's Actions tab.
+# and it can also be started manually from the repository's Actions tab.
 # Pages is set to deploy from GitHub Actions, so the built site is uploaded and
 # deployed here. That is what attaches the site address to the run. No commit
 # is made, so the Actions bot is not an author of the site.

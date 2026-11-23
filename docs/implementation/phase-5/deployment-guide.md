@@ -122,7 +122,7 @@ npm test
 npm run build
 ```
 
-9. Record the fingerprint of each built file. The upload is checked against these values later. The current build is `index.html` (1,105 bytes), `assets/index-KSsdwuOf.js` (233,372 bytes), `assets/index-yAxaDZ6u.css` (10,307 bytes), and 12 `.woff2` font files. The first deployment had only the first three kinds of file, under other names. The commands below use the current names. A new build gets new names, so use the ones in your own `dist/assets/`.
+9. Record the fingerprint of each built file. The upload is checked against these values later. The Part 1 build was `index.html` (1,105 bytes), `assets/index-KSsdwuOf.js` (233,372 bytes), `assets/index-yAxaDZ6u.css` (10,307 bytes), and 12 `.woff2` font files. The commands below use those Part 1 names as examples. Every new build, including Part 2's five-tab site, gets new script and stylesheet names, so use the ones in your own `dist/assets/`.
 
 ```bash
 shasum -a 256 dist/index.html dist/assets/*
@@ -661,7 +661,7 @@ aws lambda update-function-code --function-name 510-m3-nfl-feedback-api --zip-fi
 
 ## Redeploy After a Change
 
-**The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below do the same thing manually, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are.
+**The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below do the same thing manually, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are. A pull request that changes `frontend/` also runs the Test Web App workflow, which only tests and builds and never deploys. See [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request).
 
 1. From `frontend/`, install, test, and build. The new script and stylesheet get new hashed names.
 

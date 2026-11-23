@@ -5,13 +5,13 @@ hide:
 
 # Requirements Rubric
 
-This page lists every requirement in the assignment brief, quoted word for word, and says where the project meets it. The headings follow the brief's own sections and order: the two Deliverables, Steps 1 to 9, and the Learning Goal that asks for a reflection on ethics and limitations. Each entry gives a status, the code that meets the requirement, the docs page that explains it, and the check that proves it, so a reviewer can walk the brief line by line and no requirement goes missing.
+This page takes its requirements directly from [Project Requirements](./project-requirements.md) and says where the project meets each one. Each heading quotes the assignment's own wording, and the headings follow its sections and order: the two Deliverables, Steps 1 to 9, and the Learning Goal that asks for a reflection on ethics and limitations. Each entry gives a status, the code that meets the requirement, the docs page that explains it, and the check that proves it, so a reviewer can walk the requirements line by line and no requirement goes missing.
 
-The brief itself is on [Assignment Brief](./assignment-brief.md). The longer wording of each requirement is on [Project Requirements](./project-requirements.md). Code links go to the repository on GitHub: `https://github.com/jconnors23/510-m3-nfl-prediction-analytics`. The other Learning Goals describe what the project teaches, and each is covered by the requirements below. The ethics goal asks for something specific in the project, so it is listed as a requirement of its own.
+Code links go to the repository on GitHub: `https://github.com/jconnors23/510-m3-nfl-prediction-analytics`. The other Learning Goals describe what the project teaches, and each is covered by the requirements below. The ethics goal asks for something specific in the project, so it is listed as a requirement of its own.
 
 ## Summary
 
-The brief holds **48 requirements**, counting the ethics reflection from its Learning Goals. **All 48 are met.** Each one is checked off below and links to its entry.
+The assignment holds **48 requirements**, counting the ethics reflection from its Learning Goals. **All 48 are met.** Each one is checked off below and links to its entry.
 
 **[Deliverable 1: GitHub Repository](#deliverable-1-github-repository)**
 
@@ -97,8 +97,8 @@ The brief holds **48 requirements**, counting the ethics reflection from its Lea
 
 - [x] [Reflect on ethical implications and limitations of your ML application](#reflect-on-ethical-implications-and-limitations-of-your-ml-application)
 
-- **12 of the 48 are met by the README,** which is in the repository root and was merged into `main` in pull request #8. Its sections are written against the brief and linked from each entry.
-- **Choices the brief offers, and what this project chose:**
+- **12 of the 48 are met by the README,** which is in the repository root and was merged into `main` in pull request #8. Its sections are written against the assignment and linked from each entry.
+- **Choices the assignment offers, and what this project chose:**
     - **Cloud storage** (Google Cloud Storage, AWS S3, Firebase Storage, or cloud-hosted PostgreSQL): AWS S3.
     - **Experiment tracking** (MLflow or Weights & Biases): MLflow.
     - **API framework** (FastAPI or Flask): FastAPI.
@@ -139,7 +139,7 @@ Result: 95 passed with a trained model, 93 passed and 2 skipped without one.
 
 - **Status:** Met
 - **Where in the code:** [`requirements.txt`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/requirements.txt), with every package pinned to an exact version. [`requirements-serve.txt`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/requirements-serve.txt) lists the smaller set of packages that go into the AWS Lambda zip.
-- **Docs:** [Make Commands, What Must Be Set Up First?](../extras/development/makefile.md#what-must-be-set-up-first) and [Phase 4 Development Guide, How Do I Change a Package Version?](../phase-4/development-guide.md#how-do-i-change-a-package-version)
+- **Docs:** [Makefile, What Must Be Set Up First?](../extras/development/makefile.md#what-must-be-set-up-first) and [Phase 4 Development Guide, How Do I Change a Package Version?](../phase-4/development-guide.md#how-do-i-change-a-package-version)
 - **Evidence:** the Docker `base` stage installs this file with `pip install -r requirements.txt` and the build succeeds. The train container reproduces the run summary byte for byte (see Step 5).
 
 ### "A Dockerfile that can run the full project"
@@ -188,9 +188,9 @@ make start
 ### "Use of branches and pull requests (each group member must submit at least one PR)"
 
 - **Status:** Met
-- **Where in the code:** not code. The record is in git and on GitHub. This is a one-person project, so the only group member is the repository owner, who submitted all eight pull requests. Pull requests #1 (`phase_one`), #2 (`phase-two`), #3 (`phase-three`), #4 (`phase-four`), #5 (`phase-five`), #6 (`phase-five-p2`), #7 (`phase-six`), and #8 (`phase-seven`) are merged into `main`. They show on the [Pull requests tab](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/pulls?q=is%3Apr+is%3Amerged) of the repository.
+- **Where in the code:** not code. The record is in git and on GitHub. This is a one-person project, so the only group member is the repository owner, who submitted all nine pull requests. Pull requests #1 (`phase_one`), #2 (`phase-two`), #3 (`phase-three`), #4 (`phase-four`), #5 (`phase-five`), #6 (`phase-five-p2`), #7 (`phase-six`), #8 (`phase-seven`), and #9 (`phase-seven-p2`) are merged into `main`. They show on the [Pull requests tab](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/pulls?q=is%3Apr+is%3Amerged) of the repository.
 - **Docs:** [Phase 7 Brief, Step 6: Pre-Commit Checks and the Final Pull Request](../phase-7/brief.md#step-6-pre-commit-checks-and-the-final-pull-request)
-- **Evidence:** the merge commits are listed by this read-only command. It prints eight lines, for pull requests #8 down to #1:
+- **Evidence:** the merge commits are listed by this read-only command. It prints nine lines, for pull requests #9 down to #1:
 
 ```bash
 git log --merges --format='%h %s' main
@@ -205,7 +205,7 @@ git log --merges --format='%h %s' main
     - **Make commands:** the [`Makefile`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/Makefile) has nine commands, each explained on [Makefile](../extras/development/makefile.md).
     - **Tests:** `pytest` runs all of `tests/`. They use made-up data and a stand-in S3 client, so they need no internet and no AWS account.
 - **Docs:** [Makefile](../extras/development/makefile.md), [GitHub Workflows](../extras/development/github-workflows.md), and [Design Manifest](../design-manifest.md)
-- **Evidence:** the layout above is the output of `git ls-files`. The history is seven phase branches, each merged by a numbered pull request (see the previous entry). The tests pass:
+- **Evidence:** the layout above is the output of `git ls-files`. The history is nine branches for the seven phases (Phases 5 and 7 used two each), each merged by a numbered pull request (see the previous entry). The tests pass:
 
 ```bash
 make pytest
@@ -222,8 +222,8 @@ make web-test
 ### "Be publicly accessible and linked in the README"
 
 - **Status:** Met
-- **Where in the code:** the live web app is at `https://d1nubiunzfwm0q.cloudfront.net`. The README section [Live Links](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#live-links) carries the link. The hosting is under Step 8.
-- **Docs:** [How Is the Page Hosted?](../phase-5/implementation-part-1.md#how-is-the-page-hosted) and the README section [Live Links](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#live-links)
+- **Where in the code:** the live web app is at `https://d1nubiunzfwm0q.cloudfront.net`. The README section [Endpoints](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#endpoints) carries the link. The hosting is under Step 8.
+- **Docs:** [How Is the Page Hosted?](../phase-5/implementation-part-1.md#how-is-the-page-hosted) and the README section [Endpoints](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#endpoints)
 - **Evidence:** the address opens in a browser with no sign-in. Direct requests to the S3 bucket behind it get status 403, so CloudFront is the only public path. See the checks under Step 8.
 
 ### "Send requests to your deployed model API (e.g., using requests or fetch)"
@@ -244,7 +244,7 @@ make web-test
 
 - **Status:** Met
 - **Where in the code:** a custom web app. It is a React and TypeScript app built with Vite, in [`frontend/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/frontend). The settings are in [`frontend/package.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/package.json) and [`frontend/vite.config.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/vite.config.ts). It is not Streamlit or Gradio.
-- **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md) and [Which Choices Were Made?](../phase-5/brief.md#decisions-made)
+- **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md) and [Phase 5 Brief, Decisions Made](../phase-5/brief.md#decisions-made)
 - **Evidence:** `npm run build` runs the type check and `vite build` into `frontend/dist/`, run from inside `frontend/`:
 
 ```bash
@@ -315,7 +315,7 @@ python -m src.data.download_from_s3
 
 ## Step 3: Build a Reproducible ML Pipeline
 
-The brief adds a note under this step, which is not a requirement: "NOTE: We are not assessing your ML model. Your model could have terrible accuracy. That is fine! Not the point of the assignment, don't get hung up on your model." The requirement is a clean, repeatable process, and the evidence for it is under the entry on `config.yaml` below.
+The assignment adds a note under this step, which is not a requirement: "NOTE: We are not assessing your ML model. Your model could have terrible accuracy. That is fine! Not the point of the assignment, don't get hung up on your model." The requirement is a clean, repeatable process, and the evidence for it is under the entry on `config.yaml` below.
 
 ### "Choose a simple model (e.g., logistic regression, random forest, XGBoost)."
 
@@ -368,7 +368,7 @@ The brief adds a note under this step, which is not a requirement: "NOTE: We are
 
 ## Step 4: Track Experiments
 
-The brief says "Use MLFlow or Weights & Biases to:". This project chose **MLflow**. Its settings are the `tracking` block in [`config/config.yaml`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/config/config.yaml).
+The assignment says "Use MLFlow or Weights & Biases to:". This project chose **MLflow**. Its settings are the `tracking` block in [`config/config.yaml`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/config/config.yaml).
 
 ### "Track experiment runs, model parameters, and evaluation metrics."
 
@@ -503,7 +503,7 @@ make web-test
 ### "Collect user input, send it to the deployed API using requests or fetch, and display the prediction."
 
 - **Status:** Met
-- **Where in the code:** [`frontend/src/App.tsx`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/App.tsx) (two team lists, the Predict button, the result, and the failure messages), [`frontend/src/matchup.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/matchup.ts) (the two inputs and the chances), and [`frontend/src/api.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/api.ts) (the `fetch` call to `POST /predict`). The standings come from [`frontend/src/data/team-profiles.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/data/team-profiles.json), written by `python -m src.profiles` ([`src/profiles.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/profiles.py)).
+- **Where in the code:** [`frontend/src/App.tsx`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/App.tsx) (two team lists, the Analyze button, the result, and the failure messages), [`frontend/src/matchup.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/matchup.ts) (the two inputs and the chances), and [`frontend/src/api.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/api.ts) (the `fetch` call to `POST /predict`). The standings come from [`frontend/src/data/team-profiles.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/data/team-profiles.json), written by `python -m src.profiles` ([`src/profiles.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/profiles.py)).
 - **Docs:** [Phase 5 Implementation, Part 1](../phase-5/implementation-part-1.md) and [Phase 5 Implementation, Part 2](../phase-5/implementation-part-2.md)
 - **Evidence:** 62 app tests pass. All 992 ordered pairs of teams, and all 272 games of the 2026 season, were sent to the live API, with every pick and probability equal to the local model. The page is readable and interactive: each team's record under its list, a bar split between the two chances, a light and a dark theme, and text and graphics that pass the WCAG contrast minimums in both.
 
@@ -517,18 +517,18 @@ make web-test
 ### "Include the link to the live front-end in your README."
 
 - **Status:** Met
-- **Where in the code:** the README section [Live Links](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#live-links) in `README.md` in the repository root. It gives the live web app, `https://d1nubiunzfwm0q.cloudfront.net`, and the live API, `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
+- **Where in the code:** the README section [Endpoints](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#endpoints) in `README.md` in the repository root. It gives the live web app, `https://d1nubiunzfwm0q.cloudfront.net`, and the live API, `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 - **Docs:** [Phase 7 Brief, Step 1: Write the README](../phase-7/brief.md#step-1-write-the-readme)
-- **Evidence:** the link is in the README once the draft is committed. Check it by reading the "Live Links" section.
+- **Evidence:** the README on `main` holds both links in its "Endpoints" section, and both addresses answered in the Phase 7 live checks.
 
 ## Step 9: Document Everything and Follow Best Practices
 
-The README is `README.md` in the repository root. Its sections are "Project Overview and Goals", "Dataset", "Model and Evaluation", "Cloud Services", "Setup and Usage", "Live Links", and "Limitations". Each of the six entries below links to the section that meets it. The README links to these docs for detail instead of repeating them.
+The README is `README.md` in the repository root. Its sections are "Project Overview", "Dataset", "Model and Evaluation", "Cloud Services", "Setup and Usage", "Endpoints", and "Limitations". Each of the six entries below links to the section that meets it. The README links to these docs for detail instead of repeating them.
 
 ### "Project overview and goals"
 
 - **Status:** Met
-- **Where in the code:** the README section [Project Overview and Goals](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#project-overview-and-goals).
+- **Where in the code:** the README section [Project Overview](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#project-overview).
 - **Docs:** [Phase 7 Brief, Step 1: Write the README](../phase-7/brief.md#step-1-write-the-readme)
 - **Evidence:** the section states what the project predicts, who it is for, and that it is a coursework project not affiliated with the National Football League.
 
@@ -558,22 +558,22 @@ The README is `README.md` in the repository root. Its sections are "Project Over
 - **Status:** Met
 - **Where in the code:** the README section [Setup and Usage](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#setup-and-usage), which gives the run environment and the `make` commands.
 - **Docs:** [Makefile](../extras/development/makefile.md), [What Must Be Set Up First?](../extras/development/makefile.md#what-must-be-set-up-first), [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run), and [Phase 3 Development Guide, How Do I Run It Locally?](../phase-3/development-guide.md#how-do-i-run-it-locally)
-- **Evidence:** Phase 7 rebuilds the project from a clean copy using only the README ([Step 3: Rebuild From a Clean Copy](../phase-7/brief.md#step-3-rebuild-from-a-clean-copy)). The nine make commands are all documented on [Makefile](../extras/development/makefile.md).
+- **Evidence:** Phase 7 rebuilt the project from a clean copy using only the README ([Step 3: Rebuild From a Clean Copy](../phase-7/brief.md#step-3-rebuild-from-a-clean-copy)), with every result listed in [What Did the Follow-Up Check?](../phase-7/implementation.md#what-did-the-follow-up-check). The nine make commands are all documented on [Makefile](../extras/development/makefile.md).
 
 ### "Link to deployed API and front-end app"
 
 - **Status:** Met
-- **Where in the code:** the README section [Live Links](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#live-links). The API is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` and the web app is `https://d1nubiunzfwm0q.cloudfront.net`.
+- **Where in the code:** the README section [Endpoints](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#endpoints). The API is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` and the web app is `https://d1nubiunzfwm0q.cloudfront.net`.
 - **Docs:** [Step 9: Check the Public Address](../phase-4/implementation.md#step-9-check-the-public-address) and [How Is the Page Hosted?](../phase-5/implementation-part-1.md#how-is-the-page-hosted)
 - **Evidence:** [Phase 7 Brief, Step 4: Check the Live Services](../phase-7/brief.md#step-4-check-the-live-services) re-checks both addresses before hand-in.
 
 ## Learning Goal: Ethical Implications and Limitations
 
-The brief's Learning Goals ask every project to "Reflect on ethical implications and limitations of your ML application". It is a requirement like the others, and it is met.
+The assignment's Learning Goals ask every project to "Reflect on ethical implications and limitations of your ML application". It is listed as [11. Ethics and Limitations](./project-requirements.md#11-ethics-and-limitations) on Project Requirements, and it is met.
 
 ### "Reflect on ethical implications and limitations of your ML application"
 
 - **Status:** Met
 - **Where in the code:** the README section [Limitations](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#limitations).
 - **Docs:** [Design Manifest](../design-manifest.md) records the choices behind the model, and [What Does the Confusion Matrix Show?](../phase-2/implementation-part-2.md#what-does-the-confusion-matrix-show) shows where the model is wrong.
-- **Evidence:** the section states that predictions are for reference only, that the model uses two inputs, and that the test accuracy is **59.06%** (88 of 149).
+- **Evidence:** the section states that the model sees only two numbers and is wrong on about 41% of the 2026 test games, that it leans toward the home team (172 home picks in 2025 against 146 home wins), that predictions are for reference only, that no personal data is collected, and that the project is not affiliated with the National Football League.

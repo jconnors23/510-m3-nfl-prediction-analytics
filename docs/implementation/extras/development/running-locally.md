@@ -3,7 +3,7 @@ hide:
   - toc
 ---
 
-# Local Development Guide
+# Running Locally
 
 This page shows everything that can run on a laptop while working on the project, which port each piece uses, and which files each one reads. It also gives a short walk-through for each kind of work: the model, the API, the web app, the docs, and the Docker images. Use it to decide which pieces to start for a task. [Makefile](./makefile.md) owns the detail of each command, so this page links to it and does not repeat it.
 

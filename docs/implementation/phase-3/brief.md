@@ -5,7 +5,7 @@ hide:
 
 # Phase 3 Brief: Local Prediction API
 
-**Status: Built and tested.** All 7 steps are done, and `pytest` passes 47 tests (30 from earlier phases and 17 new).
+**Status: Built and tested.** All 7 steps are done, and the 17 new API tests in `tests/test_api.py` pass.
 
 **Needs first:** Phase 2, which is built. Its output is the saved model `models/model.joblib`. If that file is missing, run `python -m src.model.train` first.
 

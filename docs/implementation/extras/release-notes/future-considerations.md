@@ -9,7 +9,7 @@ This page lists the next steps the project could take, none of which is built: a
 
 ## How Could New Results Flow In Automatically?
 
-nflverse updates its games file as games finish. The project currently ignores those updates: `test_through_week` in `config/config.yaml` is 10, and a fresh download already has scores for most week 11 games. A full automated pipeline would run every step after each week's games, from the download to the live web app.
+nflverse updates its games file as games finish. The project ignores later updates: `test_through_week` in `config/config.yaml` is 10, and the committed games file (downloaded 2026-11-17) has no scores for week 11. A full automated pipeline would run every step after each week's games, from the download to the live web app.
 
 ```mermaid
 flowchart TB

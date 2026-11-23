@@ -319,7 +319,7 @@ curl -sS -D - -o /dev/null -X OPTIONS https://<api-id>.execute-api.us-east-1.ama
 
 ## Check the Deployed Model Against the Local Model
 
-These checks confirm the function is running the zip built here, and that every game gets the same answer as the local model. The expected hash of the zip is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=`, and the zip is 63,452,500 bytes. Both copies of the model hash to `8fff766505a925218eae2484ae56a8ba7baed06b62ce3413ea33c8eb15e8ea4b`. The data file hashes to `7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`, the same value as `data_sha256` in `results/run-summary.json`.
+These checks confirm the function is running the zip built here, and that every game gets the same answer as the local model. The expected hash of the zip is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=`, and the zip is 63,452,500 bytes. These are the values for the zip that is deployed. A later rebuild from the same files (made in Phase 7 and not deployed) came to 63,452,901 bytes, so a new zip will not match these two values, and its hash is the one to compare with `CodeSha256` after a redeploy. Both copies of the model hash to `8fff766505a925218eae2484ae56a8ba7baed06b62ce3413ea33c8eb15e8ea4b`. The data file hashes to `7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`, the same value as `data_sha256` in `results/run-summary.json`.
 
 ```bash
 openssl dgst -sha256 -binary build/510-m3-nfl-predict-api.zip | base64
@@ -349,7 +349,7 @@ aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --r
 .venv/bin/python scripts/checks/parity_check.py
 ```
 
-The script `scripts/checks/parity_check.py` is committed and writes its results to `build/parity-results.json`, in the git-ignored `build/` folder. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. The parity run sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
+The script `scripts/checks/parity_check.py` is committed. Run it from the project folder with the command above. It writes its results to `build/parity-results.json`, in the git-ignored `build/` folder. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. The parity run sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
 
 ## Redeploy After a Change
 

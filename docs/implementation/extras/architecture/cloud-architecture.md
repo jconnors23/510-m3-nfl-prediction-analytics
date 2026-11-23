@@ -49,7 +49,7 @@ flowchart TB
     ROLE -->|"invalidate"| CF["CloudFront<br/>E1ZD23BE9RM77L"]
 ```
 
-The Test Python workflow also runs on the repository, but it reaches no cloud resource.
+The Test Python and Test Web App workflows also run on the repository, but they reach no cloud resource.
 
 The browser talks to two separate front doors: CloudFront for the page, and API Gateway for predictions and feedback. How the two talk to each other is on [Frontend and Backend Connection](./frontend-backend-connection.md).
 

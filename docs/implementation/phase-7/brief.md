@@ -5,7 +5,7 @@ hide:
 
 # Phase 7 Brief: Review
 
-**Status: Built.** Merged into `main` as pull request #8. The README is written, the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement of the assignment to the code and docs that meet it, and two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed five problems. All three GitHub workflows of that time passed on the merge. The small items left over were done after the merge, and are listed at the end of this page.
+**Status: Built.** Merged into `main` as pull request #8, with the follow-up tidy-ups and docs reorganization merged as pull request #9. The README is written, the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement of the assignment to the code and docs that meet it, and two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed five problems. All three GitHub workflows of that time passed on the merge. The small items left over were done after the merge, and are listed at the end of this page. What each check found and what was fixed is on the [Phase 7 Implementation](./implementation.md) page.
 
 Phase 7 finishes the project and checks it before it is handed in. It writes the README, the front page of the repository and the one requirement still open. Then it checks the docs and comments against the finished code, rebuilds the project from a clean copy using only the README, and walks the assignment's acceptance checklist with evidence for each item. It combines what were planned as two phases, the documentation (Phase 7) and the review (Phase 8), because both read the finished project and neither adds code.
 
@@ -91,8 +91,9 @@ The evidence for each item (the file, the command, and its result) is on the [Re
 - [x] **6. API:** `/predict` returns a prediction from JSON input, checked locally.
 - [x] **7. Deployment:** the API on Lambda behind API Gateway, publicly reachable, with CORS allowing the web app.
 - [x] **8. Front-end:** the Vite app on S3 and CloudFront calls the live API and shows predictions.
-- [x] **9. Repository:** every required file present, and work merged through pull requests #1 to #8.
+- [x] **9. Repository:** every required file present, and work merged through pull requests #1 to #9.
 - [x] **10. README:** overview, dataset, model, cloud services, setup and usage, and both live links.
+- [x] **11. Ethics and limitations:** the README's Limitations section.
 
 ### Step 6: Pre-Commit Checks and the Final Pull Request
 
@@ -100,11 +101,11 @@ The evidence for each item (the file, the command, and its result) is on the [Re
 - [x] **No absolute path or user name** in any committed file, including `mlflow-reference/`.
 - [x] **Every relative link resolves** in `README.md` and `docs/`.
 - [x] **An independent review** of the code and settings, with each finding fixed or noted: two end-to-end checks by Cursor (one report-only, one with fixes), and a review of the project's structure against the requirements.
-- [x] **The final pull request** is opened and merged by the developer: pull request #8.
+- [x] **The final pull requests** are opened and merged by the developer: pull request #8, then pull request #9 for the follow-up.
 
 ### Small Items Left From Earlier Phases
 
-These are tidy-ups, not requirements. They were done after the merge of pull request #8.
+These are tidy-ups, not requirements. They were done after the merge of pull request #8, and merged in pull request #9.
 
 - [x] **The confusion-matrix picture:** the axis name "What the model picked" now sits above the grid with its column labels, and the legend sits just under the grid. See [Confusion Matrix](../extras/features/confusion-matrix.md).
 - [x] **The MLflow artifacts screenshot:** `mlflow-reference/screenshots/run-artifacts.png` now shows the picture's preview, cropped so no path shows.
@@ -120,6 +121,7 @@ These are tidy-ups, not requirements. They were done after the merge of pull req
 
 ## Where to Read More
 
+- [Phase 7 Implementation](./implementation.md) records what the checks found and what was fixed.
 - [Project Requirements](../requirements/project-requirements.md) lists every requirement and the acceptance checklist.
 - [Requirements Rubric](../requirements/requirements-rubric.md) shows where each finished requirement lives.
-- [Makefile](../extras/development/makefile.md) explains every command the README will use.
+- [Makefile](../extras/development/makefile.md) explains every command the README uses.

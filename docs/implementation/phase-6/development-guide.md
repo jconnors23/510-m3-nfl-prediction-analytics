@@ -5,7 +5,7 @@ hide:
 
 # Phase 6 Development Guide
 
-This guide shows how to build and run the project's two Docker images on your own computer: the `train` image, which trains the model, and the `serve` image, which runs the prediction API. With Docker, a copy of the repository is all you need. Python and the packages come inside the image. What goes into the image, and what was checked, is on the [Phase 6 Implementation](./implementation.md) page.
+This guide shows how to build and run the project's two Docker images on your own computer: the `train` image, which trains the model (and can also run the data steps and the tests), and the `serve` image, which runs the prediction API. With Docker, a copy of the repository is all you need. Python and the packages come inside the image. What goes into the image, and what was checked, is on the [Phase 6 Implementation](./implementation.md) page.
 
 ## What Is Needed First?
 
@@ -62,7 +62,11 @@ Download the nflverse games file. It prints the address, the time, `rows: 7548`,
 docker run --rm 510-m3-nfl-train python -m src.data.fetch_raw
 ```
 
-Clean the games into the model's table, with your `build/docker/processed/` folder mounted so the result is kept:
+Clean the games into the model's table, with your `build/docker/processed/` folder mounted so the result is kept. Make the folder first:
+
+```bash
+mkdir -p build/docker/processed
+```
 
 ```bash
 docker run --rm -v "$PWD/build/docker/processed:/app/data/processed" 510-m3-nfl-train python -m src.data.clean
@@ -74,7 +78,7 @@ It prints the row counts at each filter, ending at 1,759 games, and writes `buil
 shasum -a 256 build/docker/processed/nfl_matchups_2020_2026.csv
 ```
 
-Print the two inputs' summary for each season group (training 1,339 rows, validation 271, test 149):
+Print a summary of the two model inputs for each season group (training 1,339 rows, validation 271, test 149):
 
 ```bash
 docker run --rm 510-m3-nfl-train python -m src.model.features

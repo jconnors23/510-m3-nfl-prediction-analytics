@@ -92,7 +92,7 @@ def plot_confusion_matrix(pipeline, group, path) -> Path:
     home_picks = int(picked_home.sum())
     home_wins = int((happened == 1).sum())
     figure, axes = plt.subplots(figsize=(8.4, 6.6))
-    # The grid is drawn by hand in a 2 by 2 space, one unit per cell, so the color can mean right
+    # The grid is drawn manually in a 2 by 2 space, one unit per cell, so the color can mean right
     # or wrong rather than the size of the count.
     axes.set_xlim(0, 2)
     axes.set_ylim(0, 2)

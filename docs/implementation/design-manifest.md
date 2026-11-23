@@ -34,7 +34,7 @@ flowchart TB
     - **Sets the rules:** the requirements and constraints each phase must meet, the key thresholds, and which files each tool may edit.
     - **Decides each design and configuration choice:** for example, the season split, the Docker layout, the AWS setup, and what the web app shows. Where a tool proposed options, the developer picked one, changed it, or turned it down.
     - **Approves or rejects every spec, and reviews every result.**
-    - **Runs every git command** that changes the repository. Each phase has its own branch and pull request, and pull requests #1 to #8 are merged into `main`.
+    - **Runs every git command** that changes the repository. Each phase has its own branch and pull request, and pull requests #1 to #9 are merged into `main`.
 - **Gemini** was a working partner in conversation. With the developer, it helped generate and refine the project idea and its starting scope, and helped work through code and configuration approaches. The developer decided what to keep.
 - **Kiro** is an AI agent in the Kiro IDE. It turns the developer's request into a written spec for Cursor. It reviews Cursor's work against the spec by reading the code, rerunning the tests, recomputing the numbers, and checking the live services. It writes all of `docs/` and the code comments, and it writes the pull request notes. Its git access is read-only.
 - **Cursor** is an AI code editor. It implements each spec in `src/`, `tests/`, `frontend/`, and the config files, runs the commands, and fills in an implementation log from a template. It ends with a report of anything that differs from the spec, any choice the spec did not cover, and the real numbers beside the expected ones.

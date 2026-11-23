@@ -19,7 +19,7 @@ A pre-game NFL winner predictor, built as a small, complete machine learning sys
 !!! warning "Unofficial Coursework Project"
     **This project is not affiliated with or endorsed by the National Football League.** Team names are used only to identify the teams. The predictions are for reference only.
 
-## Project Overview and Goals
+## Project Overview
 
 The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline. The goal is a clean, repeatable process, from cloud storage to a public web app, more than a high score. Why the project exists and how it was built phase by phase are on [Background](./background.md).
 
@@ -70,7 +70,7 @@ make train
 make start
 ```
 
-The API then answers at `http://127.0.0.1:8000`. Every command is on [Makefile](./implementation/extras/development/makefile.md), and the local setup as a whole is on [Local Development Guide](./implementation/extras/development/local-development.md). Deploying is a set of written steps in the [Phase 4](./implementation/phase-4/deployment-guide.md) and [Phase 5](./implementation/phase-5/deployment-guide.md) Deployment Guides.
+The API then answers at `http://127.0.0.1:8000`. Every command is on [Makefile](./implementation/extras/development/makefile.md), and the local setup as a whole is on [Running Locally](./implementation/extras/development/running-locally.md). Deploying is a set of written steps in the [Phase 4](./implementation/phase-4/deployment-guide.md) and [Phase 5](./implementation/phase-5/deployment-guide.md) Deployment Guides.
 
 ## Limitations
 

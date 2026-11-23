@@ -5,7 +5,7 @@ hide:
 
 # Testing Guide
 
-This page lists every automated check in the project and how to run it. There are two test suites, **95 Python tests** and **62 web app tests**, and a few larger checks that were run once against the live API. The page is for anyone who changes the code and wants to know what a passing run means, where it runs, and how to add a test. The make commands that run the suites are described in [Makefile](./makefile.md).
+This page lists every automated check in the project and how to run it. There are two test suites, **95 Python tests** and **62 web app tests**, and a few larger checks that send every game to the live API. The page is for anyone who changes the code and wants to know what a passing run means, where it runs, and how to add a test. The make commands that run the suites are described in [Makefile](./makefile.md).
 
 ## Which Checks Exist?
 
@@ -13,7 +13,7 @@ This page lists every automated check in the project and how to run it. There ar
 flowchart LR
     A["Python suite<br/>95 tests, 14 files in tests/"]
     B["Web suite<br/>62 tests, 12 files in frontend/src/"]
-    C["Every-game checks<br/>against the live API<br/>run once, in Phases 4 and 5"]
+    C["Every-game checks<br/>against the live API<br/>from Phases 4 and 5"]
     A --> L["Laptop: make pytest"]
     A --> D["Docker images"]
     A --> G1["GitHub: Test Python"]
@@ -35,7 +35,7 @@ The suite is run with `make pytest`, which runs `.venv/bin/python -m pytest` wit
 | `tests/test_download_from_s3.py` | 2 | The S3 download keeps the old file when S3 fails. A `Mock` S3 client and a temporary folder. |
 | `tests/test_evaluate.py` | 6 | Accuracy, log loss, and the confusion-matrix image. A stand-in object that returns fixed probabilities, and made-up games. |
 | `tests/test_export_mlflow.py` | 10 | The readable copy of an MLflow run, the run history, and the rule that no user name or absolute path leaks. Small runs logged into a temporary MLflow database. |
-| `tests/test_features.py` | 7 | The two inputs, checked against hand-worked values. Four made-up teams over three weeks. |
+| `tests/test_features.py` | 7 | The two inputs, checked against values worked out manually. Four made-up teams over three weeks. |
 | `tests/test_feedback.py` | 9 | The feedback function: valid saves, refusals, size limits, storage error. A small `Table` class that records what would be saved, and made-up API Gateway events. |
 | `tests/test_fetch_raw.py` | 3 | The games-file download. `requests.get` replaced with a stand-in, and a temporary folder. |
 | `tests/test_lambda_handler.py` | 6 | The AWS Lambda entry point and the rule that it does not import pandas. Made-up events and a model fitted in a temporary folder. |
@@ -117,7 +117,7 @@ How the workflows are set up is in [GitHub Workflows](./github-workflows.md).
 
 ## Which Larger Checks Were Run Against the Live API?
 
-These checks send many requests to the deployed API and compare each answer with the local model. They use the committed scripts in `scripts/checks/`, which write their results to the git-ignored `build/` folder. They were last run on the final model, and are repeated after a change to the model, the API, or the data. This page does not repeat their results.
+These checks send many requests to the deployed API and compare each answer with the local model. They use the committed scripts in `scripts/checks/`, which write their results to the git-ignored `build/` folder. They were last run on the final model, and are repeated after a change to the model, the API, or the data. This page does not repeat their results. The scripts are `parity_check.py` (every game, Phase 4), `matchups_live.py` (every ordered pair of teams, Phase 5), and `season_live.py` (every 2026 game, Phase 5). The last two read the expected files made by `matchups_expected.py` and `season_expected.py`.
 
 - **Every game in Phase 4.** All 1,759 games in the model table, checked in [Step 10: Check the Deployed Model Against the Local Model](../../phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
 - **Every matchup in Phase 5.** All 992 ordered pairs of teams, described in [The Every-Matchup Check Against the Live API](../../phase-5/implementation-part-1.md#the-every-matchup-check-against-the-live-api), with the steps in [How Do I Check Every Matchup?](../../phase-5/development-guide.md#how-do-i-check-every-matchup).

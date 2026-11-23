@@ -95,7 +95,7 @@ One command, `python -m src.model.train` (`make train`), runs steps 5 to 12.
 - **Command:** `make train`, which runs `MLFLOW_DISABLE_AGENT_HINT=1 .venv/bin/python -m src.model.train`. It carries out Steps 5 to 12 in one run and takes under a minute. See [make train](../development/makefile.md#make-train).
 - **Code:** `build_pipeline(config)` and `fit_pipeline(config, training)` in [`src/model/train.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/model/train.py). The pipeline is a `StandardScaler`, which puts both inputs on one scale, followed by a `LogisticRegression` (`C: 1.0`, `solver: lbfgs`, `max_iter: 1000`).
 - **Reads:** the training group only. Validation and test games are never fitted on.
-- **Writes:** nothing yet, the fitted pipeline is in memory.
+- **Writes:** nothing yet. The fitted pipeline is in memory.
 - **Full explanation:** [Phase 2 Part 2, Step 4: Fit the Scaler and the Model](../../phase-2/implementation-part-2.md#step-4-fit-the-scaler-and-the-model).
 
 ## Step 8: Score the Model

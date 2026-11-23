@@ -68,7 +68,7 @@ validation:
 # manifest: how the project was built with AI tools, and every decision. Then the Implementation
 # section, one group per phase. Then the Extras, grouped as in their folders (architecture,
 # development, features, and release notes), with the glossary, and last the requirements
-# rubric, the original brief, and the project requirements.
+# rubric and the project requirements.
 nav:
   - Overview: index.md
   - Background: background.md
@@ -104,6 +104,7 @@ nav:
           - Development Guide: implementation/phase-6/development-guide.md
       - "Phase 7: Review":
           - Brief: implementation/phase-7/brief.md
+          - Implementation: implementation/phase-7/implementation.md
   # Pages that belong to no one phase: how the whole system fits together, how to work on it
   # locally, the tools, the release notes and what could come next, and the glossary.
   - Extras:
@@ -112,7 +113,7 @@ nav:
           - ML Workflow: implementation/extras/architecture/ml-workflow.md
           - Frontend and Backend Connection: implementation/extras/architecture/frontend-backend-connection.md
       - Development:
-          - Local Development Guide: implementation/extras/development/local-development.md
+          - Running Locally: implementation/extras/development/running-locally.md
           - Makefile: implementation/extras/development/makefile.md
           - Testing Guide: implementation/extras/development/testing-guide.md
           - Tooling Guide: implementation/extras/development/tooling-guide.md
@@ -126,5 +127,4 @@ nav:
       - Glossary: implementation/extras/glossary.md
   - Requirements:
       - Requirements Rubric: implementation/requirements/requirements-rubric.md
-      - Assignment Brief: implementation/requirements/assignment-brief.md
       - Project Requirements: implementation/requirements/project-requirements.md

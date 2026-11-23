@@ -33,7 +33,7 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-- **The web app's packages.** `make web-test` and `make start-web` need `frontend/node_modules/`. Install them once with Node.js 22.12 or later, from the exact versions in `package-lock.json`. Run this inside `frontend/`:
+- **The web app's packages.** `make web-test` and `make start-web` need `frontend/node_modules/`. Install them once with Node.js 22.12 or later (the `engines` range in `frontend/package.json` allows 22.12 and up, 24, and 26 and up), from the exact versions in `package-lock.json`. Run this inside `frontend/`:
 
 ```bash
 npm ci

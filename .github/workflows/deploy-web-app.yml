@@ -1,6 +1,6 @@
 # Builds the web app and publishes the built files to CloudFront.
 # It runs when a change under frontend/ reaches the main branch,
-# and it can also be started by hand from the repository's Actions tab.
+# and it can also be started manually from the repository's Actions tab.
 # The run asks GitHub for a short-lived token, and AWS trades that token
 # for the deploy role. No access key is stored.
 name: Deploy Web App

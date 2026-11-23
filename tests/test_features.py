@@ -1,7 +1,7 @@
 """Tests for the two pre-game inputs.
 
 The games are made up and kept in memory, so nothing reads the downloaded table, touches
-the network, or writes a file. Each expected value is worked out by hand from the scores.
+the network, or writes a file. Each expected value is worked out manually from the scores.
 """
 
 import pandas as pd

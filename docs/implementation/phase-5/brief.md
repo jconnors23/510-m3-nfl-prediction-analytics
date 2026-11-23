@@ -96,13 +96,13 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 - [x] **Step 18. Add a Makefile** with the local commands. It now has nine, each explained on [Makefile](../extras/development/makefile.md).
 - [x] **Step 19. Check every game,** all 272, in the browser's arithmetic and through the live API, then redeploy.
 - [x] **Step 21. Keep a log of every training run** in `mlflow-reference/`: `make train` moves the last run into `previous-runs/`, writes the new one to `latest-run/`, and adds a row to `run-history.md`. See [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run).
-- [x] **Step 20. Fix what review found:** the phone width, the cramped forms, the see-through lists, two hand-typed weeks, and the wording. See [What Was Fixed After Review?](./implementation-part-2.md#what-was-fixed-after-review).
+- [x] **Step 20. Fix what review found:** the phone width, the cramped forms, the see-through lists, two week numbers typed in manually, and the wording. See [What Was Fixed After Review?](./implementation-part-2.md#what-was-fixed-after-review).
 
 ## Results
 
 - **Python tests:** **95 passed** for the whole project once a model is trained, or 93 passed and 2 skipped before. Part 1 added 8 for the profiles file, and Part 2 added 8 for the season file, 9 for the feedback function, and 10 for the MLflow export and its run history. The other 7 came later: 2 for the confusion-matrix picture, and 5 for the fetch and download steps.
-- **App tests:** **62 passed**, across 12 test files.
-- **Part 2, every game:** all 272 games of 2026 sent to the live API, every pick and probability equal to the local model.
+- **App tests:** **62 passed**, across 12 test files. On a fresh checkout, 60 pass and 2 are skipped, because they need `build/expected-matchups.json` and `build/expected-season.json`.
+- **Part 2, every game:** all 272 games of 2026 sent to the live API, every pick and probability equal to the local model. The check scripts are in `scripts/checks/`.
 - **Part 2, feedback:** a test submission saved, read back, and deleted. The prediction function is unchanged.
 - **Every matchup:** all **992** ordered pairs sent to the live API came back with status 200, and every pick and every probability (rounded to 4 places) equals the local model. The local model picks the home team in 601 and the away team in 391, with home win chances from 26.72% to 78.60%.
 - **Hosting:** the files CloudFront serves are byte for byte the files the tests passed on. A request straight to the bucket gets status 403.
@@ -111,7 +111,7 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 ## Decisions Made
 
 - **React with TypeScript,** not plain TypeScript, because React makes the page's state easier to read and test.
-- **One standings snapshot after 2026 week 10,** not a week picker.
+- **One standings snapshot after 2026 week 10,** not a week picker, in Part 1. Part 2 added a week list that picks which earlier standings a game uses.
 - **The model's scores are copied into the profiles file** from `results/run-summary.json`, so the page never shows a number typed in manually.
 - **The folder is `frontend/`.** It was built as `web/` and renamed.
 - **The bucket name `510-m3-nfl-web-app` was free** and is used as proposed.
@@ -126,7 +126,7 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 - **Committed data:** `frontend/src/data/team-profiles.json`.
 - **Settings:** a `frontend` block in `config/config.yaml`.
 - **On AWS (`us-east-1`):** the bucket `510-m3-nfl-web-app`, the origin access control `510-m3-nfl-web-app-oac`, a CloudFront distribution tagged `510-m3-nfl-web-app`, a bucket policy, a second origin in the API's CORS list, the GitHub sign-in provider for AWS, and the deploy role `510-m3-nfl-web-app-deploy-role`.
-- **Workflow:** `.github/workflows/deploy-web-app.yml`, and the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`, which holds the role's address.
+- **Workflows:** `.github/workflows/deploy-web-app.yml`, and the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`, which holds the role's address. Later, `.github/workflows/test-web.yml` was added. It runs the app's tests and build on pull requests, with no AWS access. See [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request).
 - **Docs:** this brief, the [Implementation](./implementation-part-1.md) page, the [Development Guide](./development-guide.md), and the [Deployment Guide](./deployment-guide.md).
 - **Not committed:** `frontend/dist/` and `frontend/node_modules/`, which are rebuilt by `npm ci` and `npm run build`.
 
@@ -134,7 +134,7 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 
 - Docker, built in [Phase 6](../phase-6/brief.md).
 - The README and its link to the live page, and the final review, in [Phase 7](../phase-7/brief.md).
-- A custom domain, protection rules, analytics, and a week picker.
+- A custom domain, protection rules, and analytics.
 
 ## Where to Read More
 

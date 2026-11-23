@@ -43,7 +43,7 @@ For what the main libraries are, see the Glossary sections for [Phase 2](../glos
 
 ## Which Packages Does the Web App Use?
 
-The web app needs Node.js **`^22.12.0 || ^24.0.0 || >=26.0.0`** (the `engines` range in `frontend/package.json`). The Deploy Web App workflow uses Node 24, and the laptop the project was built on has 24.17.0. Install the packages with `npm ci` inside `frontend/`.
+The web app needs Node.js **`^22.12.0 || ^24.0.0 || >=26.0.0`** (the `engines` range in `frontend/package.json`). The Test Web App and Deploy Web App workflows use Node 24, and the laptop the project was built on has 24.17.0. Install the packages with `npm ci` inside `frontend/`.
 
 | Package | Range in `package.json` | Installed in `package-lock.json` | What it does here |
 | :--- | :--- | :--- | :--- |

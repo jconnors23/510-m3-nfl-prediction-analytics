@@ -178,12 +178,12 @@ Paths are inside `frontend/`.
 
 ## What Was Checked?
 
-The tests cover the season file and the feedback function in Python, using a stand-in for DynamoDB so no AWS account is needed. On the app side they cover the tabs, the labels, the inputs for a game, the result lines, the team table's sorting and formatting, the feedback check, and each tab's page.
+The tests cover the season file and the feedback function in Python, using a stand-in for DynamoDB so no AWS account is needed. On the app side they cover the tabs, the labels, the inputs for a game, the result lines, the team table's sorting and formatting, the feedback check, the list component, and each tab's page.
 
-- **The tests:** 95 Python tests and 62 app tests pass. On GitHub, or on a fresh checkout, the app gives 60 passed and 2 skipped, because the two every-game checks need files in the ignored `build/` folder. A fresh checkout with no saved model gives 93 Python tests passed and 2 skipped.
+- **The tests:** 95 Python tests and 62 app tests pass. The 62 app tests are in 12 files: `App.test.tsx` (16), `matchup.test.ts` (11), `schedule.test.ts` (9), `api.test.ts` (8), `config.test.ts` (4), `feedback.test.ts` (3), `teamStats.test.ts` (3), `Picker.test.tsx` (3), `profiles.test.ts` (2), `tabs.test.ts` (1), and the two every-game parity tests, `matchups.parity.test.ts` (1) and `season.parity.test.ts` (1). On GitHub, or on a fresh checkout, the app gives 60 passed and 2 skipped, because the two parity tests need `build/expected-matchups.json` and `build/expected-season.json`, which sit in the ignored `build/` folder. The Test Web App workflow runs these tests on pull requests, as explained in [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request). A fresh checkout with no saved model gives 93 Python tests passed and 2 skipped.
 - **The season file:** 272 games (150 finished or tied, 122 upcoming), 18 weeks, 11 sets of standings, and 32 team rows. It is 157,894 bytes, SHA-256 `9c2acb0bb239cbeb86cf9425c113deeecfe86dee68381a55a8b8291a710b6525`, and rebuilding it gives the same bytes.
 - **Finished games:** for all 149 with a winner, the browser's inputs equal `build_model_table`'s exactly.
-- **Every game through the live API:** all 272 sent, 272 answers with status 200, every pick and every probability equal to the local model, 0 retries, and 0 mismatches.
+- **Every game through the live API:** all 272 sent, 272 answers with status 200, every pick and every probability equal to the local model, 0 retries, and 0 mismatches. The check scripts are committed in `scripts/checks/` (`season_expected.py` and `season_live.py`), and write into the git-ignored `build/` folder. Run each as `.venv/bin/python scripts/checks/<name>.py` from the project folder, after `make train`.
 - **The prediction function is unchanged.** Its code fingerprint is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=` before and after.
 - **The feedback route:** saved, read back, and deleted a test submission, and refused a short message. See [What Was Checked?](../extras/features/feedback-path.md#what-was-checked) on the feedback page.
 - **The served files:** all 16 (the page, the script, the stylesheet, and 12 fonts) match the local build byte for byte.
@@ -201,8 +201,8 @@ The tests cover the season file and the feedback function in Python, using a sta
 - **The page was wider than a phone screen.** At 390 pixels wide, every tab's page was 802 pixels wide. The tab bar was centered with automatic margins inside a flex column, which made it as wide as its row of tabs. It now has a set width, and its tabs scroll inside it. Checked on all five tabs, locally and live: the page is 390 pixels wide.
 - **The forms were cramped.** Labels sat inline, the message box was a tiny default box beside its label, and nothing spaced one field from the next. Every label and its control now sit in one field style: the label on its own line, space between fields, and a full-width message box about 6 lines tall.
 - **An open list showed the button through it.** A native drop-down opens a list the operating system draws, and on macOS that list is translucent, so the orange Analyze button showed through. All seven lists now use `src/Picker.tsx`, a list the page draws itself, built to the standard select-only combobox pattern: the arrow keys, Home and End, Enter, Escape, and jumping to a typed letter. Checked: the open list is fully opaque, and it covers the button.
-- **Two week numbers were typed in manually.** Custom Matchup's starting week and the last-week fallback now come from the season file.
-- **The site mentioned betting.** The banner now reads "**Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Predictions are for reference only." No page text mentions betting, and a test checks every tab.
+- **Two week numbers were typed in manually in the code.** Custom Matchup's starting week and the last-week fallback now come from the season file.
+- **The banner wording was changed.** It now reads "**Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Predictions are for reference only." A test checks the text of every tab for words the site must not use.
 
 ## What Part 2 Does Not Do
 

@@ -16,7 +16,7 @@ The web app's Feedback tab lets a visitor send a short message about the site or
 - **Message (required):** 10 to 1,000 characters.
 - **No personal details are asked for,** and the form says not to include any. Nothing identifies the visitor: no name, email, address, or cookie.
 - **After sending:** "Thanks. Your feedback was saved." A failure shows a readable message, as the predictions do.
-- **An invisible field catches simple spam bots.** It is invisible to people. A submission that fills it gets the same thanks message, but nothing is saved.
+- **An invisible field catches simple spam bots.** People cannot see it, so only a bot fills it. A submission that fills it gets the same thanks message, but nothing is saved.
 
 ## Why Does It Need Its Own Route?
 

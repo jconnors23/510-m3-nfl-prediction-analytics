@@ -39,7 +39,7 @@ This is the same function and the same Mangum wrapper that run on AWS. Only the 
 
 ### Step 3: Build the Zip
 
-The build commands in the Deployment Guide's [Build the Zip](./deployment-guide.md#build-the-zip) section also need no AWS account. They produce `build/510-m3-nfl-predict-api.zip`, which is **231,252,596 bytes** unzipped and **63,452,500 bytes** zipped when built from the current files.
+The build commands in the Deployment Guide's [Build the Zip](./deployment-guide.md#build-the-zip) section also need no AWS account. They produce `build/510-m3-nfl-predict-api.zip`, which is **231,252,596 bytes** unzipped and **63,452,500 bytes** zipped for the deployed build. A rebuild from the same files (made in Phase 7 and not deployed) came to 63,452,901 bytes zipped, so expect a new zip to differ by a few hundred bytes.
 
 ## How Do I Develop It?
 

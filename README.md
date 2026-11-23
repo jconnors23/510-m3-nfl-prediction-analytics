@@ -10,7 +10,7 @@ A pre-game NFL winner predictor, built as a small, complete machine learning sys
 
 > **Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Team names are used only to identify the teams. Predictions are for reference only.
 
-## Project Overview and Goals
+## Project Overview
 
 The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline.
 
@@ -150,7 +150,7 @@ The deployment is a set of written AWS CLI steps:
 
 Every make command is explained on [Makefile](./docs/implementation/extras/development/makefile.md).
 
-## Live Links
+## Endpoints
 
 - **Web app:** [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)
 - **API health check:** [https://9awodatqc5.execute-api.us-east-1.amazonaws.com/health](https://9awodatqc5.execute-api.us-east-1.amazonaws.com/health)
@@ -188,11 +188,11 @@ Every make command is explained on [Makefile](./docs/implementation/extras/devel
   requirements.txt            pinned Python packages
 ```
 
-## Where to Read More
+## Further Reading
 
 - [Background](./docs/background.md): the nflverse data source, why the project exists, and how it was built, phase by phase.
 - [Requirements Rubric](./docs/implementation/requirements/requirements-rubric.md): every requirement of the assignment, linked to the code and the docs that meet it.
 - [Design Manifest](./docs/implementation/design-manifest.md): how the developer built the project with AI tools augmenting the work, and every choice and why.
 - [Cloud Architecture](./docs/implementation/extras/architecture/cloud-architecture.md): every AWS resource, with its exact name and settings, how they connect, and who can reach what.
 - [ML Workflow](./docs/implementation/extras/architecture/ml-workflow.md): the path from the raw nflverse file to a served prediction, step by step, with the command and code for each step.
-- [Local Development Guide](./docs/implementation/extras/development/local-development.md): everything that runs on a laptop (the API, the web app, MLflow, the docs, and Docker), the ports each uses, and how to work on each part.
+- [Running Locally](./docs/implementation/extras/development/running-locally.md): everything that runs on a laptop (the API, the web app, MLflow, the docs, and Docker), the ports each uses, and how to work on each part.

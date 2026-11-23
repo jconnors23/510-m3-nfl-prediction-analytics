@@ -153,6 +153,8 @@ No test may fail, and the every-matchup parity test must now run instead of bein
 
 It sends 992 requests, one at a time, and exits with an error on any mismatch. On the current data it prints 992 requests, 0 retries, 992 status 200 answers, 992 matching picks, 992 matching probabilities, 601 home picks and 391 away picks, and `mismatches: 0`.
 
+The same kind of check exists for every 2026 game of the Games by Week tab: `scripts/checks/season_expected.py`, then `npm test` (which writes `build/season-bodies.json`), then `scripts/checks/season_live.py`, which sends 272 requests to the live API. The last one ends with 272 of 272 games matched and 0 mismatches. They are run the same way, as `.venv/bin/python scripts/checks/<name>.py` from the project folder.
+
 ## How Do I Develop It?
 
 ### Where Is Each Piece?
@@ -167,14 +169,15 @@ It sends 992 requests, one at a time, and exits with an error on any mismatch. O
 - **The types:** `frontend/src/types.ts`.
 - **The profiles file:** `frontend/src/data/team-profiles.json`, written by `src/profiles.py`.
 - **The settings:** `frontend/vite.config.ts` (port, proxy, build folder), `frontend/.env.development` and `frontend/.env.production` (the API address), and the `frontend` block of `config/config.yaml` (where the profiles file is written).
-- **The tests:** `frontend/src/*.test.ts` and `frontend/src/App.test.tsx`, and `tests/test_profiles.py`.
+- **The tests:** `frontend/src/*.test.ts` and `frontend/src/*.test.tsx`, and `tests/test_profiles.py`.
+- **The Part 2 tabs, season data, and feedback form:** `src/tabs.ts`, `src/schedule.ts`, `src/teamStats.ts`, `src/feedback.ts`, and `src/data/season-2026.json`, all inside `frontend/`. They are explained in [What Changed in the App's Code?](./implementation-part-2.md#what-changed-in-the-apps-code).
 - **The automatic deploy:** `.github/workflows/deploy-web-app.yml`. See [How Does a Change Reach the Live Page?](./implementation-part-1.md#how-does-a-change-reach-the-live-page).
 
 ### What Rules Does the App Keep?
 
 - **What is sent is never rounded.** The request comes straight from `buildPredictRequest`, which only subtracts.
 - **The winner comes from the API's `prediction`,** never from the displayed percentages.
-- **No outside requests.** The only request the app makes to another address is `POST /predict`. The fonts come with the build. It uses no analytics, no cookies, and no local storage. The deploy workflow fails a build that names any other web address.
+- **No outside requests.** The only requests the app makes to another address are `POST /predict` and, from the Feedback tab, `POST /feedback`. Both go to the API. The fonts come with the build. It uses no analytics, no cookies, and no local storage. The deploy workflow fails a build that names any other web address.
 - **Every color pair stays readable in both themes:** at least 4.5 to 1 for text, and 3 to 1 for the bar and the focus ring. Check a new color in both themes.
 - **Text a test looks for stays in one piece.** Testing Library matches the text directly inside an element, so a `<strong>` or `<span>` in the middle of a tested sentence breaks the test.
 - **Nothing secret goes in a `VITE_` variable,** because Vite writes those values into the built files.
@@ -195,7 +198,7 @@ It prints `teams: 32`, `as of: 2026 week 10`, and `saved: frontend/src/data/team
 1. Edit `frontend/src/App.tsx` or `frontend/src/index.css`, with the dev server running. Check the change in both themes, with the "Dark theme" button, and at a phone width, with the browser's device view.
 2. If you change any text a test looks for, update `frontend/src/App.test.tsx` to match.
 3. Run `npm test` and `npm run build`.
-4. Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy manually instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
+4. Open a pull request. The Test Web App workflow runs `npm ci`, `npm test`, and `npm run build` on it, with no AWS access (see [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request)). Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy manually instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
 
 ### How Do I Point the App at a Different API?
 
