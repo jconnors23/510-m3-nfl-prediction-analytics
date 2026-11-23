@@ -78,14 +78,7 @@ A table of every team's 2026 games through week 10, with only the numbers the mo
 
 ### Feedback
 
-A short form whose answers are saved in a DynamoDB table.
-
-- **Category:** General, Predictions, The site, or Something is broken.
-- **Rating (optional):** 1 to 5.
-- **Message (required):** 10 to 1,000 characters.
-- **No personal details are asked for,** and the form says not to include any. Nothing identifies the visitor: no name, email, address, or cookie.
-- **After sending:** "Thanks. Your feedback was saved." A failure shows a readable message, as the predictions do.
-- **A hidden field catches simple spam bots.** It is invisible to people. A submission that fills it gets the same thanks message, but nothing is saved.
+A short form (a category, an optional rating, and a message) whose answers are saved in a DynamoDB table by a function of its own. The form goes beyond the assignment, so it is explained in full on [The Feedback Form](../extras/feedback-form.md).
 
 ## Does the API Need to Change?
 
@@ -95,7 +88,7 @@ A short form whose answers are saved in a DynamoDB table.
 - **Custom Matchup:** the same, for any week.
 - **Already checked against the live API:** every upcoming game uses the week 10 standings, so each of the 122 upcoming games is one of the 992 ordered pairs checked in Part 1. Each of the 149 finished games was sent through the live API in Phase 4, which checked all 1,759 games.
 
-**The feedback form needs a new route,** because a browser cannot write to S3 or DynamoDB without AWS credentials, and no credentials can be put in a public page. The route goes on the same API address, and a separate small function handles it, so the prediction function is not touched.
+**The feedback form needs a new route,** `POST /feedback`, on the same API address, handled by a separate small function, so the prediction function is not touched. See [Why Does It Need Its Own Route?](../extras/feedback-form.md#why-does-it-need-its-own-route).
 
 ## Where Do the Season's Games Come From?
 
@@ -170,60 +163,6 @@ An excerpt of the committed file. Week 1 has no earlier games, so its standings 
 - **Upcoming games:** the standings before week 11 must equal the Part 1 profiles file, team by team, exactly.
 - **Example upcoming answers from the local model:** Indianapolis Colts at Houston Texans 60.01% for the Texans, Miami Dolphins at Buffalo Bills 76.49% for the Bills.
 
-## How Does the Feedback Reach the Table?
-
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant G as API Gateway<br/>(same address)
-    participant L as Feedback function<br/>(new)
-    participant D as DynamoDB table<br/>(new)
-    B->>G: POST /feedback with category, rating, message
-    G->>L: the request (route throttled)
-    L->>L: check every field
-    L->>D: PutItem with a new id and the time
-    L->>G: 201 and the id
-    G->>B: 201, so the form says thanks
-```
-
-### The Request and the Answer
-
-- **Request:** `POST {VITE_API_BASE_URL}/feedback`, `Content-Type: application/json`, and a body with exactly these keys:
-    - `category`: one of `general`, `predictions`, `site`, `broken`.
-    - `rating`: a whole number from 1 to 5, or `null`.
-    - `message`: text, 10 to 1,000 characters after trimming spaces.
-    - `website`: the hidden field. It must be an empty string.
-- **Answer when saved:** status 201 and `{"status":"received","feedback_id":"<id>"}`.
-- **Answer when a field is wrong:** status 422 and `{"detail":"<what is wrong>"}`, such as "The message must be 10 to 1,000 characters."
-- **A body over 4,096 bytes, or one that is not JSON:** status 400.
-- **The hidden field filled in:** status 201 with the same answer, and nothing is saved.
-- **CORS:** the API's current setting already allows `POST` with the `content-type` header from the CloudFront address, for every route. Nothing changes there.
-
-### What Is Saved
-
-One item per submission, in the table `510-m3-nfl-feedback`:
-
-- `feedback_id`: a random UUID made by the function. It is the table's key.
-- `submitted_at`: the time in UTC, such as `2026-11-23T14:05:09Z`.
-- `category`, `rating` (left out when `null`), and `message`, as sent.
-
-Nothing else is saved: no address, no browser details, and no cookie.
-
-### What Is Created on AWS
-
-All in `us-east-1`, tagged `project=510-m3`, with names that follow the project's pattern.
-
-- **The DynamoDB table `510-m3-nfl-feedback`:** key `feedback_id` (text), billed per request, encrypted with the default AWS key.
-- **The function `510-m3-nfl-feedback-api`:** Python 3.13 on arm64. Its zip holds one file, `src/api/feedback_handler.py`, and uses the `boto3` that the Lambda runtime provides, so it adds no packages. The table name comes from the setting `FEEDBACK_TABLE`.
-- **The role `510-m3-nfl-feedback-api-role`:** it can write logs and call `dynamodb:PutItem` on this one table, and nothing else.
-- **The route `POST /feedback`** on the existing HTTP API `510-m3-nfl-predict-http-api`, with its own integration and its own permission to call the new function.
-- **A request limit on that route only:** 1 request a second, with bursts of up to 5. The prediction routes stay without a limit, as before. The form writes to a table, so it has a limit, and the predictions only read.
-- **Log retention:** 14 days, as for the prediction function.
-
-**The prediction function is not changed.** Its code fingerprint (`CodeSha256`) is the same before and after.
-
-To read the feedback, see [Read the Feedback](./deployment-guide.md#read-the-feedback) in the Deployment Guide.
-
 ## What Changed in the App's Code?
 
 Paths are inside `frontend/`.
@@ -237,21 +176,6 @@ Paths are inside `frontend/`.
 - **`src/data/season-2026.json`:** the season file.
 - **The tab bar** follows the standard pattern for tabs: a `tablist` with one `tab` per tab and one `tabpanel` for the open tab, and the arrow keys move between tabs.
 
-## What Else Was Added?
-
-### A Makefile
-
-A `Makefile` in the project folder for the six commands used most:
-
-- `make train`: one training run. It fits and scores the model, logs the run to MLflow, and adds it to `mlflow-reference/`.
-- `make pytest`: every Python test.
-- `make webtest`: the web app's tests.
-- `make start`: the FastAPI prediction service on your computer, at `http://127.0.0.1:8000`.
-- `make start-web`: the web app's dev server, at `http://localhost:5173`. It forwards `/predict` and `/health` to the service started by `make start`.
-- `make docs`: the docs site on your computer, at `http://127.0.0.1:8001`, so it does not take the API's port.
-
-Rebuilding the data files and the production build are left out, because they are run rarely: `python -m src.profiles`, `python -m src.season`, and `npm run build` in `frontend/`.
-
 ## What Was Checked?
 
 The tests cover the season file and the feedback function in Python, using a stand-in for DynamoDB so no AWS account is needed. On the app side they cover the tabs, the labels, the inputs for a game, the result lines, the team table's sorting and formatting, the feedback check, and each tab's page.
@@ -261,13 +185,7 @@ The tests cover the season file and the feedback function in Python, using a sta
 - **Finished games:** for all 149 with a winner, the browser's inputs equal `build_model_table`'s exactly.
 - **Every game through the live API:** all 272 sent, 272 answers with status 200, every pick and every probability equal to the local model, 0 retries, and 0 mismatches.
 - **The prediction function is unchanged.** Its code fingerprint is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=` before and after.
-- **The feedback route:**
-    - One test submission was saved, read back, and deleted. The table now holds 0 items.
-    - A filled hidden field saved nothing.
-    - A 5-character message got 422 with "The message must be 10 to 1,000 characters."
-    - A preflight from the CloudFront address got 204.
-    - The stage's only route limit is `POST /feedback` (1 a second, bursts of 5).
-    - The function's role can only write logs and call `dynamodb:PutItem` on this one table.
+- **The feedback route:** saved, read back, and deleted a test submission, and refused a short message. See [What Was Checked?](../extras/feedback-form.md#what-was-checked) on the feedback page.
 - **The served files:** all 16 (the page, the script, the stylesheet, and 12 fonts) match the local build byte for byte.
 - **The live site in a real browser.** Headless Chrome visited every tab on the live site:
     - **The header:** the title and heading are "NFL Prediction Analytics", the disclaimer appears once, and the model version appears once, in the header chip.

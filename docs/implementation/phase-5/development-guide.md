@@ -23,20 +23,12 @@ Run every `npm` command from `frontend/`, and every `python` command from the pr
 
 ## Which Make Commands Are There?
 
-The `Makefile` in the project folder has six commands. Run them from the project folder.
-
-- **`make train`:** trains the model, logs the run to MLflow, and adds the run to the committed log in `mlflow-reference/`. See [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run).
-- **`make pytest`:** runs every Python test.
-- **`make webtest`:** runs the web app's tests.
-- **`make start`:** starts the FastAPI prediction service at `http://127.0.0.1:8000`.
-- **`make start-web`:** starts the web app's dev server at `http://localhost:5173`. It forwards `/predict` and `/health` to the service from `make start`.
-- **`make docs`:** previews the docs site at `http://127.0.0.1:8001`.
+This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, and the port each one uses, is listed in [Which Make Commands Are There?](../extras/developer-tools.md#which-make-commands-are-there).
 
 For a local run, use two terminals: `make start` in one, then `make start-web` in the other. The steps below explain each one and what to check.
 
 - **Port 8000 must be free for `make start`.** If `mkdocs serve` is running with its default port, it holds 8000. Use `make docs` instead, which serves the docs on 8001.
-- **`make docs` uses the `mkdocs` on your PATH,** because MkDocs is not one of the project's Python packages. Install it once with `pip install mkdocs==1.6.1 mkdocs-material==9.7.7 pymdown-extensions==12.0.1`, the versions the docs workflow uses.
-- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See the [Deployment Guide](./deployment-guide.md#add-the-feedback-route).
+- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [The Feedback Form](../extras/feedback-form.md).
 
 ## How Do I Run It Locally?
 
@@ -109,7 +101,7 @@ From the project folder:
 python -m pytest tests/test_profiles.py
 ```
 
-Expected: **8 passed**. The whole project gives **88 passed** with `make pytest`. `tests/test_season.py` (8), `tests/test_feedback.py` (9), and `tests/test_export_mlflow.py` (10) cover the Part 2 Python code.
+Expected: **8 passed**. The whole project gives **90 passed** with `make pytest`. `tests/test_season.py` (8), `tests/test_feedback.py` (9), and `tests/test_export_mlflow.py` (10) cover the Part 2 Python code.
 
 ## How Do I Build and Preview the Site?
 

@@ -98,10 +98,10 @@ Open `mlflow-reference/run-history.md`. It lists every training run, newest firs
 - **The MLflow screen** shows every run, with its 15 settings, 8 scores, 3 files, and the logged model:
 
 ```bash
-mlflow ui --backend-store-uri sqlite:///mlflow.db
+make start-web-ml
 ```
 
-Open the address it prints. The default port is 5000. On macOS, Control Center often holds port 5000, so add `--port 5001` and open `http://127.0.0.1:5001`. MLflow may print a hint line about tracing code, and `MLFLOW_DISABLE_AGENT_HINT=1` silences it. Press `Ctrl+C` to stop the screen. The screen lists every run in your local `mlflow.db`, which can include runs that were never committed.
+Open `http://127.0.0.1:5001` and choose the experiment `nfl-pregame-winner-v1`. The command runs `mlflow ui` on port 5001, because macOS Control Center often holds MLflow's default port, 5000. It also hides a hint line MLflow prints about tracing code. Press `Ctrl+C` to stop the screen. The screen lists every run in your local `mlflow.db`, which can include runs that were never committed.
 
 - **The files** are explained in [What Is Each File Type?](#what-is-each-file-type), below.
 
@@ -198,7 +198,7 @@ flowchart TB
     python -m pytest
     ```
 
-    Expected on a clean checkout: **86 passed and 2 skipped**. The two skipped tests use the saved model, which a clean checkout does not have yet. After training, the same command gives **88 passed**.
+    Expected on a clean checkout: **88 passed and 2 skipped**. The two skipped tests use the saved model, which a clean checkout does not have yet. After training, the same command gives **90 passed**.
 
 3. **Train** with `make train`. It prints the nine lines shown in [Step 2: Train the Model](#step-2-train-the-model).
 4. **Confirm nothing changed.** Training overwrites `results/run-summary.json`. If the rebuild matches, git shows no change to that file.

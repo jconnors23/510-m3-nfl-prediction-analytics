@@ -81,7 +81,7 @@ Key terms and tools, grouped by the phase where they first matter, followed by g
 - **Artifact store:** where MLflow keeps files. Here it is `mlartifacts/`, with a subfolder per run. The location is set when an experiment is created and cannot be changed afterward. See [artifact stores](https://mlflow.org/docs/latest/self-hosting/architecture/artifact-store/).
 - **MLflow model format and flavor:** a standard folder layout for a saved model, so MLflow can load it back: a description file (`MLmodel`), the serialized model, and files listing the needed packages. The flavor names the library that built the model, here scikit-learn. See the [scikit-learn flavor](https://mlflow.org/docs/latest/api_reference/python_api/mlflow.sklearn.html).
 - **Logged model:** in MLflow 3, a model saved in that format is its own entry linked to the run, stored in a `models/` folder in the artifact store and not in the run's file list.
-- **MLflow UI:** a web page for browsing runs, started with `mlflow ui --backend-store-uri sqlite:///mlflow.db`. See [the tracking UI](https://mlflow.org/docs/latest/ml/tracking/#tracking-ui).
+- **MLflow UI:** a web page for browsing runs, started with `make start-web-ml` at `http://127.0.0.1:5001`. The command runs `mlflow ui --backend-store-uri sqlite:///mlflow.db` on port 5001. See [the tracking UI](https://mlflow.org/docs/latest/ml/tracking/#tracking-ui).
 - **Run summary (`results/run-summary.json`):** a small readable record of the latest run, committed to git. It has no run ID, time, or machine path, so it stays identical when the settings and data do not change.
 
 ## Phase 3: Local Prediction API
@@ -135,13 +135,23 @@ Built. See the [Phase 5 Brief](./phase-5/brief.md).
 
 ## Phase 6: Docker
 
-Planned. See [Remaining Phases](./remaining-phases.md#phase-6-docker).
+Built. See the [Phase 6 Brief](./phase-6/brief.md) and the [Phase 6 Implementation](./phase-6/implementation.md).
 
-**Docs:** [Docker](https://docs.docker.com/), [multi-stage builds](https://docs.docker.com/build/building/multi-stage/).
+**Docs:** [Docker](https://docs.docker.com/), [what is a container](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/), [multi-stage builds](https://docs.docker.com/build/building/multi-stage/), [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/), [publishing ports](https://docs.docker.com/engine/network/port-publishing/).
 
-- **Docker:** packages a program with everything it needs, so it runs the same on any machine.
-- **Image:** the packaged snapshot that Docker builds.
-- **Dockerfile and build target:** a Dockerfile lists the build steps. It can define several build targets, here `train` and `serve`.
+- **Docker:** the tool that builds images and runs containers. On a Mac, Docker Desktop runs a small Linux system in the background, and every container runs inside it. That is why the project's container runs Linux even though this computer runs macOS.
+- **Image:** a read-only package of everything a program needs to run: a cut-down Linux system, Python 3.13, the exact packages in `requirements.txt`, and the project's code, settings, and data. Here there are two images, `510-m3-nfl-train` and `510-m3-nfl-serve`. An image does nothing by itself, the way a saved file does nothing until it is opened.
+- **Container:** a running copy of an image. It has its own files, its own installed Python, its own running programs, and its own network address, kept apart from this computer's, so nothing installed on the laptop changes what it does. It starts from the image's files, and every file it writes is deleted when the container is removed (`docker run --rm` removes it when it stops). In this project:
+    - **The train container** starts, trains the model, logs one MLflow run inside itself, and stops. It reads the committed data, so it needs no AWS account and no download.
+    - **The serve container** runs the prediction API until it is stopped, the same API that `make start` runs on the laptop.
+    - **How it differs from a virtual environment:** a virtual environment (`.venv/`) keeps only the Python packages separate, and still uses this computer's Python and system. A container also brings its own Python and system, so it runs the same on any computer with Docker.
+- **Dockerfile:** the text file that lists the steps for building an image: which base image to start from, which packages to install, which files to copy in, and which command to run when a container starts.
+- **Build target (multi-stage build):** one Dockerfile can define several named stages, and `docker build --target <name>` builds the image up to that stage. Here a shared `base` stage installs everything once, and the `train` and `serve` targets start from it, so both use the same Python and the same pins.
+- **Base image:** the image a Dockerfile starts from. Here it is the official `python:3.13-slim` image, a small Linux system with Python already installed, pinned to an exact patch version.
+- **`.dockerignore`:** lists which files may be copied into an image. This project's file leaves everything out unless it is named, so keys, local databases, and `.git/` never enter the image.
+- **Bind mount:** connects a folder on this computer to a folder inside a container, so what the container writes there is kept after it stops. `make docker-train` mounts `build/docker/results/` over the container's `results/`, so its run summary can be compared with the committed one.
+- **Published port:** a port on this computer that forwards to a port inside a container. `make docker-serve` publishes `127.0.0.1:8000`, so `curl http://127.0.0.1:8000/health` on the laptop reaches the API inside the container, and nobody else on the network can.
+- **Non-root user:** the image runs the code as an ordinary user named `app`, not as the all-powerful `root` user, so a problem in the code cannot change the image's system files.
 
 ## Phase 7: Documentation and README
 
@@ -153,7 +163,7 @@ Planned. See [Remaining Phases](./remaining-phases.md#phase-7-documentation-and-
 - **Material for MkDocs:** the theme that gives the site its layout, navigation, and diagram support.
 - **Mermaid:** a text format for diagrams, written inside a code block in a page and drawn by the site.
 - **GitHub Pages:** a GitHub feature that serves a built site from a repository. `mkdocs gh-deploy` builds the docs and pushes the result to a branch named `gh-pages`, and Pages serves that branch. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
-- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). See the [documentation](https://docs.github.com/en/actions).
+- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). What both workflows do is on [Make Commands and GitHub Workflows](./extras/developer-tools.md). See the [documentation](https://docs.github.com/en/actions).
 - **README:** the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.
 
 ## Phase 8: Review

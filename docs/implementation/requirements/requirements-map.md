@@ -76,8 +76,18 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **In the repository:** `results/run-summary.json` shows the latest run's settings, scores, and learned weights without MLflow.
     - **Run record:** `mlflow.db` in the project folder. **Run files:** `mlartifacts/`. Both are created by training and are not committed, because they store absolute paths on one computer.
     - **In the repository:** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference), written by `python -m src.model.export_mlflow`, which training calls. It is a log of every training run: each run's id, git commit, 15 parameters, 8 metrics, config copy and plot, and the logged model's text files, with `run-history.md` listing every run and pictures of the MLflow screen.
-    - **To browse them:** run `mlflow ui --backend-store-uri sqlite:///mlflow.db` and open the address it prints.
+    - **To browse them:** run `make start-web-ml` and open `http://127.0.0.1:5001`.
     - **The saved model file:** `models/model.joblib`, also not committed.
+
+## 5. Docker
+
+- **Provide a Dockerfile that installs every dependency and defines entry points for both training and serving.**
+    - **Where:** `Dockerfile` in the project folder. Its `base` stage installs `requirements.txt` on `python:3.13.14-slim`. The `train` target's command is `python -m src.model.train`, and the `serve` target's command is `python -m uvicorn src.api.app:app --host 0.0.0.0 --port 8000`. `.dockerignore` decides which files enter the image.
+    - **Run with:** `make docker-train` and `make docker-serve`.
+    - **Docs:** [How Is the Dockerfile Laid Out?](../phase-6/implementation.md#how-is-the-dockerfile-laid-out)
+- **The image must build and run locally so the project is reproducible from the container alone.**
+    - **Checked:** the train container's run summary is byte for byte `results/run-summary.json`, the serve container answers the worked example with 0.3296 like the local API, and the tests pass inside both images (88 passed and 2 skipped in the train image, 90 passed in the serve image). The serve image trains its own model during the build, so it needs no file from outside the image.
+    - **Docs:** [Phase 6 Implementation, What Was Checked?](../phase-6/implementation.md#what-was-checked) and the [Phase 6 Development Guide](../phase-6/development-guide.md)
 
 ## 6. Prediction API
 
@@ -117,7 +127,7 @@ This page maps each requirement that is done so far to where it lives in the rep
 - **Host the built files in a private S3 bucket served over HTTPS through CloudFront.**
     - **Where:** the bucket `510-m3-nfl-web-app` and the CloudFront distribution at `https://d1nubiunzfwm0q.cloudfront.net`, with the origin access control `510-m3-nfl-web-app-oac`, all in `us-east-1`. The served files are byte for byte the tested build, and direct requests to the bucket get status 403.
     - **Redeployed by:** `.github/workflows/deploy-web-app.yml`, on a change under `frontend/` on `main`.
-    - **Docs:** [How Is the Page Hosted?](../phase-5/implementation-part-1.md#how-is-the-page-hosted), [How Does a Change Reach the Live Page?](../phase-5/implementation-part-1.md#how-does-a-change-reach-the-live-page), and the [Phase 5 Deployment Guide](../phase-5/deployment-guide.md)
+    - **Docs:** [How Is the Page Hosted?](../phase-5/implementation-part-1.md#how-is-the-page-hosted), [How Does a Change Reach the Live Web App?](../extras/developer-tools.md#how-does-a-change-reach-the-live-web-app), and the [Phase 5 Deployment Guide](../phase-5/deployment-guide.md)
 - **Link the live front-end URL in the README.** Not done yet. It comes in [Phase 7](../remaining-phases.md#phase-7-documentation-and-readme).
 
 ## 9. Repository Contents
@@ -130,9 +140,10 @@ This page maps each requirement that is done so far to where it lives in the rep
     - **Front-end:** `frontend/` (the web app) and `src/profiles.py` (the team profiles file it reads).
 - **`config.yaml` for pipeline configuration.** `config/config.yaml`.
 - **A dependency file: `requirements.txt` or `environment.yaml`.** `requirements.txt`, with every package pinned to an exact version.
+- **A Dockerfile that runs the full project.** `Dockerfile`, with a `train` target and a `serve` target. See [5. Docker](#5-docker).
 - **MLflow or Weights & Biases logging wired into the pipeline.** `log_run` is called by `main` in `src/model/train.py`, so `python -m src.model.train` logs a run by itself, and then writes the readable copy in [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference).
 - **A clear project structure and a readable commit history.**
-    - **Layout:** `src/data/` (Phase 1 steps), `src/model/` (Phase 2 code), `src/api/` (Phases 3 and 4 code), `src/profiles.py` and `frontend/` (Phase 5), `results/` (the committed run summary), `.github/workflows/` (the docs site publishing workflow and the web app deploy workflow), `src/config.py` (reads the settings), `tests/` (one test file per code file), `config/` (settings), and `docs/` (these pages).
+    - **Layout:** `src/data/` (Phase 1 steps), `src/model/` (Phase 2 code), `src/api/` (Phases 3 and 4 code), `src/profiles.py`, `src/season.py`, and `frontend/` (Phase 5), `Dockerfile` and `.dockerignore` (Phase 6), `Makefile` and `.github/workflows/` (the make commands, and the docs site and web app workflows, described in [Extras](../extras/developer-tools.md)), `results/` (the committed run summary), `mlflow-reference/` (the committed log of every training run), `src/config.py` (reads the settings), `tests/` (one test file per code file), `config/` (settings), and `docs/` (these pages).
     - **Tests:** `pytest` runs all of `tests/`. They use made-up data and a stand-in S3 client, so they need no internet and no AWS account.
 - **Work done on branches merged through pull requests, with at least one pull request on record.**
-    - **Where:** pull requests #1 (`phase_one`), #2 (`phase-two`), and #3 (`phase-three`) are merged into `main`, and show in `git log` and on the GitHub repository's Pull requests tab. Phase 4 is on the branch `phase-four`.
+    - **Where:** pull requests #1 (`phase_one`), #2 (`phase-two`), #3 (`phase-three`), #4 (`phase-four`), #5 (`phase-five`), and #6 (`phase-five-p2`) are merged into `main`, and show in `git log` and on the GitHub repository's Pull requests tab. Phase 6 is on the branch `phase-six`.
