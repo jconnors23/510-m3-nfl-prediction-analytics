@@ -5,10 +5,12 @@ A pre-game NFL winner predictor, built as a small, complete machine learning sys
 - **Live web app:** [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)
 - **Live API:** `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` (`POST /predict`, `GET /health`)
 - **Documentation:** [https://jconnors23.github.io/510-m3-nfl-prediction-analytics/](https://jconnors23.github.io/510-m3-nfl-prediction-analytics/)
+- **Course:** Duke AIPI 510
+- **Model version:** 1.0, November 2026. See the [Version 1.0 Release Notes](./docs/implementation/extras/release-notes/version-1-0.md).
 
 > **Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Team names are used only to identify the teams. Predictions are for reference only.
 
-## Project Overview and Goals
+## Project Overview
 
 The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline.
 
@@ -45,7 +47,7 @@ flowchart TB
 | **Validation (2025)** | **63.10% (171 of 271)** | 53.87% | 0.6451 |
 | Test (2026 weeks 1 to 10) | 59.06% (88 of 149) | 47.65% | 0.6815 |
 
-- **Tracking:** every training run is logged to MLflow (15 parameters, 8 metrics, the saved model, the confusion-matrix picture, and a copy of the settings). A readable log of every run is committed in [`mlflow-reference/`](mlflow-reference/mlflow-logging-reference.md).
+- **Tracking:** every training run is logged to MLflow (15 parameters, 8 metrics, the saved model, the confusion-matrix picture, and a copy of the settings). A readable log of every run is committed in [`mlflow-reference/`](./mlflow-reference/mlflow-logging-reference.md).
 
 ## Cloud Services
 
@@ -57,9 +59,9 @@ All on AWS in `us-east-1`, except the docs site.
 - **Amazon CloudFront:** serves the web app over HTTPS from its private bucket.
 - **Amazon DynamoDB:** stores the messages sent from the web app's feedback form.
 - **AWS IAM and CloudWatch Logs:** a narrow role for each function and for the deploy workflow, and the functions' logs.
-- **GitHub Actions and GitHub Pages:** three workflows run the Python tests, publish the docs site, and deploy the web app.
+- **GitHub Actions and GitHub Pages:** four workflows run the Python tests and the web app tests, publish the docs site, and deploy the web app.
 
-The full picture is on [Cloud Architecture](docs/implementation/extras/cloud-architecture.md).
+The full picture is on [Cloud Architecture](./docs/implementation/extras/architecture/cloud-architecture.md).
 
 ## Setup and Usage
 
@@ -143,19 +145,19 @@ Open `http://localhost:5173`. The web app's tests run with `make web-test` (62 p
 
 The deployment is a set of written AWS CLI steps:
 
-- **The API:** build the Lambda zip (the serving packages, `src/`, the settings, and the trained model), create the function and its role, and put API Gateway in front of it. See the [Phase 4 Deployment Guide](docs/implementation/phase-4/deployment-guide.md).
-- **The web app:** build it with `npm run build`, upload it to the private bucket, and serve it through CloudFront. After the first setup, the Deploy Web App workflow redeploys it on every change under `frontend/` that reaches `main`. See the [Phase 5 Deployment Guide](docs/implementation/phase-5/deployment-guide.md).
+- **The API:** build the Lambda zip (the serving packages, `src/`, the settings, and the trained model), create the function and its role, and put API Gateway in front of it. See the [Phase 4 Deployment Guide](./docs/implementation/phase-4/deployment-guide.md).
+- **The web app:** build it with `npm run build`, upload it to the private bucket, and serve it through CloudFront. After the first setup, the Deploy Web App workflow redeploys it on every change under `frontend/` that reaches `main`. See the [Phase 5 Deployment Guide](./docs/implementation/phase-5/deployment-guide.md).
 
-Every make command is explained on [Makefile](docs/implementation/extras/makefile.md).
+Every make command is explained on [Makefile](./docs/implementation/extras/development/makefile.md).
 
-## Live Links
+## Endpoints
 
 - **Web app:** [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)
 - **API health check:** [https://9awodatqc5.execute-api.us-east-1.amazonaws.com/health](https://9awodatqc5.execute-api.us-east-1.amazonaws.com/health)
 - **API predictions:** `POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/predict` with the two inputs as JSON, as in the local example above
 - **Docs site:** [https://jconnors23.github.io/510-m3-nfl-prediction-analytics/](https://jconnors23.github.io/510-m3-nfl-prediction-analytics/)
 
-## Limitations and Ethics
+## Limitations
 
 - **The model sees only two numbers.** It knows nothing about injuries, weather, travel, rest, or anything after the standings date. It is wrong on about 37% of the 2025 validation games and 41% of the 2026 test games.
 - **It leans toward the home team.** In 2025 it picked the home team in 172 of 271 games, while the home team won 146.
@@ -180,16 +182,17 @@ Every make command is explained on [Makefile](docs/implementation/extras/makefil
   mlflow-reference/           a readable log of every MLflow run
   Dockerfile, .dockerignore   one image definition with train and serve targets
   Makefile                    the nine commands used most
-  .github/workflows/          the test, docs, and web app workflows
+  scripts/checks/             every-game checks of the live API against the local model
+  .github/workflows/          the two test workflows, and the docs and web app workflows
   docs/                       the documentation site
   requirements.txt            pinned Python packages
 ```
 
-## Where to Read More
+## Further Reading
 
-- [Background](docs/background.md): the nflverse data source, why the project exists, and how it was built, phase by phase.
-- [Requirements Rubric](docs/implementation/requirements/requirements-rubric.md): every requirement of the assignment, linked to the code and the docs that meet it.
-- [Design Manifest](docs/implementation/design-manifest.md): how the developer built the project with AI tools augmenting the work, and every choice and why.
-- [Cloud Architecture](docs/implementation/extras/cloud-architecture.md): every AWS resource, with its exact name and settings, how they connect, and who can reach what.
-- [ML Workflow](docs/implementation/extras/ml-workflow.md): the path from the raw nflverse file to a served prediction, step by step, with the command and code for each step.
-- [Local Development Guide](docs/implementation/extras/local-development.md): everything that runs on a laptop (the API, the web app, MLflow, the docs, and Docker), the ports each uses, and how to work on each part.
+- [Background](./docs/background.md): the nflverse data source, why the project exists, and how it was built, phase by phase.
+- [Requirements Rubric](./docs/implementation/requirements/requirements-rubric.md): every requirement of the assignment, linked to the code and the docs that meet it.
+- [Design Manifest](./docs/implementation/design-manifest.md): how the developer built the project with AI tools augmenting the work, and every choice and why.
+- [Cloud Architecture](./docs/implementation/extras/architecture/cloud-architecture.md): every AWS resource, with its exact name and settings, how they connect, and who can reach what.
+- [ML Workflow](./docs/implementation/extras/architecture/ml-workflow.md): the path from the raw nflverse file to a served prediction, step by step, with the command and code for each step.
+- [Running Locally](./docs/implementation/extras/development/running-locally.md): everything that runs on a laptop (the API, the web app, MLflow, the docs, and Docker), the ports each uses, and how to work on each part.

@@ -5,7 +5,7 @@ hide:
 
 # GitHub Workflows
 
-Three GitHub Actions workflows run on this repository. `test-python.yml` runs every Python test on each pull request. When a change reaches `main`, `deploy-docs.yml` builds and publishes this docs site, and `deploy-web-app.yml` tests, builds, and publishes the web app. None belongs to one phase, because they check and publish the output of every phase. This page explains what each workflow does, when it runs, and what it is allowed to do. The commands used on a laptop are on [Makefile](./makefile.md).
+Four GitHub Actions workflows run on this repository. `test-python.yml` runs every Python test on each pull request, and `test-web.yml` runs the web app's tests and build on each pull request that changes the web app. When a change reaches `main`, `deploy-docs.yml` builds and publishes this docs site, and `deploy-web-app.yml` tests, builds, and publishes the web app. None belongs to one phase, because they check and publish the output of every phase. This page explains what each workflow does, when it runs, and what it is allowed to do. The commands used on a laptop are on [Makefile](./makefile.md).
 
 ## How Are the Python Tests Run?
 
@@ -23,6 +23,23 @@ flowchart LR
 - **The same pins as everywhere else:** Python 3.13 and `requirements.txt`. The pip download cache is keyed on `requirements.txt`, so a changed pin installs fresh packages.
 - **No secrets and no AWS.** Its only permission is to read the repository. The tests use made-up data and stand-ins for S3, DynamoDB, and the model.
 - **It does not block a merge by itself.** GitHub shows its result on the pull request. Making it a required check is a repository setting.
+
+## How Are the Web App's Tests Run on a Pull Request?
+
+The workflow `.github/workflows/test-web.yml` runs the web app's tests and its production build on a fresh GitHub runner, before the change reaches `main`.
+
+```mermaid
+flowchart LR
+    A["Pull request that<br/>changes frontend/"] --> B["Node 24<br/>(npm cache)"]
+    B --> C["npm ci,<br/>npm test"]
+    C --> D["npm run build"]
+```
+
+- **When it runs:** on a pull request that changes `frontend/` or the workflow file itself, and manually from the repository's Actions tab. A pull request that changes only Python or docs does not start it.
+- **Expected: 60 passed, 2 skipped.** The two every-game parity tests need expected files that the scripts in `scripts/checks/` write with a trained model, and the runner has neither.
+- **The build is a check too.** `npm run build` runs the TypeScript compiler first, so a type error fails the pull request.
+- **No secrets and no AWS.** Its only permission is to read the repository, and it deploys nothing. Deploy Web App runs the same tests again when the change reaches `main`.
+- **It does not block a merge by itself,** the same as Test Python.
 
 ## How Are the Docs Published?
 
@@ -66,10 +83,10 @@ flowchart TB
 - **The role's address is the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`.** It is a secret only because it holds the account number.
 - **One run at a time.** A second run waits for the first, so two uploads never overlap.
 - **A summary on every run.** The summary step runs even when an earlier step failed, and writes `not checked` for a step that did not run, so a failed run still says how far it got.
-- **The same steps as a manual redeploy.** The upload, the cache settings, and the invalidation are the ones in [Redeploy After a Change](../phase-5/deployment-guide.md#redeploy-after-a-change). The commands that created the sign-in provider and the role are in [Let GitHub Actions Deploy](../phase-5/deployment-guide.md#let-github-actions-deploy).
+- **The same steps as a manual redeploy.** The upload, the cache settings, and the invalidation are the ones in [Redeploy After a Change](../../phase-5/deployment-guide.md#redeploy-after-a-change). The commands that created the sign-in provider and the role are in [Let GitHub Actions Deploy](../../phase-5/deployment-guide.md#let-github-actions-deploy).
 
 ## What Is Not Automated?
 
-- **The Python model and API.** Training, the Lambda zip, and the function update are run manually, following the [Phase 4 Deployment Guide](../phase-4/deployment-guide.md). Nothing in GitHub can reach the Lambda functions.
+- **The Python model and API.** Training, the Lambda zip, and the function update are run manually, following the [Phase 4 Deployment Guide](../../phase-4/deployment-guide.md). Nothing in GitHub can reach the Lambda functions.
 - **The Docker images.** They are built and run on a laptop only, and are not pushed anywhere.
 - **Training.** No workflow trains the model or adds a run to `mlflow-reference/`. That is `make train`, run by the developer and committed.

@@ -5,7 +5,7 @@ hide:
 
 # Phase 6 Development Guide
 
-This guide shows how to build and run the project's two Docker images on your own computer: the `train` image, which trains the model, and the `serve` image, which runs the prediction API. With Docker, a copy of the repository is all you need. Python and the packages come inside the image. What goes into the image, and what was checked, is on the [Phase 6 Implementation](./implementation.md) page.
+This guide shows how to build and run the project's two Docker images on your own computer: the `train` image, which trains the model (and can also run the data steps and the tests), and the `serve` image, which runs the prediction API. With Docker, a copy of the repository is all you need. Python and the packages come inside the image. What goes into the image, and what was checked, is on the [Phase 6 Implementation](./implementation.md) page.
 
 ## What Is Needed First?
 
@@ -18,7 +18,7 @@ docker version
 - **A copy of the repository.** No virtual environment, no trained model, and no AWS account are needed. Training reads the committed data.
 - **Port 8000 free,** for the serve image. `make start` and a plain `mkdocs serve` both use it.
 
-The terms used here (image, container, bind mount, published port) are explained in the [Glossary](../glossary.md#phase-6-docker).
+The terms used here (image, container, bind mount, published port) are explained in the [Glossary](../extras/glossary.md#phase-6-docker).
 
 ## How Do I Train in a Container?
 
@@ -51,6 +51,54 @@ docker run --rm 510-m3-nfl-train python -m pytest
 ```
 
 Expected: **93 passed, 2 skipped**. The two skipped tests need a saved model, and the train image has none until a container trains.
+
+### Run the Data Steps in the Container
+
+The train image also holds the Phase 1 data steps and the two web app data steps, so the whole project can run in Docker. Build the image first (`make docker-train` does this), then run each step in its own container. Each container starts from the committed files inside the image and is removed when it stops, so a file it writes is gone afterward unless a folder from your computer is mounted over it.
+
+Download the nflverse games file. It prints the address, the time, `rows: 7548`, and `saved: data/raw/games.csv`:
+
+```bash
+docker run --rm 510-m3-nfl-train python -m src.data.fetch_raw
+```
+
+Clean the games into the model's table, with your `build/docker/processed/` folder mounted so the result is kept. Make the folder first:
+
+```bash
+mkdir -p build/docker/processed
+```
+
+```bash
+docker run --rm -v "$PWD/build/docker/processed:/app/data/processed" 510-m3-nfl-train python -m src.data.clean
+```
+
+It prints the row counts at each filter, ending at 1,759 games, and writes `build/docker/processed/nfl_matchups_2020_2026.csv`. Its SHA-256 must be `7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`, the same as the committed table:
+
+```bash
+shasum -a 256 build/docker/processed/nfl_matchups_2020_2026.csv
+```
+
+Print a summary of the two model inputs for each season group (training 1,339 rows, validation 271, test 149):
+
+```bash
+docker run --rm 510-m3-nfl-train python -m src.model.features
+```
+
+Build the web app's two data files. They print `teams: 32` and `games: 272 (150 final or tie, 122 upcoming)`. The files stay inside the container, so these runs check that the steps work and leave the committed copies alone:
+
+```bash
+docker run --rm 510-m3-nfl-train python -m src.profiles
+```
+
+```bash
+docker run --rm 510-m3-nfl-train python -m src.season
+```
+
+The S3 upload and download need AWS credentials, which the image does not hold. To run them, mount your own AWS settings folder, read-only:
+
+```bash
+docker run --rm -v ~/.aws:/home/app/.aws:ro 510-m3-nfl-train python -m src.data.upload_to_s3
+```
 
 ## How Do I Run the API in a Container?
 

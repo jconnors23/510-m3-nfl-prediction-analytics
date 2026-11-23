@@ -7,13 +7,13 @@ hide:
 
 This page explains how the Phase 4 deployment works, one step at a time, with the real results. It also holds the measurement made before anything was built: the size of the Lambda package (Step 3). For the short version, see the [Brief](./brief.md). The commands, in order, are on [Deployment Guide](./deployment-guide.md). The Deployment Guide also holds the redeploy steps. To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
 
-**Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. The full test suite passes with 53 tests (the 47 from earlier phases and 6 new ones) and no warnings. The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
+**Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. When the phase was built, the full test suite passed with 53 tests (the 47 from earlier phases and 6 new ones) and no warnings. The suite now has 95 tests, because Phase 5 added more. See the [Development Guide](./development-guide.md#how-do-i-run-all-the-tests). The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 
 ## What Is Mangum?
 
 Mangum is a small Python library that lets a FastAPI app run inside AWS Lambda. It translates between two formats, and it does nothing else.
 
-- **A normal web server** ([`uvicorn`](https://uvicorn.dev/) on a laptop, see the [Glossary](../glossary.md#phase-3-local-prediction-api)) listens on a port and receives HTTP requests.
+- **A normal web server** ([`uvicorn`](https://uvicorn.dev/) on a laptop, see the [Glossary](../extras/glossary.md#phase-3-local-prediction-api)) listens on a port and receives HTTP requests.
 - **Lambda has no port.** It runs a function once per request. The function receives a dictionary (called an event) and returns a dictionary.
 - **API Gateway** is what receives the browser's HTTP request, builds the event, and calls the Lambda function. This happens with or without Mangum.
 - **Mangum** runs inside the function. It turns the event into a request that FastAPI understands, calls the app, and turns FastAPI's answer back into the dictionary Lambda returns.
@@ -149,8 +149,8 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 5. `test_lambda_handler_does_not_import_pandas`: The file's imports are read as text, and none is `pandas`, `mlflow`, `matplotlib`, or from `src/model/`.
 6. `test_real_handler_worked_example`: With the real model (skipped if `models/model.joblib` is missing), the inputs -0.5 and -18.0 return 0.3296.
 
-- **Result:** 53 tests pass (47 from earlier phases and 6 new). Without `models/model.joblib`, 51 pass and 2 are skipped.
-- **One warning is hidden.** Mangum's adapter asks `asyncio` for the current event loop in a way Python 3.12 and later deprecate, which printed a `DeprecationWarning` from inside Mangum. `pytest.ini` hides that one warning, as it already does for one MLflow warning. Every other warning is still shown, and the run now has none.
+- **Result at the end of Phase 4:** 53 tests pass (47 from earlier phases and 6 new). Without `models/model.joblib`, 51 pass and 2 are skipped.
+- **One warning is silenced.** Mangum's adapter asks `asyncio` for the current event loop in a way Python 3.12 and later deprecate, which printed a `DeprecationWarning` from inside Mangum. `pytest.ini` hides that one warning, as it already does for one MLflow warning. Every other warning is still shown, and the run now has none.
 
 ## Step 3: Measure the Package Size
 
@@ -281,14 +281,13 @@ find build/lambda -type f -exec cat {} + | wc -c
 - **The role `510-m3-nfl-predict-api-role`** can be assumed only by Lambda, and has one policy attached, the AWS managed `AWSLambdaBasicExecutionRole`, which only writes logs. Its trust policy has no statement id, because IAM rejected a hyphenated one with `MalformedPolicyDocument`.
 - **The zip is staged in S3.** At 63.2 MB it is over the console's direct-upload limit, so it was copied to `deploy/510-m3-nfl-predict-api.zip` in the data bucket, the function was created from it, and the staged copy was deleted. The bucket holds no `deploy/` object now.
 - **Function settings:**
-
-- **Runtime:** `python3.13`.
-- **Architecture:** `arm64`.
-- **Handler:** `src.api.lambda_handler.handler`.
-- **Memory:** 1769 MB.
-- **Timeout:** 10 seconds.
-- **Environment variable:** `JOBLIB_MULTIPROCESSING` = `0` (the only one).
-- **VPC, layers, reserved concurrency:** none.
+    - **Runtime:** `python3.13`.
+    - **Architecture:** `arm64`.
+    - **Handler:** `src.api.lambda_handler.handler`.
+    - **Memory:** 1769 MB.
+    - **Timeout:** 10 seconds.
+    - **Environment variable:** `JOBLIB_MULTIPROCESSING` = `0` (the only one).
+    - **VPC, layers, reserved concurrency:** none.
 
 - **The environment variable.** The function's first log printed "joblib will operate in serial mode", because Lambda has no multiprocessing directory. Setting `JOBLIB_MULTIPROCESSING=0` makes joblib skip that check. The function never uses multiprocessing, and the line is gone from every later log.
 - **Log retention.** The log group `/aws/lambda/510-m3-nfl-predict-api` keeps logs for 14 days, and is tagged `project=510-m3`.
@@ -391,7 +390,7 @@ HTTP 200
 - **The model file:** the SHA-256 of `models/model.joblib` and of the copy inside the zip are both `8fff766505a925218eae2484ae56a8ba7baed06b62ce3413ea33c8eb15e8ea4b`.
 - **The data:** the SHA-256 of `data/from-s3/nfl_matchups_2020_2026.csv` equals `data_sha256` in `results/run-summary.json` (`7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`).
 
-**Then, every game through the public API.** A local script (`build/parity_check.py`, kept on the developer's machine and not committed) builds the local answers with the saved model, and sends each of the 1,759 games to `POST /predict`, one at a time, then compares each answer.
+**Then, every game through the public API.** A committed script (`scripts/checks/parity_check.py`, which writes its results to `build/parity-results.json` in the git-ignored `build/` folder) builds the local answers with the saved model, and sends each of the 1,759 games to `POST /predict`, one at a time, then compares each answer.
 
 - **Requests sent:** 1,759 (1,339 training, 271 validation, 149 test).
 - **Retries:** 0.

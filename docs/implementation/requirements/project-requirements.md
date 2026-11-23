@@ -5,7 +5,7 @@ hide:
 
 # Project Requirements
 
-End-to-end requirements for one person building this project, stated as checkable items. The full assignment brief is in the [Project Instructions](./assignment-brief.md).
+End-to-end requirements for one person building this project, stated as checkable items.
 
 Two things are delivered: a GitHub repository with the full pipeline, and a publicly reachable front-end linked from the repository README.
 
@@ -81,6 +81,10 @@ The repository README must include:
 - Setup and usage instructions covering how to train the model, how to build and test the API locally, and how to deploy to the cloud.
 - Links to both the deployed API and the live front-end.
 
+## 11. Ethics and Limitations
+
+- Reflect on the ethical implications and limitations of the ML application, in the README: what the model leaves out, how its mistakes lean, how its predictions should and should not be used, and what data the app collects.
+
 ## Acceptance Checklist
 
 1. **Problem and dataset.** Done when: Public dataset chosen; task, target, and metric named.
@@ -93,3 +97,4 @@ The repository README must include:
 8. **Front-end.** Done when: Vite app served from S3 through CloudFront calls the live API and shows predictions.
 9. **Repository.** Done when: All required files present; branch-and-PR workflow with at least one PR.
 10. **README.** Done when: Overview, dataset, model, cloud services, setup/usage, and both live links.
+11. **Ethics and limitations.** Done when: The README states the model's limitations and the app's ethical boundaries.

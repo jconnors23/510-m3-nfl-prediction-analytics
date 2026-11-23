@@ -91,7 +91,7 @@ def test_copies_text_and_images_and_lists_binaries(tmp_path):
 def test_picks_the_newest_finished_run(tmp_path):
     """With two finished runs and one failed run, the newer finished run is exported."""
     settings = _settings(tmp_path)
-    # Build an empty MLflow store by hand inside tmp_path: a SQLite file plus an artifact folder.
+    # Build an empty MLflow store manually inside tmp_path: a SQLite file plus an artifact folder.
     database = Path(settings["tracking"]["database_path"])
     artifacts = Path(settings["tracking"]["artifact_folder"])
     artifacts.mkdir(parents=True)

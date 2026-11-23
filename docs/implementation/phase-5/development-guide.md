@@ -23,12 +23,12 @@ Run every `npm` command from `frontend/`, and every `python` command from the pr
 
 ## Which Make Commands Are There?
 
-This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, what it needs, and the port it uses are on [Makefile](../extras/makefile.md).
+This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, what it needs, and the port it uses are on [Makefile](../extras/development/makefile.md).
 
 For a local run, use two terminals: `make start` in one, then `make start-web` in the other. The steps below explain each one and what to check.
 
 - **Port 8000 must be free for `make start`.** If `mkdocs serve` is running with its default port, it holds 8000. Use `make docs` instead, which serves the docs on 8001.
-- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [Feedback Path](../extras/feedback-path.md).
+- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [Feedback Path](../extras/features/feedback-path.md).
 
 ## How Do I Run It Locally?
 
@@ -125,18 +125,18 @@ This repeats the Phase 5 accuracy check: every one of the 992 ordered pairs of t
 
 ```mermaid
 flowchart TB
-    A["build/matchups_expected.py<br/>local model, no profiles file"] --> B["build/expected-matchups.json"]
+    A["scripts/checks/matchups_expected.py<br/>local model, no profiles file"] --> B["build/expected-matchups.json"]
     B --> C["npm test<br/>parity test"]
     C --> D["build/js-bodies.json"]
-    D --> E["build/matchups_live.py<br/>live API"]
+    D --> E["scripts/checks/matchups_live.py<br/>live API"]
     B --> E
     E --> F["build/matchups-results.json"]
 ```
 
-The two scripts live in `build/`, which git ignores, like the Phase 4 parity script. From the project folder:
+The two scripts are committed in `scripts/checks/`, next to the Phase 4 parity script. They write their files into `build/`, which git ignores, and need `models/model.joblib` from `make train`. From the project folder:
 
 ```bash
-python build/matchups_expected.py
+.venv/bin/python scripts/checks/matchups_expected.py
 ```
 
 It prints `pairs: 992`. Then, from `frontend/`:
@@ -148,10 +148,12 @@ npm test
 No test may fail, and the every-matchup parity test must now run instead of being skipped, because its expected file exists. Then, from the project folder:
 
 ```bash
-python build/matchups_live.py
+.venv/bin/python scripts/checks/matchups_live.py
 ```
 
 It sends 992 requests, one at a time, and exits with an error on any mismatch. On the current data it prints 992 requests, 0 retries, 992 status 200 answers, 992 matching picks, 992 matching probabilities, 601 home picks and 391 away picks, and `mismatches: 0`.
+
+The same kind of check exists for every 2026 game of the Games by Week tab: `scripts/checks/season_expected.py`, then `npm test` (which writes `build/season-bodies.json`), then `scripts/checks/season_live.py`, which sends 272 requests to the live API. The last one ends with 272 of 272 games matched and 0 mismatches. They are run the same way, as `.venv/bin/python scripts/checks/<name>.py` from the project folder.
 
 ## How Do I Develop It?
 
@@ -167,14 +169,15 @@ It sends 992 requests, one at a time, and exits with an error on any mismatch. O
 - **The types:** `frontend/src/types.ts`.
 - **The profiles file:** `frontend/src/data/team-profiles.json`, written by `src/profiles.py`.
 - **The settings:** `frontend/vite.config.ts` (port, proxy, build folder), `frontend/.env.development` and `frontend/.env.production` (the API address), and the `frontend` block of `config/config.yaml` (where the profiles file is written).
-- **The tests:** `frontend/src/*.test.ts` and `frontend/src/App.test.tsx`, and `tests/test_profiles.py`.
+- **The tests:** `frontend/src/*.test.ts` and `frontend/src/*.test.tsx`, and `tests/test_profiles.py`.
+- **The Part 2 tabs, season data, and feedback form:** `src/tabs.ts`, `src/schedule.ts`, `src/teamStats.ts`, `src/feedback.ts`, and `src/data/season-2026.json`, all inside `frontend/`. They are explained in [What Changed in the App's Code?](./implementation-part-2.md#what-changed-in-the-apps-code).
 - **The automatic deploy:** `.github/workflows/deploy-web-app.yml`. See [How Does a Change Reach the Live Page?](./implementation-part-1.md#how-does-a-change-reach-the-live-page).
 
 ### What Rules Does the App Keep?
 
 - **What is sent is never rounded.** The request comes straight from `buildPredictRequest`, which only subtracts.
 - **The winner comes from the API's `prediction`,** never from the displayed percentages.
-- **No outside requests.** The only request the app makes to another address is `POST /predict`. The fonts come with the build. It uses no analytics, no cookies, and no local storage. The deploy workflow fails a build that names any other web address.
+- **No outside requests.** The only requests the app makes to another address are `POST /predict` and, from the Feedback tab, `POST /feedback`. Both go to the API. The fonts come with the build. It uses no analytics, no cookies, and no local storage. The deploy workflow fails a build that names any other web address.
 - **Every color pair stays readable in both themes:** at least 4.5 to 1 for text, and 3 to 1 for the bar and the focus ring. Check a new color in both themes.
 - **Text a test looks for stays in one piece.** Testing Library matches the text directly inside an element, so a `<strong>` or `<span>` in the middle of a tested sentence breaks the test.
 - **Nothing secret goes in a `VITE_` variable,** because Vite writes those values into the built files.
@@ -195,7 +198,7 @@ It prints `teams: 32`, `as of: 2026 week 10`, and `saved: frontend/src/data/team
 1. Edit `frontend/src/App.tsx` or `frontend/src/index.css`, with the dev server running. Check the change in both themes, with the "Dark theme" button, and at a phone width, with the browser's device view.
 2. If you change any text a test looks for, update `frontend/src/App.test.tsx` to match.
 3. Run `npm test` and `npm run build`.
-4. Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy manually instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
+4. Open a pull request. The Test Web App workflow runs `npm ci`, `npm test`, and `npm run build` on it, with no AWS access (see [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request)). Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy manually instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
 
 ### How Do I Point the App at a Different API?
 

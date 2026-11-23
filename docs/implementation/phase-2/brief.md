@@ -5,7 +5,7 @@ hide:
 
 # Phase 2 Brief: Features, Training, and Tracking
 
-**Status: Built and tested.** All 7 steps are done, and `pytest` passes 30 tests.
+**Status: Built and tested.** All 7 steps are done, and the 29 tests for this phase pass.
 
 **Needs first:** Phase 1, which is built. Its output is the downloaded table `data/from-s3/nfl_matchups_2020_2026.csv`.
 

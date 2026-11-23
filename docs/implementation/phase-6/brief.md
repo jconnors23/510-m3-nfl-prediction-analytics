@@ -27,7 +27,7 @@ flowchart TB
 ```
 
 - **One install, two entry points.** Both targets start from the same base stage, so the Python version and every package pin are written once. This follows the choice in [Design Manifest](../design-manifest.md#phase-6-docker).
-- **The data is already in the repository.** Training reads `data/from-s3/nfl_matchups_2020_2026.csv`, which is committed, so the container needs no AWS credentials and no download.
+- **The data is already in the repository.** Training reads `data/from-s3/nfl_matchups_2020_2026.csv`, which is committed, so training needs no AWS credentials and no download. Only the S3 upload and download steps need credentials.
 - **The serve image carries its own model.** `models/model.joblib` is git-ignored, so a fresh copy of the repository has no model. Training during the build means `docker build --target serve` alone gives a working service.
 
 ## What Does Each Target Do?
@@ -38,12 +38,13 @@ flowchart TB
 - **Writes, inside the container:** `models/model.joblib`, `mlflow.db`, `mlartifacts/`, `results/run-summary.json`, and the readable copy in `mlflow-reference/`.
 - **Keeps only the run summary on this computer.** Every other file is deleted with the container. `make docker-train` mounts `build/docker/results/` over the container's `results/`, so the new `run-summary.json` can be checked against the committed one.
 - **Can also run the tests:** `python -m pytest` inside the same image, with no extra install.
+- **Can also run the data steps:** the image holds the whole `src/` folder, so the Phase 1 data steps and the two web app data steps run in it too. See [Run the Data Steps in the Container](./development-guide.md#run-the-data-steps-in-the-container).
 
 ### The `serve` Target
 
 - **Runs:** `uvicorn src.api.app:app` on port 8000 inside the container, listening on every address the container has, so Docker can forward a port to it.
 - **Published only to this computer:** the run command maps `127.0.0.1:8000` to the container, so nobody else on the network can reach it, as in Phase 3.
-- **Routes:** `POST /predict` and `GET /health`, the Phase 3 service unchanged. The [feedback route](../extras/feedback-path.md) stays on AWS only, because it writes to a DynamoDB table.
+- **Routes:** `POST /predict` and `GET /health`, the Phase 3 service unchanged. The [feedback route](../extras/features/feedback-path.md) stays on AWS only, because it writes to a DynamoDB table.
 
 ## Steps in Order
 
@@ -71,7 +72,7 @@ flowchart TB
 - **Pin the base image** to `python:3.13.14-slim`, so a rebuild months later uses the same Python. Python 3.13 matches this computer and the Lambda function.
 - **Build for this computer's chip only.** This Mac uses `arm64`. Building for other chips is not needed for a laptop image.
 - **Accept that a container run records no git commit.** `.git/` is left out of the image, and the export still finishes without it.
-- **Two make commands,** `make docker-train` and `make docker-serve`. See [Makefile](../extras/makefile.md).
+- **Two make commands,** `make docker-train` and `make docker-serve`. See [Makefile](../extras/development/makefile.md).
 
 ## What Was Created
 

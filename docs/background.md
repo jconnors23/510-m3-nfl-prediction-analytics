@@ -17,7 +17,7 @@ This page explains where the data comes from, the idea behind the predictor, the
 - **How it is downloaded:** `python -m src.data.fetch_raw` reads it from `https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv`, the address in the `data.source_url` setting of `config/config.yaml`.
 - **The copy this project uses:** downloaded on 2026-11-17, with 7,548 rows and 46 columns, covering the 1999 season through the 2026 schedule. It is committed unchanged as `data/raw/games.csv`, so the project can be rebuilt from the same file even after nflverse updates it.
 - **What the project keeps:** 7 of the 46 columns, for the regular-season games from 2020 through week 10 of 2026 that had a winner: 1,759 games. The web app also reads the 2026 schedule (dates, kickoff times, and neutral sites) from the same file. How the file is cleaned is in the [Phase 1 Implementation](./implementation/phase-1/implementation.md).
-- **What it does not hold:** injuries, weather forecasts, rosters, or play-by-play. The model uses none of these. nflverse publishes some of them in other files, which [Future Considerations](./implementation/extras/future-considerations.md) lists as possible additions.
+- **What it does not hold:** injuries, weather forecasts, rosters, or play-by-play. The model uses none of these. nflverse publishes some of them in other files, which [Future Considerations](./implementation/extras/release-notes/future-considerations.md) lists as possible additions.
 
 ## What Is the Idea?
 

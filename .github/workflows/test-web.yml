@@ -1,0 +1,43 @@
+# Runs the web app's tests and production build on each pull request that changes the web app.
+# Deploy Web App runs the same tests again when a change reaches main, then deploys.
+name: Test Web App
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/test-web.yml"
+  workflow_dispatch:
+
+# The job only reads the repository. It deploys nothing, so it needs no AWS access.
+permissions:
+  contents: read
+
+jobs:
+  vitest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # npm ci installs the exact versions in package-lock.json. The two every-game parity tests
+      # are skipped here, because their expected files are written by scripts/checks/, which
+      # need a trained model.
+      - name: Install and test
+        run: |
+          npm ci
+          npm test
+
+      # The build runs the TypeScript compiler, so a type error fails the pull request too.
+      - name: Build
+        run: npm run build

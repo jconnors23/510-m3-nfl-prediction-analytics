@@ -85,7 +85,7 @@ Key terms and tools, grouped by the phase where they first matter, followed by g
 
 ## Phase 3: Local Prediction API
 
-Built. See the [Phase 3 Brief](./phase-3/brief.md) and the [Phase 3 Implementation](./phase-3/implementation.md).
+Built. See the [Phase 3 Brief](../phase-3/brief.md) and the [Phase 3 Implementation](../phase-3/implementation.md).
 
 **Docs:** [FastAPI](https://fastapi.tiangolo.com/), [Pydantic](https://docs.pydantic.dev/latest/), [Uvicorn](https://uvicorn.dev/), [ASGI](https://asgi.readthedocs.io/en/latest/).
 
@@ -93,26 +93,26 @@ Built. See the [Phase 3 Brief](./phase-3/brief.md) and the [Phase 3 Implementati
 - **Pydantic:** the library FastAPI uses to check each request's fields, types, and ranges, and to describe the response. A request that fails the checks gets an error before any model code runs.
 - **Uvicorn and ASGI:** a FastAPI app is only a Python object. It does not listen for requests on its own. Uvicorn is the program that does: it opens a port on the computer, receives each HTTP request, hands it to the app, and sends the app's answer back. They talk through ASGI, the standard interface between Python web servers and Python web apps. Uvicorn is used only on a laptop. On AWS Lambda there is no port to listen on, and Mangum takes its place (Phase 4).
 - **Start-up step (lifespan):** code that runs once when the app starts. The API loads the saved model there, so each request reuses it.
-- **NumPy, not pandas, in the API:** the API passes the two inputs to the model as a NumPy array. It does not import pandas, which would push the Lambda zip over its 250 MB limit (278.4 MB with pandas, 231.3 MB without). Training and cleaning still use pandas. See [Why Does the API Use NumPy Instead of pandas?](./phase-3/implementation.md#why-does-the-api-use-numpy-instead-of-pandas).
+- **NumPy, not pandas, in the API:** the API passes the two inputs to the model as a NumPy array. It does not import pandas, which would push the Lambda zip over its 250 MB limit (278.4 MB with pandas, 231.3 MB without). Training and cleaning still use pandas. See [Why Does the API Use NumPy Instead of pandas?](../phase-3/implementation.md#why-does-the-api-use-numpy-instead-of-pandas).
 - **Test client:** FastAPI's way to call the app in memory, with no server and no network, so tests run fast.
 
 ## Phase 4: AWS Deployment
 
-Built. See the [Phase 4 Brief](./phase-4/brief.md) and the [Phase 4 Implementation](./phase-4/implementation.md).
+Built. See the [Phase 4 Brief](../phase-4/brief.md) and the [Phase 4 Implementation](../phase-4/implementation.md).
 
 **Docs:** [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html), [API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html), [Mangum](https://mangum.fastapiexpert.com/), [Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html).
 
 - **AWS Lambda:** runs code only when a request arrives, with no server to manage.
 - **API Gateway:** gives the function a public web address, and routes each request to it.
-- **Mangum:** a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See [What Is Mangum?](./phase-4/implementation.md#what-is-mangum).
-- **Lambda zip and size limit:** the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without `pandas`. See the [Phase 4 Implementation, Step 3](./phase-4/implementation.md#step-3-measure-the-package-size).
+- **Mangum:** a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
+- **Lambda zip and size limit:** the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without `pandas`. See the [Phase 4 Implementation, Step 3](../phase-4/implementation.md#step-3-measure-the-package-size).
 - **Environment variable:** a named setting passed to the function when it starts. This function has one, `JOBLIB_MULTIPROCESSING=0`, which stops joblib from checking for multiprocessing support that Lambda does not have.
 - **CodeSha256:** the SHA-256 fingerprint AWS stores for the zip a function was created from. When it equals the hash of the local zip, Lambda is running the file built here.
 - **ECR:** stores Docker images. It is used only if the Lambda zip turns out to be too large.
 
 ## Phase 5: Web App and Hosting
 
-Built. See the [Phase 5 Brief](./phase-5/brief.md).
+Built. See the [Phase 5 Brief](../phase-5/brief.md).
 
 **Docs:** [Vite](https://vite.dev/guide/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/docs/), [npm](https://docs.npmjs.com/), [Vitest](https://vitest.dev/), [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html), [CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).
 
@@ -134,7 +134,7 @@ Built. See the [Phase 5 Brief](./phase-5/brief.md).
 
 ## Phase 6: Docker
 
-Built. See the [Phase 6 Brief](./phase-6/brief.md) and the [Phase 6 Implementation](./phase-6/implementation.md).
+Built. See the [Phase 6 Brief](../phase-6/brief.md) and the [Phase 6 Implementation](../phase-6/implementation.md).
 
 **Docs:** [Docker](https://docs.docker.com/), [what is a container](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/), [multi-stage builds](https://docs.docker.com/build/building/multi-stage/), [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/), [publishing ports](https://docs.docker.com/engine/network/port-publishing/).
 
@@ -154,21 +154,21 @@ Built. See the [Phase 6 Brief](./phase-6/brief.md) and the [Phase 6 Implementati
 
 ## Phase 7: Review
 
-Not started. See the [Phase 7 Brief](./phase-7/brief.md). The review uses no new tools.
+Built. See the [Phase 7 Brief](../phase-7/brief.md). The review uses no new tools.
 
 **Docs:** [MkDocs](https://www.mkdocs.org/), [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [Mermaid](https://mermaid.js.org/), [GitHub Pages](https://docs.github.com/en/pages), [GitHub Actions](https://docs.github.com/en/actions).
 
 - **MkDocs:** builds the pages in `docs/` into a documentation site. A strict build (`mkdocs build --strict`) fails on a broken link, so it doubles as a link check.
 - **Material for MkDocs:** the theme that gives the site its layout, navigation, and diagram support.
 - **Mermaid:** a text format for diagrams, written inside a code block in a page and drawn by the site.
-- **GitHub Pages:** a GitHub feature that serves a built site from a repository. `mkdocs gh-deploy` builds the docs and pushes the result to a branch named `gh-pages`, and Pages serves that branch. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
-- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). A third workflow, `test-python.yml`, runs the Python tests on each pull request. What all three do is on [GitHub Workflows](./extras/github-workflows.md). See the [documentation](https://docs.github.com/en/actions).
+- **GitHub Pages:** a GitHub feature that serves a built site from a repository. Pages is set to deploy from GitHub Actions, so the workflow uploads the built `site/` folder and Pages serves it. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
+- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). Two more run on each pull request: `test-python.yml` runs the Python tests, and `test-web.yml` runs the web app's tests and build when `frontend/` changes. What all four do is on [GitHub Workflows](./development/github-workflows.md). See the [documentation](https://docs.github.com/en/actions).
 - **README:** the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.
 
 ## General Machine Learning Ideas
 
 - **Supervised learning:** learning from examples that come with known answers. Every game has a known winner, so the model can be checked against answers it has not seen.
-- **Binary classification:** a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale. See [Why Binary Classification and Not Regression?](./design-manifest.md#why-binary-classification-and-not-regression).
+- **Binary classification:** a task with exactly two possible answers. Here: did the home team win (1) or not (0)? The alternative, regression, predicts a number on a scale. See [Why Binary Classification and Not Regression?](../design-manifest.md#why-binary-classification-and-not-regression).
 - **Training, validation, and test sets:** training data fits the model, validation data gives the score to report, and test data is a final check on games the model never touched.
 - **Data leakage:** a feature that uses information from after the thing being predicted, which inflates scores. Using only earlier weeks prevents it, and a check stops the run if a week-1 feature is not 0.
 - **Overfitting:** memorizing the training games instead of learning a pattern that carries over, so the training score is high and the score on unseen games is lower.
@@ -177,7 +177,7 @@ Not started. See the [Phase 7 Brief](./phase-7/brief.md). The review uses no new
 
 **Docs:** [pytest](https://docs.pytest.org/en/stable/), [`venv`](https://docs.python.org/3/library/venv.html), [`hashlib`](https://docs.python.org/3/library/hashlib.html), [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation).
 
-- **Reproducibility:** getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See [How Do I Reproduce the Result From a Clean Checkout?](./phase-2/development-guide.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
+- **Reproducibility:** getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See [How Do I Reproduce the Result From a Clean Checkout?](../phase-2/development-guide.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
 - **Pinned version:** an exact version in `requirements.txt`, such as `scikit-learn==1.9.1`, so every install is identical. A saved model may fail to load under another scikit-learn version.
 - **Virtual environment:** a private folder of Python packages for one project, so projects do not interfere.
 - **`config.yaml`:** the one file holding every adjustable setting. YAML is a text format of indented `name: value` lines.

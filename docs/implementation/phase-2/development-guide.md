@@ -157,7 +157,7 @@ mlartifacts/
 - **Where the settings go.** `config/config.yaml` is the input. The copy under `mlartifacts/` is a snapshot of what was used for that run.
 - **Why they are not committed.** The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See [Design Manifest](../design-manifest.md).
 - **What is committed in their place.** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference) holds a readable copy of every run: its settings, scores, plot, and the logged model's text files, with no absolute paths. See [Step 3: Read the Run History](#step-3-read-the-run-history).
-- **Terms.** The [Glossary](../glossary.md) defines artifact, artifact store, logged model, and SQLite.
+- **Terms.** The [Glossary](../extras/glossary.md) defines artifact, artifact store, logged model, and SQLite.
 
 ## How Do I Reproduce the Result From a Clean Checkout?
 
@@ -235,7 +235,7 @@ python -m src.data.download_from_s3
 
 ### What Was Checked?
 
-- A copy of the project with only `config/`, `data/`, `src/`, `tests/`, `results/`, `pytest.ini`, and the committed profiles file, and no `mlflow.db`, `mlartifacts/`, or `models/`. The tests gave 59 passed and 2 skipped. `python -m src.model.train` printed the eight lines above and **rewrote `results/run-summary.json` identically to the committed one** (checked with `cmp`). The tests then gave 61 passed.
+- When Phase 2 was built (before the later phases added their tests), it was checked in a copy of the project with only `config/`, `data/`, `src/`, `tests/`, `results/`, `pytest.ini`, and the committed profiles file, and no `mlflow.db`, `mlartifacts/`, or `models/`. The tests gave 59 passed and 2 skipped. `python -m src.model.train` printed the score lines and **rewrote `results/run-summary.json` identically to the committed one** (checked with `cmp`). The tests then gave 61 passed.
 - The earlier real run was repeated and gave identical scores. See [Part 2](./implementation-part-2.md).
 - Both checks ran on one Mac, with Python 3.13.14 and the pinned packages.
 
@@ -248,7 +248,7 @@ python -m src.data.download_from_s3
 - **Accuracy, log loss, and the confusion-matrix plot:** `src/model/evaluate.py`.
 - **The seasons and the split rules:** `src/config.py` (`season_window`, `split_seasons`).
 - **Every setting:** `config/config.yaml` (the `window`, `split`, `model`, and `tracking` blocks).
-- **Tests:** `tests/test_features.py` (7), `test_split.py` (5), `test_evaluate.py` (4), `test_train.py` (11).
+- **Tests:** `tests/test_features.py` (7), `test_split.py` (5), `test_evaluate.py` (6), `test_train.py` (11).
 
 ### How Do I Run the Tests?
 
@@ -256,7 +256,7 @@ python -m src.data.download_from_s3
 python -m pytest tests/test_features.py tests/test_split.py tests/test_evaluate.py tests/test_train.py
 ```
 
-Expected: **27 passed**. The tests use made-up games, and every file they write goes in a temporary folder. They point MLflow at a temporary database, so they never touch your `mlflow.db`.
+Expected: **29 passed**. The tests use made-up games, and every file they write goes in a temporary folder. They point MLflow at a temporary database, so they never touch your `mlflow.db`.
 
 ### How Do I Change a Model Setting?
 

@@ -5,7 +5,7 @@ hide:
 
 # Phase 4 Brief: AWS Deployment
 
-**Status: Built and tested.** All 11 steps are done, and `pytest` passes 53 tests. The API is live at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
+**Status: Built and tested.** All 11 steps are done. `pytest` passed 53 tests when the phase was built, and the full suite now has 95 (see the [Development Guide](./development-guide.md#how-do-i-run-all-the-tests)). The API is live at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 
 **Needs first:** Phase 3, which is built, and a trained model at `models/model.joblib`. Also an AWS account, AWS CLI version 2, and credentials on the machine, as listed in the [run environment](../phase-1/implementation.md#what-is-the-run-environment).
 

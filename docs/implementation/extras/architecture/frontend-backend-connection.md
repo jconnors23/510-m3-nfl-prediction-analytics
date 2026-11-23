@@ -5,7 +5,7 @@ hide:
 
 # Frontend and Backend Connection
 
-This page follows one click from the browser to the prediction API and back. It covers what the browser loads, how a prediction travels, how the page knows which API address to call, how local development differs from the live site, and what the page shows when a call fails. It is for anyone who needs to see how the web app and the API fit together. The exact request and answer formats are owned by [Phase 5 Implementation Part 1](../phase-5/implementation-part-1.md), and the AWS resources are listed on [Cloud Architecture](./cloud-architecture.md).
+This page follows one click from the browser to the prediction API and back. It covers what the browser loads, how a prediction travels, how the page knows which API address to call, how local development differs from the live site, and what the page shows when a call fails. It is for anyone who needs to see how the web app and the API fit together. The exact request and answer formats are owned by [Phase 5 Implementation Part 1](../../phase-5/implementation-part-1.md), and the AWS resources are listed on [Cloud Architecture](./cloud-architecture.md).
 
 ## What Does the Browser Load?
 
@@ -13,12 +13,12 @@ The page is a static site: the browser fetches files from CloudFront and runs th
 
 - **From `https://d1nubiunzfwm0q.cloudfront.net`:** `index.html`, one hashed script file, one hashed style file, and the fonts. CloudFront reads them from the private bucket `510-m3-nfl-web-app`.
 - **Two data files travel inside the script.** `frontend/src/App.tsx` imports [`team-profiles.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/data/team-profiles.json) and [`season-2026.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/data/season-2026.json), and the build packs them into that file. The browser makes no request for them while the page runs.
-- **Who writes them:** `python -m src.profiles` writes `team-profiles.json`, and `python -m src.season` writes `season-2026.json`. Both read the downloaded game table, and both files are committed. The page therefore shows the standings as of week 10 of 2026 until someone rebuilds the files and deploys again. See [How Do I Rebuild the Profiles File?](../phase-5/development-guide.md#how-do-i-rebuild-the-profiles-file).
+- **Who writes them:** `python -m src.profiles` writes `team-profiles.json`, and `python -m src.season` writes `season-2026.json`. Both read the downloaded game table, and both files are committed. The page therefore shows the standings as of week 10 of 2026 until someone rebuilds the files and deploys again. See [How Do I Rebuild the Profiles File?](../../phase-5/development-guide.md#how-do-i-rebuild-the-profiles-file).
 - **What the files hold:** each team's wins, games, points, and per-game values, and every 2026 game with the standings before each week. The browser needs no model and no data download to fill the pickers.
 
 ## How Does a Prediction Travel?
 
-The browser works out the two inputs itself, from the committed standings: the home team's value minus the away team's value, for the win percentage and for the points margin per game. It sends only those two numbers. Who does each piece of arithmetic is in [Who Works Out Each Number?](../phase-5/implementation-part-1.md#who-works-out-each-number).
+The browser works out the two inputs itself, from the committed standings: the home team's value minus the away team's value, for the win percentage and for the points margin per game. It sends only those two numbers. Who does each piece of arithmetic is in [Who Works Out Each Number?](../../phase-5/implementation-part-1.md#who-works-out-each-number).
 
 ```mermaid
 %%{init: {"sequence": {"width": 120, "actorMargin": 30}}}%%
@@ -47,9 +47,9 @@ sequenceDiagram
 
 - **The browser sends `POST {base address}/predict`** with the header `Content-Type: application/json` and nothing else it sets itself. The call is cut off after **15 seconds** (`timeoutMs: 15000` in `frontend/src/App.tsx`).
 - **API Gateway applies CORS.** The page and the API have different addresses, so the browser first asks with an `OPTIONS` request. The API's list allows `https://d1nubiunzfwm0q.cloudfront.net` and `http://localhost:5173`. An address not on the list gets status 204 with no `access-control-*` headers, and the browser then refuses to send the `POST`.
-- **Lambda runs Mangum and the FastAPI app.** The same app runs on a laptop under uvicorn. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
+- **Lambda runs Mangum and the FastAPI app.** The same app runs on a laptop under uvicorn. See [What Is Mangum?](../../phase-4/implementation.md#what-is-mangum).
 - **The browser checks the answer** before showing it (`isPredictResponse` in `frontend/src/api.ts`). The label must match the prediction, and the probability must be a number from 0 to 1.
-- **The exact request body and answer,** with worked examples, are in [What Does the Browser Send?](../phase-5/implementation-part-1.md#what-does-the-browser-send).
+- **The exact request body and answer,** with worked examples, are in [What Does the Browser Send?](../../phase-5/implementation-part-1.md#what-does-the-browser-send).
 
 ## How Is the API Address Chosen?
 
@@ -64,7 +64,7 @@ The address is a build-time setting, `VITE_API_BASE_URL`, read once when the pag
 - **In a production build, an empty address stops the page.** The function throws "VITE_API_BASE_URL is not set." A production page has no dev server to forward calls, so an empty address would call the site's own host. The build itself still finishes, and the error appears when the page loads. The page then shows "This page is not configured: VITE_API_BASE_URL is not set."
 - **A production address must start with `https://`.** The page is served over https, so a plain `http` address would be blocked as mixed content.
 - **No secret goes in these files.** The value is written into the built script, and anyone can read it.
-- **To point the app at another API,** see [How Do I Point the App at a Different API?](../phase-5/development-guide.md#how-do-i-point-the-app-at-a-different-api).
+- **To point the app at another API,** see [How Do I Point the App at a Different API?](../../phase-5/development-guide.md#how-do-i-point-the-app-at-a-different-api).
 
 ## How Does Local Development Differ?
 
@@ -78,8 +78,8 @@ flowchart LR
 - **The browser sees only its own address,** so it makes no cross-origin call, sends no preflight, and CORS does not apply.
 - **The port is fixed at 5173** (`strictPort`), because the live API's CORS list allows only that local address.
 - **The local API has no `/feedback` route.** Sending the form from the dev server gets status 404. The route exists only on AWS.
-- **To use the live API from the dev server,** set `VITE_API_BASE_URL` to the live address for that run. The preflight then applies, and `http://localhost:5173` is on the list. See [Step 3: Try the Live API From the Dev Server (Optional)](../phase-5/development-guide.md#step-3-try-the-live-api-from-the-dev-server-optional).
-- **Commands for both programs:** [Makefile](./makefile.md).
+- **To use the live API from the dev server,** set `VITE_API_BASE_URL` to the live address for that run. The preflight then applies, and `http://localhost:5173` is on the list. See [Step 3: Try the Live API From the Dev Server (Optional)](../../phase-5/development-guide.md#step-3-try-the-live-api-from-the-dev-server-optional).
+- **Commands for both programs:** [Makefile](../development/makefile.md).
 
 ## What Does the Page Show When a Call Fails?
 
@@ -100,4 +100,4 @@ flowchart LR
 
 ## How Does the Feedback Route Fit In?
 
-The Feedback tab sends `POST {base address}/feedback` to the same API address. A separate Lambda function checks the fields and saves one item in a DynamoDB table, and the prediction function is not involved. Everything about it, including the answers and the limit of 1 request a second, is on [Feedback Path](./feedback-path.md).
+The Feedback tab sends `POST {base address}/feedback` to the same API address. A separate Lambda function checks the fields and saves one item in a DynamoDB table, and the prediction function is not involved. Everything about it, including the answers and the limit of 1 request a second, is on [Feedback Path](../features/feedback-path.md).

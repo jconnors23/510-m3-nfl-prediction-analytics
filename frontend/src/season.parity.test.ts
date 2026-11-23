@@ -24,9 +24,9 @@ interface ExpectedGame {
   point_diff_per_game_differential: number;
 }
 
-// The expected file is written by build/season_expected.py, a local script. Both live in the gitignored
-// build folder, so a fresh checkout does not have them. The test is skipped in that case, which the test
-// run reports as skipped and not as passed. toBe is used, not toBeCloseTo, because the browser must
+// The expected file is written by scripts/checks/season_expected.py. Only the file it writes lives in the
+// gitignored build folder, so a fresh checkout skips this test until the script is run. The test run
+// reports that as skipped and not as passed. toBe is used, not toBeCloseTo, because the browser must
 // produce the exact same 64-bit number as Python.
 it.skipIf(!fs.existsSync(expectedPath))("matches the Python number for every 2026 game", () => {
   const expected = JSON.parse(fs.readFileSync(expectedPath, "utf8")) as ExpectedGame[];

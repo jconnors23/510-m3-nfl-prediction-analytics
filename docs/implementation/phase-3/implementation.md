@@ -7,7 +7,7 @@ hide:
 
 This page explains how the Phase 3 service works, one step at a time, and why. The service takes two numbers about a game and returns the model's pick and the home team's chance of winning, as JSON. To run it, send it requests, or change it, see the [Development Guide](./development-guide.md). For the short version, see the [Brief](./brief.md).
 
-**Status: built and tested.** The code is in `src/api/app.py` and `src/api/schemas.py`, and the tests are in `tests/test_api.py`. Every request and response in the guide was produced by the running service. The full test suite passes with 47 tests: the 30 from earlier phases and 17 new ones.
+**Status: built and tested.** The code is in `src/api/app.py` and `src/api/schemas.py`, and the tests are in `tests/test_api.py`. Every request and response in the guide was produced by the running service. This phase added 17 tests. The whole project now has 95 tests, counting those added by later phases.
 
 ## How Does the Service Work?
 
@@ -206,10 +206,10 @@ The checks all come from the request definition in Step 2, and FastAPI answers a
     **If skipped:** A change could pass unnoticed until the deployed function failed.
 
 ```bash
-python -m pytest
+python -m pytest tests/test_api.py
 ```
 
-Expected: **47 passed**, with no warnings, in about 11 seconds. Without `models/model.joblib`, test 17 is skipped instead, and 46 pass.
+Expected: **17 passed**, with no warnings. Without `models/model.joblib`, test 17 is skipped instead, and 16 pass. Running `python -m pytest` with no file name runs every test in the project: 95 passed once a model is trained, or 93 passed and 2 skipped before.
 
 - **Made-up model.** A fixture fits a tiny pipeline on 40 made-up rows (fixed random seed), saves it in the same dictionary format that training writes, and points the service at it. The tests never touch `models/model.joblib`, except test 17.
 - **In-memory calls.** FastAPI's test client calls the app without starting a server. It is used as a context manager (`with TestClient(app)`), because that is what runs the start-up step.

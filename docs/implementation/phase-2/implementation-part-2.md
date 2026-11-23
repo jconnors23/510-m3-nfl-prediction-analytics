@@ -7,7 +7,7 @@ hide:
 
 This page explains how the last four Phase 2 steps work: fitting the model, scoring it, recording the run in MLflow, and saving the trained model. [Part 1](./implementation-part-1.md) covers the inputs, the split, and the settings. For the short version, see the [Brief](./brief.md).
 
-**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores, and `pytest` passes 30 tests.
+**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores, and the 29 tests for this phase pass (in `tests/test_features.py`, `test_split.py`, `test_evaluate.py`, and `test_train.py`).
 
 ## How Does the Data Flow?
 
@@ -218,7 +218,7 @@ The model picks the home team in 172 of 271 games (63.5%), more often than home 
 
 One image, `confusion_matrix_validation.png`, is drawn for the validation season by `plot_confusion_matrix` in `src/model/evaluate.py`. It uses matplotlib's non-window drawing mode (`Agg`), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.
 
-The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. The picture and how to read it are on [Confusion Matrix](../extras/confusion-matrix.md).
+The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. The picture and how to read it are on [Confusion Matrix](../extras/features/confusion-matrix.md).
 
 ## Step 6: Record the Run in MLflow
 
@@ -314,7 +314,7 @@ Each run keeps the trained pipeline in two forms, for two different readers.
 
 - **Quiet start-up.** MLflow prints a hint about its tracing helper when it is imported. This project does not use tracing, so `train.py` sets `MLFLOW_DISABLE_AGENT_HINT` before the import and the command prints nothing extra.
 - **No leftovers from tests.** The tests point MLflow at a temporary database and artifact folder, and each test puts the earlier tracking address back afterward, so no test affects the next one or writes into the project.
-- **One hidden warning.** MLflow's own database code uses a SQLAlchemy option that SQLAlchemy plans to remove. `pytest.ini` hides that single warning, because it comes from inside MLflow and not from this project.
+- **Two silenced warnings.** MLflow's own code triggers two deprecation warnings (a SQLAlchemy option that SQLAlchemy plans to remove, and an event-loop message). `pytest.ini` silences those two, because they come from inside MLflow and not from this project.
 - **Where records are kept.** See [Where Does MLflow Keep Its Records?](./implementation-part-1.md#where-does-mlflow-keep-its-records).
 
 To browse the recorded runs, start the MLflow viewer and open the address it prints:
@@ -464,7 +464,7 @@ The file from the real run, 1,174 bytes:
 python -m src.model.train
 ```
 
-Output (the second run printed the same eight lines):
+Output (the second run printed the same lines). The last line comes from the export to `mlflow-reference/` described in the [Development Guide](./development-guide.md#how-do-i-do-a-training-run):
 
 ```text
 training: 820 of 1339 correct (61.24%), always-home 53.32%
@@ -475,4 +475,5 @@ test log loss 0.6815
 saved: models/model.joblib
 summary: results/run-summary.json
 MLflow run: LogisticRegression-v1.0
+saved: mlflow-reference/latest-run
 ```

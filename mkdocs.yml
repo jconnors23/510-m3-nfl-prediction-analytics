@@ -4,6 +4,7 @@ site_name: NFL Prediction Analytics
 site_url: https://jconnors23.github.io/510-m3-nfl-prediction-analytics/
 repo_url: https://github.com/jconnors23/510-m3-nfl-prediction-analytics
 repo_name: 510-m3-nfl-prediction-analytics
+site_author: Josiah Connors
 site_description: Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.
 copyright: NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
 
@@ -63,15 +64,16 @@ validation:
   links:
     anchors: warn
 
-# The design manifest comes first: how the project was built with AI tools, and every decision.
-# Then the background, and the Implementation section, which opens with the overview (a
-# condensed copy of the README) before each phase. Then the Extras in priority order, and last
-# the requirements rubric, the original brief, and the project requirements.
+# The overview (a condensed copy of the README) comes first, then the background and the design
+# manifest: how the project was built with AI tools, and every decision. Then the Implementation
+# section, one group per phase. Then the Extras, grouped as in their folders (architecture,
+# development, features, and release notes), with the glossary, and last the requirements
+# rubric and the project requirements.
 nav:
-  - Design Manifest: implementation/design-manifest.md
+  - Overview: index.md
   - Background: background.md
-  - Implementation:
-      - Overview: index.md
+  - Design Manifest: implementation/design-manifest.md
+  - V1 Implementation:
       - "Phase 1: Data Pipeline":
           - Brief: implementation/phase-1/brief.md
           - Implementation: implementation/phase-1/implementation.md
@@ -102,22 +104,27 @@ nav:
           - Development Guide: implementation/phase-6/development-guide.md
       - "Phase 7: Review":
           - Brief: implementation/phase-7/brief.md
+          - Implementation: implementation/phase-7/implementation.md
   # Pages that belong to no one phase: how the whole system fits together, how to work on it
-  # locally, the tools, and what could come next.
+  # locally, the tools, the release notes and what could come next, and the glossary.
   - Extras:
-      - Cloud Architecture: implementation/extras/cloud-architecture.md
-      - ML Workflow: implementation/extras/ml-workflow.md
-      - Frontend and Backend Connection: implementation/extras/frontend-backend-connection.md
-      - Local Development Guide: implementation/extras/local-development.md
-      - Makefile: implementation/extras/makefile.md
-      - Testing Guide: implementation/extras/testing-guide.md
-      - GitHub Workflows: implementation/extras/github-workflows.md
-      - Tooling Guide: implementation/extras/tooling-guide.md
-      - Feedback Path: implementation/extras/feedback-path.md
-      - Confusion Matrix: implementation/extras/confusion-matrix.md
-      - Future Considerations: implementation/extras/future-considerations.md
-  - Glossary: implementation/glossary.md
+      - Architecture:
+          - Cloud Architecture: implementation/extras/architecture/cloud-architecture.md
+          - ML Workflow: implementation/extras/architecture/ml-workflow.md
+          - Frontend and Backend Connection: implementation/extras/architecture/frontend-backend-connection.md
+      - Development:
+          - Running Locally: implementation/extras/development/running-locally.md
+          - Makefile: implementation/extras/development/makefile.md
+          - Testing Guide: implementation/extras/development/testing-guide.md
+          - Tooling Guide: implementation/extras/development/tooling-guide.md
+          - GitHub Workflows: implementation/extras/development/github-workflows.md
+      - Features:
+          - Feedback Path: implementation/extras/features/feedback-path.md
+          - Confusion Matrix: implementation/extras/features/confusion-matrix.md
+      - Release Notes:
+          - Version 1.0: implementation/extras/release-notes/version-1-0.md
+          - Future Considerations: implementation/extras/release-notes/future-considerations.md
+      - Glossary: implementation/extras/glossary.md
   - Requirements:
       - Requirements Rubric: implementation/requirements/requirements-rubric.md
-      - Assignment Brief: implementation/requirements/assignment-brief.md
       - Project Requirements: implementation/requirements/project-requirements.md

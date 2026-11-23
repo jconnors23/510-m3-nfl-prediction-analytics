@@ -44,7 +44,7 @@ flowchart TB
     - Creates a user named `app` with id 10001, and uses `/app` as the working folder, owned by that user.
     - Copies `requirements.txt` on its own and installs it before copying the code, so a code change reuses the slow install step from Docker's cache.
     - Copies the included files, owned by `app`, and switches to that user.
-- **The `train` target** adds nothing to the base. Its command is `python -m src.model.train`.
+- **The `train` target** adds nothing to the base. Its command is `python -m src.model.train`. Because the base holds all of `src/`, the same image also runs the data steps and the tests. The commands are in [Run the Data Steps in the Container](./development-guide.md#run-the-data-steps-in-the-container).
 - **The `serve` target** runs `python -m src.model.train` once while the image is built, so the image holds `models/model.joblib`. Its command is `python -m uvicorn src.api.app:app --host 0.0.0.0 --port 8000`. Inside a container, `0.0.0.0` is needed so Docker can forward a port to the service. The run command publishes that port only on `127.0.0.1`.
 - **Exec form** (`CMD ["python", ...]`) is used for both commands, so Python receives Ctrl+C and the stop signal directly. `docker stop` ended the service in 0.5 seconds. Ctrl+C (the same signal, sent to `docker run`) ended it in under a second with exit code 0, uvicorn printed its normal shutdown lines, and `--rm` removed the container.
 - **`serve` is the last stage,** so a plain `docker build` with no `--target` gives the service.
@@ -55,7 +55,7 @@ flowchart TB
 
 ## Which Make Commands Run It?
 
-Two commands were added to the `Makefile`: `make docker-train` and `make docker-serve`. What each one runs is in the [Phase 6 Development Guide](./development-guide.md). The full list of make commands is on [Makefile](../extras/makefile.md).
+Two commands were added to the `Makefile`: `make docker-train` and `make docker-serve`. What each one runs is in the [Phase 6 Development Guide](./development-guide.md). The full list of make commands is on [Makefile](../extras/development/makefile.md).
 
 ## What Was Checked?
 

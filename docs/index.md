@@ -10,11 +10,16 @@ A pre-game NFL winner predictor, built as a small, complete machine learning sys
 - **Live web app:** [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)
 - **Live API:** `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` (`POST /predict`, `GET /health`)
 - **Code:** [github.com/jconnors23/510-m3-nfl-prediction-analytics](https://github.com/jconnors23/510-m3-nfl-prediction-analytics)
+- **Course:** Duke AIPI 510
+- **Model version:** 1.0, November 2026. See the [Version 1.0 Release Notes](./implementation/extras/release-notes/version-1-0.md).
+
+!!! info "Owner and Developer"
+    **Josiah Connors** designed and built this project, and owns it. GitHub: [@jconnors23](https://github.com/jconnors23). The design, how it was implemented, and the details behind each choice are on [Design Manifest](./implementation/design-manifest.md).
 
 !!! warning "Unofficial Coursework Project"
     **This project is not affiliated with or endorsed by the National Football League.** Team names are used only to identify the teams. The predictions are for reference only.
 
-## Project Overview and Goals
+## Project Overview
 
 The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline. The goal is a clean, repeatable process, from cloud storage to a public web app, more than a high score. Why the project exists and how it was built phase by phase are on [Background](./background.md).
 
@@ -39,11 +44,11 @@ flowchart TB
 - **Model:** a standard scaler and a logistic regression (scikit-learn), giving a home win probability. Above 0.5 picks the home team.
 - **Split by season:** training 2020 to 2024 (1,339 games), validation 2025 (271), test 2026 weeks 1 to 10 (149).
 - **Validation accuracy: 63.10%** (171 of 271), against 53.87% for always picking the home team. **Test accuracy: 59.06%** (88 of 149), against 47.65%.
-- **Every run is tracked in MLflow.** The path from data to a served prediction is on [ML Workflow](./implementation/extras/ml-workflow.md).
+- **Every run is tracked in MLflow.** The path from data to a served prediction is on [ML Workflow](./implementation/extras/architecture/ml-workflow.md).
 
 ## Cloud Services
 
-S3 for the data and the web app, Lambda for the prediction and feedback functions, API Gateway for the public API, CloudFront for the web app, DynamoDB for feedback, and IAM and CloudWatch Logs, all in `us-east-1`. GitHub Actions runs the tests and publishes the docs to GitHub Pages and the web app to CloudFront. See [Cloud Architecture](./implementation/extras/cloud-architecture.md).
+S3 for the data and the web app, Lambda for the prediction and feedback functions, API Gateway for the public API, CloudFront for the web app, DynamoDB for feedback, and IAM and CloudWatch Logs, all in `us-east-1`. GitHub Actions runs the tests and publishes the docs to GitHub Pages and the web app to CloudFront. See [Cloud Architecture](./implementation/extras/architecture/cloud-architecture.md).
 
 ## Setup and Usage
 
@@ -65,9 +70,9 @@ make train
 make start
 ```
 
-The API then answers at `http://127.0.0.1:8000`. Every command is on [Makefile](./implementation/extras/makefile.md), and the local setup as a whole is on [Local Development Guide](./implementation/extras/local-development.md). Deploying is a set of written steps in the [Phase 4](./implementation/phase-4/deployment-guide.md) and [Phase 5](./implementation/phase-5/deployment-guide.md) Deployment Guides.
+The API then answers at `http://127.0.0.1:8000`. Every command is on [Makefile](./implementation/extras/development/makefile.md), and the local setup as a whole is on [Running Locally](./implementation/extras/development/running-locally.md). Deploying is a set of written steps in the [Phase 4](./implementation/phase-4/deployment-guide.md) and [Phase 5](./implementation/phase-5/deployment-guide.md) Deployment Guides.
 
-## Limitations and Ethics
+## Limitations
 
 - The model sees only two numbers, and is wrong on about 37% of the 2025 validation games and 41% of the 2026 test games.
 - It leans toward the home team, picking it in 172 of 271 games in 2025, while the home team won 146.
@@ -78,5 +83,6 @@ The API then answers at `http://127.0.0.1:8000`. Every command is on [Makefile](
 
 - [Requirements Rubric](./implementation/requirements/requirements-rubric.md): every requirement of the assignment, linked to the code and docs that meet it.
 - [Design Manifest](./implementation/design-manifest.md): how the project was built with AI tools, and every choice and why.
-- [Future Considerations](./implementation/extras/future-considerations.md): what could come next.
-- [Glossary](./implementation/glossary.md): plain-language meaning of the terms used here.
+- [Version 1.0 Release Notes](./implementation/extras/release-notes/version-1-0.md): what the November 23, 2026 release holds.
+- [Future Considerations](./implementation/extras/release-notes/future-considerations.md): what could come next.
+- [Glossary](./implementation/extras/glossary.md): plain-language meaning of the terms used here.

@@ -1,16 +1,16 @@
 {
-  "duration_seconds": 2.098,
-  "end_time": "2026-11-23T00:45:44Z",
+  "duration_seconds": 2.666,
+  "end_time": "2026-11-23T17:08:39Z",
   "experiment_id": "1",
   "experiment_name": "nfl-pregame-winner-v1",
-  "run_id": "cbe558d3a28143838db5e93869f31b8f",
+  "run_id": "49a0841f8ae94ac0b8c5acabbd62c3d0",
   "run_name": "LogisticRegression-v1.0",
-  "start_time": "2026-11-23T00:45:42Z",
+  "start_time": "2026-11-23T17:08:36Z",
   "status": "FINISHED",
   "tags": {
     "mlflow.runName": "LogisticRegression-v1.0",
-    "mlflow.source.git.branch": "main",
-    "mlflow.source.git.commit": "07ca6ced733e0735008fcd0354151d8150cb362c",
+    "mlflow.source.git.branch": "phase-seven-p2",
+    "mlflow.source.git.commit": "9562f88a5fbcabebbe332b60d0b4163992957339",
     "mlflow.source.git.repoURL": "https://github.com/jconnors23/510-m3-nfl-prediction-analytics.git",
     "mlflow.source.type": "LOCAL"
   }
