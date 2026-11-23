@@ -18,11 +18,17 @@ The goals are the ones the course project sets: a cleaned dataset stored in the 
 
 ```mermaid
 flowchart TB
-    A["nflverse<br/>games file"] --> B["Clean, then<br/>store in S3"]
-    B --> C["Two inputs,<br/>split by season"]
-    C --> D["Train and track<br/>with MLflow"]
-    D --> E["FastAPI on<br/>AWS Lambda"]
-    E --> F["Web app on<br/>CloudFront"]
+    subgraph Build["Built on a laptop"]
+        A["nflverse<br/>games file"] --> B["Clean, store in S3,<br/>download back"]
+        B --> C["Train and log<br/>to MLflow"]
+    end
+    subgraph Live["Live on AWS"]
+        V["Visitor's browser"] -->|"loads the page"| W["Web app<br/>S3 and CloudFront"]
+        V -->|"POST /predict"| G["API Gateway"]
+        G --> L["Lambda<br/>FastAPI and the model"]
+    end
+    C -->|"saved model,<br/>in the Lambda zip"| L
+    C -->|"team standings files,<br/>in the web app build"| W
 ```
 
 ## Dataset
