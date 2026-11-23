@@ -121,7 +121,7 @@ function sourceSentence(standingsBefore: number): string {
   return `These numbers come from games through ${profiles.as_of.season} week ${standingsBefore - 1}, and the first team is treated as the home team.`;
 }
 
-// The sun icon shows while dark is on, the moon while it is off. It is hidden from screen readers because the button text already names the control.
+// The sun icon shows while dark is on, the moon while it is off. It is marked aria-hidden, so screen readers skip it, because the button text already names the control.
 function ThemeMark({ dark }: { dark: boolean }) {
   if (dark) {
     return (
@@ -227,6 +227,8 @@ function usePredict(baseUrl: string) {
     call.current = controller;
     setWaiting(true);
     setOutcome(null);
+    // 15000 ms is 15 seconds, long enough for a cold start of the live API but short enough to
+    // show the "timeout" message instead of leaving the page waiting.
     const result = await predict(request, { baseUrl, timeoutMs: 15000, signal: controller.signal });
     // A cancelled call is dropped. Showing it would put an old answer, or an unreachable message
     // caused by the cancel itself, beside a newer choice.
@@ -242,7 +244,7 @@ function usePredict(baseUrl: string) {
   return { waiting, outcome, clear, run };
 }
 
-// The About This Site tab. It is text only, and it reads its numbers from the profiles file.
+// The Overview tab, which explains the site. It is text only, and it reads its numbers from the profiles file.
 function Overview() {
   const accuracy = (profiles.model.validation_accuracy * 100).toFixed(1);
   const baseline = (profiles.model.validation_baseline * 100).toFixed(1);
@@ -313,7 +315,7 @@ function GamesTab({ baseUrl }: { baseUrl: string }) {
   const [gameId, setGameId] = useState(week.games[0]?.game_id ?? "");
   const { waiting, outcome, clear, run } = usePredict(baseUrl);
   const game = week.games.find((item) => item.game_id === gameId) ?? week.games[0];
-  // The request is built from the standings set the week names, so weeks 12 to 18 use the week 11 standings.
+  // The request is built from the standings set the week names, so weeks 11 to 18 all use the week 11 standings (games through week 10).
   const request = game ? requestForGame(game, season, names) : null;
   const answer = outcome?.kind === "ok" ? outcome.response : null;
   const failure = outcome ? failureText(outcome) : null;
@@ -562,7 +564,8 @@ function TeamsTab() {
   );
 }
 
-// The Feedback tab: a short form that posts to the API's /feedback endpoint.
+// The Feedback tab: a short form that posts to the API's /feedback endpoint. Note: only the live
+// API has this route. The local FastAPI service has none, so against it the form shows an error.
 function FeedbackTab({ baseUrl }: { baseUrl: string }) {
   const [category, setCategory] = useState("general");
   const [rating, setRating] = useState("");
@@ -573,7 +576,8 @@ function FeedbackTab({ baseUrl }: { baseUrl: string }) {
   const [thanks, setThanks] = useState(false);
 
   // Checks the form first, so an obvious mistake is shown at once. Only a saved note clears the form,
-  // so a failed send does not lose what the visitor typed.
+  // so a failed send does not lose what the visitor typed. The 15000 ms timeout is 15 seconds,
+  // the same as the prediction calls.
   async function onSend() {
     const ratingValue = rating === "" ? null : Number(rating);
     const formError = checkFeedback({ category, rating: ratingValue, message });
@@ -781,7 +785,7 @@ export default function App() {
         {configError ? (
           <p>This page is not configured: {configError}</p>
         ) : (
-          // Only the selected tab is mounted, so a hidden tab has no state or calls running.
+          // Only the selected tab is mounted, so a tab that is not selected has no state or calls running.
           <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
             {tab === "overview" ? <Overview /> : null}
             {tab === "games" ? <GamesTab baseUrl={baseUrl} /> : null}

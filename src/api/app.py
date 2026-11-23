@@ -1,7 +1,8 @@
-"""A local service that answers one prediction from the saved model.
+"""A service that answers one prediction from the saved model.
 
-The service has two routes: POST /predict and GET /health. The saved model is read once, when the
-service starts, and every request after that is answered from memory. This file does not train
+It runs locally under uvicorn, and in AWS Lambda through src/api/lambda_handler.py. The service
+has two routes: POST /predict and GET /health. The saved model is read once, when the service
+starts, and every request after that is answered from memory. This file does not train
 anything. It reads only config/config.yaml and the saved model file.
 
 Run it with: python -m uvicorn src.api.app:app --port 8000

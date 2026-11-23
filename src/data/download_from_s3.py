@@ -32,7 +32,7 @@ def download(config: dict, client=None) -> None:
         # The swap happens only after the whole file arrived. Any older copy is replaced in one step.
         os.replace(tmp, dest)
     except Exception:
-        # Anything unexpected: clean up the half-finished file, then pass the error on.
+        # Whatever went wrong, remove the half-finished file, then pass the error on.
         tmp.unlink(missing_ok=True)
         raise
 

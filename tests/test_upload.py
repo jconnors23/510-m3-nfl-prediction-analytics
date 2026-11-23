@@ -28,7 +28,7 @@ def _config(bucket: str, processed: Path, from_s3: Path) -> dict:
 def test_upload_stops_when_object_size_differs(tmp_path):
     """Upload fails if the stored object is a different size than the local file.
 
-    The size check is the only proof that the file in S3 is the file that was sent.
+    The size check is how the script confirms that the file in S3 is the file that was sent.
     """
     path = tmp_path / "games.csv"
     path.write_text("game_id\n1\n", encoding="utf-8")

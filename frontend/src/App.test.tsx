@@ -1,10 +1,8 @@
 // @vitest-environment jsdom
 // Renders the whole App in jsdom, a browser stand-in that runs in Node, and drives it the way a visitor would.
 // fetch is replaced with a fake in every test that sends a request, so nothing touches the network. The team and
-// season data are the real committed JSON files.
-// Renders the whole App in jsdom (a browser stand-in that runs in Node) and drives it like a visitor.
-// fetch is replaced with a fake in every test, so nothing touches the network, and the team and season data
-// are the real committed JSON files.
+// season data are the real committed JSON files. The first line is a Vitest setting that picks jsdom for this
+// file, because the config's default environment is node. Do not remove it.
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
@@ -16,7 +14,6 @@ import { gameLabel, profileFor, requestForGame, weekLabel } from "./schedule.ts"
 import type { Season, TeamProfiles } from "./types.ts";
 import App from "./App.tsx";
 
-// Fake API answers. The probabilities are the values the page must turn into the percentages the tests expect.
 // Fake API answers. The page must turn each probability into the percentages the tests below expect.
 const neTenAnswer = {
   prediction: 1,
@@ -32,13 +29,10 @@ const miaSfAnswer = {
   model_version: "v1.0",
 };
 
-// The exact request text for home NE, away TEN. Compared as text because the API must receive these digits unchanged.
 // The exact request text for home NE, away TEN. It is compared as text because the body the API receives must be
 // byte for byte what was checked.
 const neTenBody = '{"win_pct_differential":0.3888888888888889,"point_diff_per_game_differential":5.9}';
 
-// Undo everything a test changed on the shared page. Without this, a leftover theme, URL hash, fake fetch, or
-// environment value would decide which tab opens or what the next test sees.
 // Undo everything a test changed on the shared jsdom page. Without this, a leftover data-theme, location.hash, fake
 // fetch, or API address would decide which tab or theme the next test starts with, and tests would leak into each other.
 afterEach(() => {
@@ -49,14 +43,12 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-// Points the app at a fake API address, then renders it. The address is set before render because the app reads it at start.
 // vi.stubEnv sets a made-up API address before the app renders and reads it. afterEach removes it again.
 function renderApp() {
   vi.stubEnv("VITE_API_BASE_URL", "https://api.example.test");
   return render(<App />);
 }
 
-// Opens the Custom Matchup tab by setting the URL hash before the app reads it.
 // Opens on the Custom Matchup tab by setting the hash before the app reads it.
 function renderMatchup() {
   window.location.hash = "#matchup";
@@ -70,7 +62,6 @@ async function choose(user: ReturnType<typeof userEvent.setup>, label: string, o
   await user.click(screen.getByRole("option", { name: optionText }));
 }
 
-// Replaces fetch with a fake that always answers 200 with this body. Each call builds a new Response because a body can be read once.
 // Replaces fetch with a fake that answers 200 with this body. Each call builds a new Response, because a
 // response body can be read only once.
 function answerWith(body: unknown) {
@@ -80,7 +71,6 @@ function answerWith(body: unknown) {
   );
 }
 
-// The fake fetch must stay uncalled, so a bad choice is caught on the page and never reaches the API.
 // The fake fetch records calls and must stay uncalled, so the page catches this choice before the API sees it.
 it("refuses the same team twice and sends no request", async () => {
   const fetchMock = vi.fn();
@@ -93,7 +83,6 @@ it("refuses the same team twice and sends no request", async () => {
   expect(fetchMock).not.toHaveBeenCalled();
 });
 
-// Also checks the request body, so the numbers on screen and the numbers sent come from the same inputs.
 // Also checks the inputs shown on screen and the exact body sent, so the page and the request use the same numbers.
 it("shows the winner and both chances for home NE, away TEN", async () => {
   answerWith(neTenAnswer);
@@ -133,7 +122,6 @@ it("names the away team when the API picks an away win", async () => {
   expect(within(screen.getByTestId("chance-away")).getByText("70.6%")).toBeTruthy();
 });
 
-// A rejected fetch stands in for a network failure.
 // A fake fetch that rejects stands in for a network failure.
 it("shows a message and no result when the API cannot be reached", async () => {
   vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new TypeError("failed"))));
@@ -146,7 +134,6 @@ it("shows a message and no result when the API cannot be reached", async () => {
   expect(screen.queryByText(/Predicted winner/)).toBeNull();
 });
 
-// An old result must not stay on screen next to a new team choice.
 // An old result must not stay on screen next to a different team choice.
 it("clears the result when a team changes", async () => {
   answerWith(neTenAnswer);
@@ -160,7 +147,6 @@ it("clears the result when a team changes", async () => {
   expect(screen.queryByText(/Predicted winner/)).toBeNull();
 });
 
-// The page compares the model version in the answer with the one in team-profiles.json and warns when they differ.
 // The page compares the version in the answer with the one in team-profiles.json and explains a difference.
 it("says which model the scores belong to when versions differ", async () => {
   answerWith({ ...neTenAnswer, model_version: "v9.9" });
@@ -174,6 +160,7 @@ it("says which model the scores belong to when versions differ", async () => {
   ).toBeTruthy();
 });
 
+// Each team's record line appears under its picker as soon as it is chosen, before any request.
 it("shows each chosen team's record", async () => {
   const user = userEvent.setup();
   renderMatchup();
@@ -183,9 +170,8 @@ it("shows each chosen team's record", async () => {
   expect(screen.getByText("1-8 record, -8.0 points per game")).toBeTruthy();
 });
 
-// The non-affiliation sentence must appear exactly once, in the banner, not repeated elsewhere.
 // The non-affiliation sentence must appear exactly once on the page, inside the banner.
-it("shows the disclaimer and the model chip before anything is chosen", () => {
+it("shows the disclaimer and the model version line before anything is chosen", () => {
   renderMatchup();
   expect(screen.getByText("Unofficial coursework project.")).toBeTruthy();
   expect(screen.getByText("Model v1.0 · Standings through 2026 week 10")).toBeTruthy();
@@ -194,7 +180,6 @@ it("shows the disclaimer and the model chip before anything is chosen", () => {
   expect(screen.getAllByText("Not affiliated with or endorsed by the National Football League.", { exact: false })).toHaveLength(1);
 });
 
-// The theme is stored as data-theme on the html element. afterEach removes it so later tests start without a theme.
 // The theme is stored as data-theme on the html element, which afterEach removes for the next test.
 it("switches between the light and dark themes", async () => {
   const user = userEvent.setup();
@@ -209,13 +194,11 @@ it("switches between the light and dark themes", async () => {
   expect(toggle.getAttribute("aria-pressed")).toBe("false");
 });
 
-// Real committed data for the tests below. names maps a team code to its full name.
 // The real committed data, used below to build the request a test expects. names maps a team code to its full name.
 const seasonData = rawSeason as Season;
 const profileData = rawProfiles as TeamProfiles;
 const names = Object.fromEntries(profileData.teams.map((team) => [team.team, team.name]));
 
-// No hash is set here, so the app opens its default tab. Arrow keys must also update the hash.
 // No hash is set, so the app opens its default tab. The arrow keys must also update location.hash.
 it("shows five tabs, opens Overview, and moves with the arrow keys", async () => {
   const user = userEvent.setup();
@@ -238,7 +221,6 @@ it("shows five tabs, opens Overview, and moves with the arrow keys", async () =>
   expect(window.location.hash).toBe("#overview");
 });
 
-// Week 11 is the first week marked upcoming, so the Games tab opens on it. The body is compared as exact text.
 // Week 11 is the first week marked upcoming, so the Games by Week tab opens on it. The body sent must be the exact
 // JSON text of requestForGame for that game.
 it("analyzes the first week 11 game", async () => {
@@ -267,7 +249,6 @@ it("analyzes the first week 11 game", async () => {
   );
 });
 
-// The tie line comes from the final score, so it must disappear when another week is chosen.
 // The tie line belongs to one finished game, so it must disappear when another week is chosen.
 it("shows the week 5 tie line and clears it when the week changes", async () => {
   answerWith({
@@ -300,7 +281,6 @@ it("shows the week 5 tie line and clears it when the week changes", async () => 
   expect(screen.queryByText(/Tie\. There is no winner/)).toBeNull();
 });
 
-// Choosing earlier standings must change the numbers sent. The last assertion checks they differ from the current standings.
 // The body must come from the standings before week 5. The last assertion confirms those numbers differ from the
 // current standings in neTenBody, so the test would catch the page ignoring the choice.
 it("sends the week 5 standings from Custom Matchup", async () => {
@@ -325,7 +305,6 @@ it("sends the week 5 standings from Custom Matchup", async () => {
   expect(request.win_pct_differential).not.toBe(JSON.parse(neTenBody).win_pct_differential);
 });
 
-// slice(1) skips the header row. A column that has not been sorted yet reports aria-sort "none".
 // slice(1) skips the header row. A column that is not the current sort reports aria-sort "none".
 it("lists 32 teams with the Bills first and sorts from a header", async () => {
   const user = userEvent.setup();
@@ -341,10 +320,9 @@ it("lists 32 teams with the Bills first and sorts from a header", async () => {
   expect(pointsAgainst.getAttribute("aria-sort")).toBe("descending");
 });
 
-// The loop at the end tabs through the page and checks the hidden website field never gets focus.
-// A person using the keyboard must not land in a field meant only to catch bots.
-// The fake fetch answers 201 and must be called once, only after the message is long enough. The loop at the end
-// tabs through the page and checks that the hidden website field, which only catches bots, never gets focus.
+// The fake fetch answers 201 and must be called once, only after the message is long enough. The loop at the
+// end presses Tab 12 times and checks that the website field, which only catches bots and is not shown to
+// visitors, never gets focus, so a keyboard user cannot land in it.
 it("checks a short feedback message before sending, then thanks the visitor", async () => {
   const fetchMock = vi.fn(() =>
     Promise.resolve(new Response(JSON.stringify({ status: "received", feedback_id: "abc" }), { status: 201 })),
@@ -370,8 +348,8 @@ it("checks a short feedback message before sending, then thanks the visitor", as
   }
 });
 
-// The page must not talk about betting. A result is opened on the two tabs that show one.
-// The test names the betting words only to prove the page does not contain them.
+// Predictions are for reference only, so no tab may use gambling words. A result is opened on the two tabs
+// that show one. The test lists those words only to prove the page does not contain them.
 it("mentions no betting words on any tab", async () => {
   // Word stems, matched without regard to case, so "betting", "Bets", and "gambling" are all caught.
   const patterns = [/bet/i, /wager/i, /gambl/i, /odds/i, /spread/i];

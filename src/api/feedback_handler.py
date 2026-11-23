@@ -20,8 +20,10 @@ _table = None
 # field that real visitors never fill in.
 CATEGORIES = ("general", "predictions", "site", "broken")
 KEYS = {"category", "rating", "message", "website"}
-# The largest body that is read, in bytes. A message is at most 1,000 characters, so a larger
-# body is not a real form and is refused before it is parsed or stored.
+# The largest body that is read, in bytes. A full form with a 1,000-character message in plain
+# English is a little over 1 KB, so a larger body is refused before it is parsed or stored.
+# Note: a character can take up to 4 bytes, so a long message written mostly in emoji or other
+# multi-byte characters can go over 4,096 bytes and be refused even though it is a real form.
 MAX_BODY_BYTES = 4096
 
 

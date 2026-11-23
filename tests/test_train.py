@@ -31,8 +31,8 @@ from src.model.train import (
     write_run_summary,
 )
 
-# The exact names a run must record. Phase 3 and the README read these names, so a rename or a
-# missing entry should fail a test instead of passing unnoticed.
+# The exact names a run must record. The docs and the exported MLflow copy refer to these names,
+# so a rename or a missing entry should fail a test instead of passing unnoticed.
 PARAMETER_NAMES = {
     "model_version",
     "random_seed",
@@ -83,7 +83,7 @@ def _restore_tracking_address():
 
 
 def _games() -> pd.DataFrame:
-    """About 60 rows whose home-win label depends a little on the two inputs."""
+    """Exactly 60 rows whose home-win label depends a little on the two inputs."""
     # A generator with a fixed starting number, so every test run builds the same 60 rows.
     generator = np.random.default_rng(0)
     count = 60

@@ -19,8 +19,10 @@ from mlflow.tracking import MlflowClient
 
 from src.config import load_config, resolve_path
 
-# These tags hold a user name or an absolute path, so the copy leaves them out.
-OMITTED_TAGS = ("mlflow.user", "mlflow.source.name")
+# The run tags the copy keeps. Only these tags are copied, and mlflow.user and
+# mlflow.source.name are left out on purpose because they can hold a user name or an absolute
+# path. A list of kept tags, rather than of removed ones, means a tag that a later MLflow
+# version adds stays out until someone adds it here.
 KEPT_TAGS = (
     "mlflow.runName",
     "mlflow.source.type",
@@ -28,6 +30,8 @@ KEPT_TAGS = (
     "mlflow.source.git.branch",
     "mlflow.source.git.repoURL",
 )
+# File endings read as text when a copied file is not one of the named files below. Each text
+# file is checked for absolute paths before it is written.
 TEXT_SUFFIXES = {".yaml", ".yml", ".txt", ".json", ".md"}
 
 

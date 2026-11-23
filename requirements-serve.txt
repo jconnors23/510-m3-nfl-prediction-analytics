@@ -1,10 +1,10 @@
 # The list for the Lambda zip. It leaves out pandas, mlflow, matplotlib, boto3
 # (Lambda provides it), uvicorn (Mangum replaces it), and the test packages.
-# scipy is pinned here because scikit-learn needs it and requirements.txt does not pin it.
+# Every pin here matches the same package in requirements.txt.
 
 scikit-learn==1.9.1
 numpy==2.5.4
-# scikit-learn imports scipy, and the size check was measured with this version.
+# scikit-learn imports scipy, and the zip size check was measured with this version.
 scipy==1.18.1
 joblib==1.6.0
 PyYAML==6.0.3

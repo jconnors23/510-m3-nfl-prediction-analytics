@@ -1,0 +1,38 @@
+# Runs every Python test on each pull request and on each change that reaches main. The other two
+# workflows publish the docs site and the web app. This one only checks the Python code.
+name: Test Python
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# The job only reads the repository. It needs no AWS access, because the tests use made-up data
+# and stand-ins for S3, DynamoDB, and the model.
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      # The same Python as the laptop, the Lambda function, and the Docker image. The pip cache
+      # is keyed on requirements.txt, so a change to a pin installs fresh packages.
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install the pinned packages
+        run: python -m pip install -r requirements.txt
+
+      # The runner has no trained model, because models/ is not committed, so the two tests that
+      # load models/model.joblib are skipped. The make command is the same one used on a laptop.
+      - name: Run the tests
+        run: make pytest PYTHON=python

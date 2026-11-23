@@ -148,27 +148,6 @@
   letter-spacing: 0.06em;
 }
 
-/* The two header links from overrides/partials/source.html: the repository name and the live
-   web app. They take the place of the theme's repository box, which also showed star and fork
-   counts. The theme hides this header area on narrow screens. */
-.site-links {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin-left: 1rem;
-  font-size: 0.7rem;
-  white-space: nowrap;
-}
-.site-links__link,
-.site-links__link:visited {
-  color: var(--md-primary-bg-color);
-  opacity: 0.9;
-}
-.site-links__link:hover,
-.site-links__link:focus {
-  opacity: 1;
-  text-decoration: underline;
-}
 /* ------------------------------------------------------------------
    Left navigation
    ------------------------------------------------------------------ */

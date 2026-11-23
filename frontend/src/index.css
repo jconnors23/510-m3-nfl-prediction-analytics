@@ -125,7 +125,8 @@ body {
   min-height: 100dvh;
 }
 
-/* Type: headings, the model badge, buttons, and the big percentages use the condensed display font. */
+/* Type: headings, the model and standings line in the header (.as-of), the "vs" between the team
+   pickers, buttons, and the big percentages use the condensed display font. */
 h1,
 h2,
 h3,

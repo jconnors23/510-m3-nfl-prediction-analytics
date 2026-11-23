@@ -13,6 +13,7 @@ const profiles = rawProfiles as TeamProfiles;
 // A made-up address. The fake fetch never contacts it.
 const options = { baseUrl: "https://api.example.test", timeoutMs: 15000 };
 
+// Looks up a real team by its code, and fails the test at once if the code is not in the file.
 function byCode(code: string): TeamProfile {
   const found = profiles.teams.find((team) => team.team === code);
   if (!found) {
@@ -72,6 +73,7 @@ it("sends exactly the contract request", async () => {
   vi.unstubAllGlobals();
 });
 
+// A 200 with a body that meets the contract comes back unchanged inside an ok result.
 it("returns ok for a valid answer", async () => {
   vi.stubGlobal("fetch", () => Promise.resolve(jsonResponse(200, JSON.stringify(answers.neTen))));
   await expect(predict(neTen, options)).resolves.toEqual({ kind: "ok", response: answers.neTen });
@@ -110,6 +112,7 @@ it("returns http-error for a 404 from the gateway", async () => {
   vi.unstubAllGlobals();
 });
 
+// The first fake fetch rejects the way fetch does when the network fails.
 it("returns unreachable when fetch rejects or the caller cancels", async () => {
   vi.stubGlobal("fetch", () => Promise.reject(new TypeError("failed")));
   await expect(predict(neTen, options)).resolves.toEqual({ kind: "unreachable" });
@@ -161,7 +164,8 @@ it("returns unexpected-body for answers that break the contract", async () => {
   vi.unstubAllGlobals();
 });
 
-it("isPredictResponse accepts the three real answers", () => {
+// The three answers above are made up but in the real API's shape, and each must pass the check.
+it("isPredictResponse accepts three well-formed answers", () => {
   expect(isPredictResponse(answers.sfMia)).toBe(true);
   expect(isPredictResponse(answers.miaSf)).toBe(true);
   expect(isPredictResponse(answers.neTen)).toBe(true);

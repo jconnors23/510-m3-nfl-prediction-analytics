@@ -1,5 +1,3 @@
-// Tests the label, result, and request functions in schedule.ts against the real committed season-2026.json and
-// team-profiles.json. No fetch, no browser, no network. The PredictResponse values are made up for the result lines.
 // Tests the label, result-line, and request functions in schedule.ts against the real committed season-2026.json and
 // team-profiles.json. No fetch, no browser, no network. The two PredictResponse values are made up for the result lines.
 import { expect, it } from "vitest";
@@ -23,7 +21,6 @@ const season = rawSeason as Season;
 const profiles = rawProfiles as TeamProfiles;
 const names = Object.fromEntries(profiles.teams.map((team) => [team.team, team.name]));
 
-// Finds a game by id in any week, and fails the test if it does not exist.
 // Finds a game by id in any week, and fails the test if it is not in the season file.
 function game(id: string): SeasonGame {
   for (const week of season.weeks) {
@@ -35,7 +32,6 @@ function game(id: string): SeasonGame {
   throw new Error(id);
 }
 
-// Made-up answers, one per side, so a result line can be checked for a right and a wrong pick.
 // Made-up answers, one for each side, so a result line can be checked for a right pick and a wrong pick.
 const homeWin: PredictResponse = {
   prediction: 1,
@@ -51,7 +47,6 @@ const awayWin: PredictResponse = {
   model_version: "v1.0",
 };
 
-// Week 5 is final, week 11 is the first upcoming week, and week 18 is a single day, so each label form is covered.
 // Week 5 is final, week 11 is upcoming, and week 18 is played on one day, so each label form is covered.
 it("writes week labels from the date text", () => {
   const week5 = season.weeks.find((week) => week.week === 5);
@@ -65,7 +60,6 @@ it("writes week labels from the date text", () => {
   expect(weekLabel(week18)).toBe("Week 18 · Jan 10 · Upcoming");
 });
 
-// 00:30 and 12:00 are the edge cases for a 12-hour clock.
 // 00:30 and 12:00 are the two cases a 12-hour clock most often gets wrong.
 it("writes kickoff times in Eastern time", () => {
   expect(kickoffLabel("20:15")).toBe("8:15 PM ET");
@@ -74,6 +68,7 @@ it("writes kickoff times in Eastern time", () => {
   expect(kickoffLabel("12:00")).toBe("12:00 PM ET");
 });
 
+// An upcoming game has no score, a final adds the score, and a tie is labeled Tie.
 it("writes a game label for an upcoming game, a final, and the tie", () => {
   expect(gameLabel(game("2026_11_IND_HOU"), names)).toBe(
     "Thu Nov 19 · 8:15 PM ET · Indianapolis Colts at Houston Texans",
@@ -86,8 +81,6 @@ it("writes a game label for an upcoming game, a final, and the tie", () => {
   );
 });
 
-// Week 11 is the first upcoming week, so its standings are the ones in team-profiles.json.
-// toBe is used because both sides must give the exact same 64-bit number.
 // Week 11 is the first upcoming week, so its standings must be the ones in team-profiles.json. toBe is used
 // because both paths must give the exact same 64-bit number.
 it("uses the profiles file for the week 11 Colts at Texans game", () => {
@@ -102,7 +95,6 @@ it("uses the profiles file for the week 11 Colts at Texans game", () => {
   expect(request.point_diff_per_game_differential).toBe(expected.point_diff_per_game_differential);
 });
 
-// No games are played before week 1, so every team has the same standings and both differences are 0.
 // No games come before week 1, so every team has the same starting standings and both differences are 0.
 it("gives every week 1 game two zeros", () => {
   const week1 = season.weeks.find((week) => week.week === 1);
@@ -116,6 +108,7 @@ it("gives every week 1 game two zeros", () => {
   }
 });
 
+// Seattle won 13 to 10 at home, so the home-win answer is right and the away-win answer is wrong.
 it("writes a result line for a right pick, a wrong pick, the tie, and nothing for an upcoming game", () => {
   const finished = game("2026_01_NE_SEA");
   expect(resultLine(finished, homeWin, names)).toBe(
@@ -130,9 +123,8 @@ it("writes a result line for a right pick, a wrong pick, the tie, and nothing fo
   expect(resultLine(game("2026_11_IND_HOU"), homeWin, names)).toBeNull();
 });
 
-// The test finds any game the schedule marks as neutral site. An ordinary home game must give null.
 // Uses the first game the schedule marks as neutral site. An ordinary home game must give no neutral line.
-// defaultWeek returns the first week marked upcoming.
+// defaultWeek returns the first week marked upcoming, which is week 11 in the current file.
 it("names a neutral site and starts on week 11", () => {
   const neutral = season.weeks.flatMap((week) => week.games).find((item) => item.neutral_site);
   const homeGame = game("2026_11_IND_HOU");

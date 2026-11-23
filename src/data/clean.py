@@ -8,8 +8,9 @@ import pandas as pd
 
 from src.config import data_file, load_config, season_window
 
-# The only columns that are saved. The raw file has 46. The rest (venue, pre-game market
-# columns, people, and ids from other data sources) are not used by this project.
+# The only columns that are saved. The raw file has 46. The other 39 (such as the date and
+# kickoff time, the stadium and weather, the coaches and quarterbacks, and ids from other data
+# sources) are not used by the model.
 KEPT_COLUMNS = [
     "game_id",
     "season",

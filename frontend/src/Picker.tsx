@@ -1,4 +1,5 @@
 // A list the page draws itself, so an open list is solid and can cover the button under it.
+// App.tsx uses it for each choice list on the site.
 // A native <select> opens a list the operating system draws, and on macOS that list is
 // translucent, so the button below showed through it. Every list on the site uses this instead.
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
@@ -169,8 +170,8 @@ export function Picker(props: {
     }
   }
 
-  // The button's name is the label followed by its own text. The visible value is hidden from the
-  // accessibility tree, so the name a test or a screen reader finds is exactly the label. The list
+  // The button's name is the label followed by its own text. The visible value is marked aria-hidden, so
+  // the accessibility tree skips it, so the name a test or a screen reader finds is exactly the label. The list
   // is rendered only while open. mousedown is prevented on each option, so a click does not take
   // focus away from the button before the choice is made.
   return (

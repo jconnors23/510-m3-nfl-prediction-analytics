@@ -1,4 +1,4 @@
-// Calls the /predict endpoint. Every outcome comes back as a result value, and a call that
+// Calls the /predict endpoint (the feedback call lives in feedback.ts). Every outcome comes back as a result value, and a call that
 // never answers is cut off after a timeout, so the page never waits forever.
 
 import type { PredictOutcome, PredictRequest, PredictResponse } from "./types.ts";

@@ -10,7 +10,8 @@ export interface FeedbackForm {
   message: string;
 }
 
-// The category names the feedback function accepts.
+// The category names the feedback function accepts. Keep in step with CATEGORIES in
+// src/api/feedback_handler.py.
 const CATEGORIES = ["general", "predictions", "site", "broken"];
 
 // The same rules as the feedback function, so the page can refuse a body before it is sent.
@@ -22,7 +23,8 @@ export function checkFeedback(form: FeedbackForm): string | null {
   if (rating !== null && (!Number.isInteger(rating) || rating < 1 || rating > 5)) {
     return "The rating must be a whole number from 1 to 5, or empty.";
   }
-  // Trimmed, so a message of only spaces does not count as 10 characters.
+  // Trimmed, so a message of only spaces does not count as 10 characters. The 10 and 1,000
+  // limits are the server's own.
   const length = form.message.trim().length;
   if (length < 10 || length > 1000) {
     return "The message must be 10 to 1,000 characters.";

@@ -1,5 +1,3 @@
-// Tests the table rows, sorting, and number formatting in teamStats.ts against the real committed season and
-// profile files. No fetch, no browser, no network.
 // Tests the table rows, sorting, and number formatting in teamStats.ts against the real committed season and profile files.
 // No fetch, no browser, no network.
 import { expect, it } from "vitest";
@@ -13,7 +11,6 @@ const season = rawSeason as Season;
 const profiles = rawProfiles as TeamProfiles;
 const names = Object.fromEntries(profiles.teams.map((team) => [team.team, team.name]));
 
-// Both teams are 8-1, so the next sort key, point margin per game (highest first), puts the Bills ahead.
 // Both teams are 8-1, so the second sort key (point margin per game, highest first) puts the Bills ahead.
 it("starts with the Bills, then the 49ers", () => {
   const rows = sortRows(teamRows(season, names), "win_pct", "desc");
@@ -26,7 +23,6 @@ it("starts with the Bills, then the 49ers", () => {
   expect(rows[1]?.losses).toBe(1);
 });
 
-// Descending must give the exact reverse of ascending, so the same three teams end the list in the opposite order.
 // Fewer points allowed is better, so ascending puts the best defenses first. Descending must reverse the same three teams.
 it("sorts points against from low to high, and again reverses it", () => {
   const rows = teamRows(season, names);
@@ -37,6 +33,7 @@ it("sorts points against from low to high, and again reverses it", () => {
   expect(descending.slice(-3).map((row) => row.team)).toEqual(["KC", "JAX", "MIN"]);
 });
 
+// Win % has three decimals, and the margin has one decimal with a sign.
 it("formats win percentage and margin the way the table shows them", () => {
   const rows = teamRows(season, names);
   const bills = rows.find((row) => row.team === "BUF");
@@ -47,7 +44,6 @@ it("formats win percentage and margin the way the table shows them", () => {
   expect(formatWinPct(bills.win_pct)).toBe("0.889");
   expect(formatMargin(bills.point_diff_per_game)).toBe("+9.8");
   expect(formatMargin(patriots.point_diff_per_game)).toBe("-2.1");
-  // A margin that rounds to zero must show with no sign, so -0.04 is not shown as -0.0.
   // A tiny margin rounds to zero and must show without a sign, so -0.04 is not shown as -0.0.
   expect(formatMargin(0.04)).toBe("0.0");
   expect(formatMargin(-0.04)).toBe("0.0");

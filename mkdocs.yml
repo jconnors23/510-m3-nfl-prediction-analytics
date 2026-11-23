@@ -4,18 +4,11 @@ site_name: NFL Prediction Analytics
 site_url: https://jconnors23.github.io/510-m3-nfl-prediction-analytics/
 repo_url: https://github.com/jconnors23/510-m3-nfl-prediction-analytics
 repo_name: 510-m3-nfl-prediction-analytics
-# The header shows two plain links, to the repository and to the live web app, from
-# overrides/partials/source.html. It replaces the theme's repository box, which also fetched and
-# showed the star and fork counts.
-extra:
-  web_app_url: https://d1nubiunzfwm0q.cloudfront.net
 site_description: Pre-game NFL matchup prediction. A reproducible machine learning pipeline, served through an AWS API and a Vite web app.
 copyright: NFL Prediction Analytics is a coursework project in sports analytics and machine learning. It is not affiliated with or endorsed by the National Football League.
 
 theme:
   name: material
-  # Template overrides. Only partials/source.html, the header links, is replaced.
-  custom_dir: overrides
   # A light and a dark scheme in the web app's colors (white, black, purple,
   # orange, gold, silver, and amber). The site starts in the reader's system
   # setting, and the toggle in the header switches between the two. The exact
