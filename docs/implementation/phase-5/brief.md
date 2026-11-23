@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Brief: Web App and Hosting
 
-**Status: Parts 1 and 2 built and hosted.** The site is live at **[https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)**. Part 1 built one prediction page. Part 2 turned it into a five-tab site, NFL Prediction Analytics. See [Implementation Part 2](./implementation-part-2.md). One phone layout fix is next.
+**Status: Parts 1 and 2 built and hosted.** The site is live at **[https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)**. Part 1 built one prediction page. Part 2 turned it into a five-tab site, NFL Prediction Analytics. See [Implementation Part 2](./implementation-part-2.md). The fixes found in review, including the phone layout, are done.
 
 **Needs first:** Phase 4, whose output is the public API at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`, and Node.js with npm (Node 22.12 or later, or 24; this computer has 24.17.0 and npm 11.13.0).
 
@@ -92,8 +92,8 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 - [x] **Step 14. Build the season file** with `python -m src.season`: every 2026 game, with the standings before each week and each team's totals.
 - [x] **Step 15. Rename the site and tidy the header:** NFL Prediction Analytics, the disclaimer and the model version once each at the top, and an "Analyze" button.
 - [x] **Step 16. Add the tabs:** Overview, Games by Week, Custom Matchup (with a week list), Team Stats, and Feedback.
-- [x] **Step 17. Add the feedback route:** a DynamoDB table, a small function, and `POST /feedback` on the same API. The prediction function is not changed.
-- [x] **Step 18. Add a Makefile** with five local commands: `pytest`, `webtest`, `start`, `start-web`, and `docs`.
+- [x] **Step 17. Add the feedback route:** a DynamoDB table, a small function, and `POST /feedback` on the same API. The prediction function is not changed. See [The Feedback Form](../extras/feedback-form.md).
+- [x] **Step 18. Add a Makefile** with the local commands. It now has nine, listed in [Which Make Commands Are There?](../extras/developer-tools.md#which-make-commands-are-there).
 - [x] **Step 19. Check every game,** all 272, in the browser's arithmetic and through the live API, then redeploy.
 - [x] **Step 21. Keep a log of every training run** in `mlflow-reference/`: `make train` moves the last run into `previous-runs/`, writes the new one to `latest-run/`, and adds a row to `run-history.md`. See [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run).
 - [x] **Step 20. Fix what review found:** the phone width, the cramped forms, the see-through lists, two hand-typed weeks, and the wording. See [What Was Fixed After Review?](./implementation-part-2.md#what-was-fixed-after-review).

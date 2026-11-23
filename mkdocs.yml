@@ -93,6 +93,15 @@ nav:
           - Implementation Part 2: implementation/phase-5/implementation-part-2.md
           - Development Guide: implementation/phase-5/development-guide.md
           - Deployment Guide: implementation/phase-5/deployment-guide.md
+      - "Phase 6: Docker":
+          - Brief: implementation/phase-6/brief.md
+          - Implementation: implementation/phase-6/implementation.md
+          - Development Guide: implementation/phase-6/development-guide.md
+      - "Extras: Tools and Add-Ons":
+          - Brief: implementation/extras/brief.md
+          - Make Commands and Workflows: implementation/extras/developer-tools.md
+          - Feedback Form: implementation/extras/feedback-form.md
+          - Confusion-Matrix Picture: implementation/extras/confusion-matrix.md
       - "Remaining Phases (Planned)": implementation/remaining-phases.md
       - Decisions: implementation/decisions.md
       - Glossary: implementation/glossary.md

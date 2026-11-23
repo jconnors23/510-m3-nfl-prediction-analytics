@@ -431,27 +431,7 @@ Every name follows the pattern of the data bucket, `510-m3-nfl-dataset`: lowerca
 
 ## How Does a Change Reach the Live Page?
 
-A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, redeploys the page when a change under `frontend/` reaches `main`. It can also be started by hand from the repository's Actions tab. Its first run, on the merge of `phase-five` into `main`, passed.
-
-```mermaid
-flowchart TB
-    A["Change under frontend/<br/>reaches main"] --> B["npm ci, npm test,<br/>npm run build"]
-    B --> C["Check the build names<br/>no outside address"]
-    C --> D["Sign in to AWS<br/>as the deploy role"]
-    D --> E["Upload the hashed files,<br/>then index.html"]
-    E --> F["Invalidate / and /index.html,<br/>and wait"]
-    F --> G["Compare every served file<br/>with the build, byte for byte"]
-    G --> H["Write a summary<br/>for the run"]
-```
-
-- **A failed test or check stops the run before anything is uploaded.** On GitHub, the every-game checks' expected files do not exist, so those tests are skipped: since Part 2, the run expects 54 passed and 2 skipped.
-- **No AWS key is stored in GitHub.** The run asks GitHub for a signed token that names the repository and the branch. AWS checks it against the GitHub sign-in provider (OpenID Connect) and trades it for the deploy role's credentials, which last at most an hour.
-- **Only `main` of this repository can use the role.** The role trusts the token only when it names `repo:jconnors23/510-m3-nfl-prediction-analytics:ref:refs/heads/main`. A run on another branch, a pull request, or a fork fails at the sign-in step.
-- **The role can do two things:** upload files into the web app bucket (`s3:PutObject`), and create and read invalidations on this one distribution. It cannot delete, list, or change settings, and it has no access to the data bucket, the Lambda function, the API, or any other distribution.
-- **The role's address is the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`.** It is a secret only because it holds the account number.
-- **One run at a time.** A second run waits for the first, so two uploads never overlap.
-- **A summary on every run.** The summary step runs even when an earlier step failed, and writes `not checked` for a step that did not run, so a failed run still says how far it got.
-- **The same steps as by hand.** The upload, the cache settings, and the invalidation are the ones in the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
+A GitHub Actions workflow, `.github/workflows/deploy-web-app.yml`, tests, builds, and redeploys the page when a change under `frontend/` reaches `main`, signing in to AWS without a stored key. Its first run, on the merge of `phase-five` into `main`, passed. The workflow serves every phase, so its steps and its AWS role are explained in [How Does a Change Reach the Live Web App?](../extras/developer-tools.md#how-does-a-change-reach-the-live-web-app).
 
 ## Which Tests Pin These Contracts?
 

@@ -46,7 +46,7 @@ mlflow-reference/
 ```
 
 - **A previous run's folder name** is the run's start time in UTC, then the first 8 characters of its run id, for example `2026-11-22T21-40-33Z_0086979f`. The `:` in the time is written as `-`, so the name works on every computer. The names sort in time order.
-- **Each run adds about 40 KB.** Most of that is the confusion-matrix picture.
+- **Each run adds about 95 KB.** Most of that is the confusion-matrix picture (87 KB). Runs from before the picture was redrawn are about 40 KB each.
 - **The history is built from the folders here,** not from MLflow's database. It reads the same in any copy of the repository.
 - **Running the export twice on the same run changes nothing.** The run is archived only when a newer run replaces it.
 - **Runs from before the history began** are added once with `python -m src.model.export_mlflow --backfill`.
@@ -93,10 +93,10 @@ make train
 ```
 
 ```bash
-mlflow ui --backend-store-uri sqlite:///mlflow.db
+make start-web-ml
 ```
 
-Open the address it prints (`http://127.0.0.1:5000`, or add `--port 5001` if 5000 is taken, as it is by macOS Control Center), and choose the experiment `nfl-pregame-winner-v1`. The screen lists every run in your local database. This folder lists every run that was exported.
+Open `http://127.0.0.1:5001` and choose the experiment `nfl-pregame-winner-v1`. The command runs `mlflow ui` on port 5001, because macOS Control Center often holds MLflow's default port, 5000. The screen lists every run in your local database. This folder lists every run that was exported.
 
 ## Where to Read More
 

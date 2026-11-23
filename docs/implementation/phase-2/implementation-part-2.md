@@ -216,38 +216,9 @@ The model picks the home team in 172 of 271 games (63.5%), more often than home 
 
 ### Which Plot Is Drawn?
 
-One image is drawn for the validation season with matplotlib's non-window drawing mode (`Agg`), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.
+One image, `confusion_matrix_validation.png`, is drawn for the validation season by `plot_confusion_matrix` in `src/model/evaluate.py`. It uses matplotlib's non-window drawing mode (`Agg`), so no window opens. It is saved to a temporary folder, stored in the MLflow run, and then removed, so no image is left in the project.
 
-- **`confusion_matrix_validation.png`:** the table above as a heat map, with the count written in each cell.
-- **Wording:** the title is bold ("Validation 2025: Predicted vs Actual", with the year read from the games in the group), a one-line takeaway under it says how many games were picked correctly (171 of 271), and both axis labels are bold.
-
-```python
-def plot_confusion_matrix(pipeline, group, path) -> Path:
-    """Save the group's confusion matrix and return the image path."""
-    probability = pipeline.predict_proba(group[INPUT_COLUMNS])[:, 1]
-    # The same 0.5 rule as the score, so the picture counts the same picks.
-    picked_home = (probability > 0.5).astype(int)
-    matrix = confusion_matrix(group["home_win"], picked_home, labels=[0, 1])
-    figure, axes = plt.subplots(figsize=(5, 4.5))
-    ConfusionMatrixDisplay(matrix, display_labels=["Away win", "Home win"]).plot(
-        ax=axes,
-        colorbar=False,
-        cmap="Blues",
-        values_format="d",
-    )
-    # The year comes from the games in this group, so a different validation season renames the figure.
-    season = int(group["season"].iloc[0])
-    correct = int((picked_home == group["home_win"].to_numpy()).sum())
-    figure.suptitle(f"Validation {season}: Predicted vs Actual", fontweight="bold")
-    axes.set_title(f"{correct} of {len(group)} games were picked correctly")
-    axes.set_xlabel(axes.get_xlabel(), fontweight="bold")
-    axes.set_ylabel(axes.get_ylabel(), fontweight="bold")
-    destination = Path(path)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    figure.savefig(destination, dpi=150, bbox_inches="tight")
-    plt.close(figure)
-    return destination
-```
+The picture shows the table above, with correct picks in purple, wrong picks in orange, and each cell's share of its row. It was redrawn after this phase. The picture, and what changed from the first version, are on [The Confusion-Matrix Picture](../extras/confusion-matrix.md).
 
 ## Step 6: Record the Run in MLflow
 

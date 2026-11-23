@@ -49,7 +49,7 @@ What must be true first:
 
 ## Check the Account
 
-1. Run both test suites with `make pytest` and `make webtest`. The Python tests give **78 passed**. The app tests give **56 passed**, or **54 passed and 2 skipped** without the expected files in `build/`.
+1. Run both test suites with `make pytest` and `make web-test`. The Python tests give **90 passed**. The app tests give **62 passed**, or **60 passed and 2 skipped** without the expected files in `build/`.
 
 ```bash
 python -m pytest -q
@@ -403,7 +403,7 @@ curl -sS -D - -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/pre
 
 ## Let GitHub Actions Deploy
 
-These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on the [Implementation](./implementation-part-1.md#how-does-a-change-reach-the-live-page) page. Write the two policy files with the real account number, under `build/`, which git ignores.
+These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/developer-tools.md#how-does-a-change-reach-the-live-web-app). Write the two policy files with the real account number, under `build/`, which git ignores.
 
 29. Confirm there is no GitHub sign-in provider and no role with this name yet. The second command should fail with `NoSuchEntity`.
 
@@ -502,7 +502,7 @@ gh secret set AWS_WEB_APP_DEPLOY_ROLE_ARN --repo jconnors23/510-m3-nfl-predictio
 
 ## Add the Feedback Route
 
-These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [Implementation Part 2](./implementation-part-2.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
+These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [The Feedback Form](../extras/feedback-form.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
 
 37. Confirm nothing exists yet. The first three commands should fail with "not found", and the last should list only `POST /predict` and `GET /health`.
 

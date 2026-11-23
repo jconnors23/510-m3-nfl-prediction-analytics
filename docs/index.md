@@ -75,9 +75,18 @@ Each phase ends with something that runs. Git commits and pull requests are done
 - Give the page a light and a dark theme, bundled fonts, and bold disclaimers. A GitHub Actions workflow redeploys it whenever the app changes on `main`.
 - See the [implementation page](./implementation/phase-5/implementation-part-1.md) for the contracts and the hosting, the [Development Guide](./implementation/phase-5/development-guide.md) to run and change the app, and the [Deployment Guide](./implementation/phase-5/deployment-guide.md) for the AWS commands.
 
+**[Phase 6: Docker](./implementation/phase-6/brief.md)** (built)
+
+- Package the project in one Dockerfile with a `train` target and a `serve` target, so it trains and serves from a container.
+- Check that the container writes the same run summary as the committed one, and answers the worked example with the same 0.3296 as the local API.
+- See the [implementation page](./implementation/phase-6/implementation.md) for what goes into the image and what was checked, and the [Development Guide](./implementation/phase-6/development-guide.md) to build and run it.
+
+**[Extras: Tools and Add-Ons](./implementation/extras/brief.md)** (built, README to come)
+
+- Work that belongs to no one phase: the [make commands and GitHub workflows](./implementation/extras/developer-tools.md), the [feedback form](./implementation/extras/feedback-form.md), the redrawn [confusion-matrix picture](./implementation/extras/confusion-matrix.md), the MLflow run history, the docs site, and the README.
+
 **[Remaining Phases](./implementation/remaining-phases.md)** (planned)
 
-- **Phase 6:** package the project in Docker.
 - **Phase 7:** write the README and finish the documentation.
 - **Phase 8:** review the finished project against the requirements.
 

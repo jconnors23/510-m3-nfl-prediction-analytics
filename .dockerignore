@@ -1,0 +1,21 @@
+# Everything is left out of the image unless it is listed below with "!". Listing what to
+# include is safer than listing what to leave out, because a new private file (a key, a local
+# database, a .env) is excluded without anyone having to remember it.
+*
+
+# What the image needs: the pinned packages, the test settings, the code, the settings file,
+# the committed data, the committed run summary, and the two JSON files the season and
+# profiles tests compare against.
+!requirements.txt
+!pytest.ini
+!config/
+!src/
+!tests/
+!data/
+!results/
+!frontend/src/data/
+
+# Files Python and macOS make by themselves, even inside the folders above.
+**/__pycache__
+**/*.py[cod]
+**/.DS_Store
