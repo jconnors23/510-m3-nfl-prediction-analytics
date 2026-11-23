@@ -44,9 +44,11 @@ docs:
 
 # Build the Docker train target and run one training inside it. The container's results/ is
 # this computer's build/docker/results/, so the run summary it writes can be compared with
-# results/run-summary.json. build/ is git-ignored.
+# results/run-summary.json. build/ is git-ignored. The container runs as user 10001. On Linux
+# the mounted folder keeps this computer's permissions, so it has to be writable by that user.
 docker-train:
 	mkdir -p build/docker/results
+	chmod a+rwx build/docker/results
 	docker build --target train -t 510-m3-nfl-train .
 	docker run --rm -v "$(CURDIR)/build/docker/results:/app/results" 510-m3-nfl-train
 
