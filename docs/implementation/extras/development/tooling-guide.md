@@ -5,7 +5,7 @@ hide:
 
 # Tooling Guide
 
-This page lists every tool the project uses, the version it is pinned to or requires, and where it is used. It covers Python and its packages, the web app's packages, containers, the cloud command line, the docs tools, and the automation. It is for anyone setting up a new machine or checking whether a version change is safe. For what each tool is, see the [Glossary](../glossary.md). The AI tools used to build the project are not covered here.
+This page lists every tool the project uses, the version it is pinned to or requires, and where it is used. It covers Python and its packages, the web app's packages, containers, the cloud command line, the docs tools, and the automation. For what each tool is, see the [Glossary](../glossary.md).
 
 ## Which Versions Are Exact?
 

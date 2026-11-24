@@ -5,7 +5,7 @@ hide:
 
 # Phase 4 Deployment Guide
 
-This guide holds every AWS command for the Phase 4 API: the commands that built and deployed it, in order, the commands to redeploy it or change its settings, and the commands that remove it. Each step is explained in the [Phase 4 Implementation](./implementation.md). To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
+This guide holds every AWS command for the Phase 4 API, in order: deploy it, redeploy it, change its settings, and remove it. Each step is explained in the [Phase 4 Implementation](./implementation.md). To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
 
 ## How Do the Sections Fit Together?
 
@@ -36,7 +36,7 @@ flowchart TB
 
 Run these from the project folder, in order. Resource names stay as written. `<account-id>`, `<api-id>`, and `<integration-id>` stand in for values that differ between accounts.
 
-Why these settings: accuracy is the only requirement for this deployment. Latency and cost are not concerns. Memory is 1769 MB and may be changed if it helps, but it is not a priority. `JOBLIB_MULTIPROCESSING=0` stops a harmless joblib warning about multiprocessing, which Lambda does not provide.
+About the settings: memory is 1769 MB and was left untuned. `JOBLIB_MULTIPROCESSING=0` stops a harmless joblib warning about multiprocessing, which Lambda does not provide.
 
 Before the first command:
 
@@ -319,7 +319,7 @@ curl -sS -D - -o /dev/null -X OPTIONS https://<api-id>.execute-api.us-east-1.ama
 
 ## Check the Deployed Model Against the Local Model
 
-These checks confirm the function is running the zip built here, and that every game gets the same answer as the local model. The expected hash of the zip is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=`, and the zip is 63,452,500 bytes. These are the values for the zip that is deployed. A later rebuild from the same files (made in Phase 7 and not deployed) came to 63,452,901 bytes, so a new zip will not match these two values, and its hash is the one to compare with `CodeSha256` after a redeploy. Both copies of the model hash to `8fff766505a925218eae2484ae56a8ba7baed06b62ce3413ea33c8eb15e8ea4b`. The data file hashes to `7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`, the same value as `data_sha256` in `results/run-summary.json`.
+These checks confirm the function is running the zip built here, and that every game gets the same answer as the local model. The deployed zip is 63,452,500 bytes, with the hash `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=`. A later rebuild (made in Phase 7 and not deployed) came to 63,452,901 bytes, so a new zip will not match these two values. After a redeploy, compare the new zip's hash with `CodeSha256` instead. Both copies of the model hash to `8fff766505a925218eae2484ae56a8ba7baed06b62ce3413ea33c8eb15e8ea4b`. The data file hashes to `7219e8a8672b900af9facbb54d8a28f9f2a34df9ede3b8385a735768082517fb`, the same value as `data_sha256` in `results/run-summary.json`.
 
 ```bash
 openssl dgst -sha256 -binary build/510-m3-nfl-predict-api.zip | base64
@@ -349,7 +349,7 @@ aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --r
 .venv/bin/python scripts/checks/parity_check.py
 ```
 
-The script `scripts/checks/parity_check.py` is committed. Run it from the project folder with the command above. It writes its results to `build/parity-results.json`, in the git-ignored `build/` folder. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. The parity run sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
+The committed script `scripts/checks/parity_check.py` writes its results to `build/parity-results.json`. It builds the local answers with the saved model and `src.model.features`, then posts each game to the public `/predict` route one at a time. It sends 1,759 games and should print 0 retries, 1,759 status 200 answers, 1,759 exact picks, 1,759 exact probabilities, a largest difference of 0, and these correct counts: training 820 of 1,339, validation 171 of 271, test 88 of 149.
 
 ## Redeploy After a Change
 
@@ -407,7 +407,7 @@ aws lambda get-function-configuration --function-name 510-m3-nfl-predict-api --r
 openssl dgst -sha256 -binary build/510-m3-nfl-predict-api.zip | base64
 ```
 
-8. Check the public address and every game, with the commands in [Check the Deployed Model Against the Local Model](#check-the-deployed-model-against-the-local-model). Accuracy is the only priority for this deployment, so repeat this check whenever the model, the packages, or the API code change.
+8. Check the public address and every game, with the commands in [Check the Deployed Model Against the Local Model](#check-the-deployed-model-against-the-local-model). Repeat this check whenever the model, the packages, or the API code change.
 
 ## Change a Setting Without New Code
 
@@ -423,7 +423,7 @@ aws lambda wait function-updated --function-name 510-m3-nfl-predict-api --region
 
 - **Current values:** 1769 MB of memory, a 10-second timeout, and the one environment variable `JOBLIB_MULTIPROCESSING=0`. See [Step 5](./implementation.md#step-5-create-the-role-and-the-function).
 - **`--environment` replaces every variable.** If you pass it, pass all of them together, for example `--environment "Variables={JOBLIB_MULTIPROCESSING=0}"`. Leave it out when you change only the memory.
-- **Memory sets how much CPU the function gets, not what code it runs,** and it is not a priority here. Whatever you change, repeat the every-game check at the end of [Redeploy After a Change](#redeploy-after-a-change).
+- **Memory sets how much CPU the function gets, not what code it runs.** After any change, repeat the every-game check at the end of [Redeploy After a Change](#redeploy-after-a-change).
 
 ## Change the CORS List
 
@@ -433,7 +433,7 @@ CORS is set on the API Gateway, not in the app. The command replaces the whole s
 aws apigatewayv2 update-api --api-id <api-id> --cors-configuration file://build/cors.json --region us-east-1
 ```
 
-The `<api-id>` is the part of the public address before `.execute-api`. The list now allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/implementation-part-1.md#the-preflight).
+The `<api-id>` is the part of the public address before `.execute-api`. The deployed list allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/implementation-part-1.md#the-preflight).
 
 ## Remove Everything
 

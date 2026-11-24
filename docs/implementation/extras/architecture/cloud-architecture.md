@@ -5,7 +5,7 @@ hide:
 
 # Cloud Architecture
 
-This page lists every cloud resource the project uses, with its exact name and settings, and shows how they connect. Most are on AWS, in the region `us-east-1`. The docs site you are reading is on GitHub Pages, which is not AWS but is part of what is published. The page is a map for a reader who wants the whole picture in one place. The commands that create each resource are in the deployment guides, which this page links to and does not copy.
+This page lists every cloud resource the project uses, with its exact name and settings, and shows how they connect. Most are on AWS in the region `us-east-1`. The docs site is on GitHub Pages, which is not AWS. The commands that create each resource are in the deployment guides, which this page links to and does not copy.
 
 ## How Does Everything Connect?
 
@@ -51,11 +51,11 @@ flowchart TB
 
 The Test Python and Test Web App workflows also run on the repository, but they reach no cloud resource.
 
-The browser talks to two separate front doors: CloudFront for the page, and API Gateway for predictions and feedback. How the two talk to each other is on [Frontend and Backend Connection](./frontend-backend-connection.md).
+The browser talks to two separate front doors: CloudFront for the page, and API Gateway for predictions and feedback. See [Frontend and Backend Connection](./frontend-backend-connection.md).
 
 ## Which Settings Apply to Every Resource?
 
-- **Region:** `us-east-1`. CloudFront is a global service, but its commands are still passed this region so every line looks alike.
+- **Region:** `us-east-1`. CloudFront is global, but its commands still pass this region.
 - **Tag:** `project=510-m3` on every resource that supports tags.
 - **Names:** lowercase words joined by hyphens, starting `510-m3-nfl-`, then what the thing is. The exceptions are ids that AWS assigns, such as the API id `9awodatqc5` and the distribution id `E1ZD23BE9RM77L`.
 - **Account number:** never written in the docs. Role addresses use `<account-id>` in its place.
@@ -66,7 +66,7 @@ The browser talks to two separate front doors: CloudFront for the page, and API 
 
 - **Holds:** one object, `data/processed/nfl_matchups_2020_2026.csv` (63,908 bytes), the cleaned game table. It also briefly holds the Lambda zip under the key `deploy/510-m3-nfl-predict-api.zip`. The zip is over the console's 50 MB direct-upload limit, so it is staged here and deleted after the function is created or updated.
 - **Settings:** all four public-access blocks on, AES-256 encryption, versioning off.
-- **Read by:** the developer's computer, with the developer's own AWS sign-in, through `python -m src.data.download_from_s3`. Nothing on the internet and no Lambda function reads it. The prediction function's role has no access to it.
+- **Read by:** the developer's computer, with the developer's own AWS sign-in, through `python -m src.data.download_from_s3`. No Lambda function reads it, and the prediction function's role has no access to it.
 - **More:** [How Is the Cloud Storage Set Up?](../../phase-1/development-guide.md#how-is-the-cloud-storage-set-up).
 
 ## What Runs the Predictions?
@@ -90,7 +90,7 @@ The browser talks to two separate front doors: CloudFront for the page, and API 
 
 ## What Saves the Feedback?
 
-The Feedback tab sends its message to a function of its own, so the prediction function and its zip stay unchanged. The page that owns the details is [Feedback Path](../features/feedback-path.md).
+The Feedback tab sends its message to a function of its own, so the prediction function and its zip stay unchanged. Details are on [Feedback Path](../features/feedback-path.md).
 
 - **The Lambda function `510-m3-nfl-feedback-api`:** Python 3.13 on `arm64`, 256 MB, a 5-second timeout, handler `src.api.feedback_handler.handler`. The zip holds one file, `src/api/feedback_handler.py`, and uses the `boto3` that Lambda provides. The environment variable `FEEDBACK_TABLE=510-m3-nfl-feedback` names the table.
 - **The role `510-m3-nfl-feedback-api-role`:** the same trust and the same log-writing policy as the prediction role, plus one inline policy, `510-m3-nfl-feedback-write`. That policy allows only `dynamodb:PutItem`, and only on the table `510-m3-nfl-feedback`.
@@ -113,7 +113,7 @@ The Feedback tab sends its message to a function of its own, so the prediction f
 
 ## Where Do the Logs Go?
 
-**CloudWatch Logs** keeps each function's output in its own log group: `/aws/lambda/510-m3-nfl-predict-api` and `/aws/lambda/510-m3-nfl-feedback-api`. Both groups keep logs for 14 days. Each function's role is what lets it write there. The deployment guide steps are in [Stage the Zip and Create the Function](../../phase-4/deployment-guide.md#stage-the-zip-and-create-the-function) and [Add the Feedback Route](../../phase-5/deployment-guide.md#add-the-feedback-route).
+**CloudWatch Logs** keeps each function's output in its own log group: `/aws/lambda/510-m3-nfl-predict-api` and `/aws/lambda/510-m3-nfl-feedback-api`. Both groups keep logs for 14 days. The setup steps are in [Stage the Zip and Create the Function](../../phase-4/deployment-guide.md#stage-the-zip-and-create-the-function) and [Add the Feedback Route](../../phase-5/deployment-guide.md#add-the-feedback-route).
 
 ## How Is the Web App Hosted?
 
@@ -160,4 +160,4 @@ No AWS key is stored in GitHub. The workflow `deploy-web-app.yml` asks GitHub fo
 | `510-m3-nfl-feedback-api-role` | Feedback Lambda function | Write its own logs, and `dynamodb:PutItem` on `510-m3-nfl-feedback` |
 | `510-m3-nfl-web-app-deploy-role` | The GitHub workflow, from `main` only | `s3:PutObject` on `510-m3-nfl-web-app/*`, and `cloudfront:CreateInvalidation` and `cloudfront:GetInvalidation` on `E1ZD23BE9RM77L`. It cannot delete, list, or change settings. |
 
-The policies above were read back from AWS with read-only commands. Nothing in GitHub can reach the Lambda functions. The model and API are deployed manually, as described in [What Is Not Automated?](../development/github-workflows.md#what-is-not-automated).
+Nothing in GitHub can reach the Lambda functions. The model and API are deployed manually, as described in [What Is Not Automated?](../development/github-workflows.md#what-is-not-automated).

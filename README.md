@@ -18,7 +18,7 @@ A pre-game NFL winner predictor, built as a small, complete machine learning sys
 
 The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline.
 
-The goals are the ones the course project sets: a cleaned dataset stored in the cloud, a pipeline driven by one settings file, every training run tracked, the model containerized and deployed as a public API, and a front end that calls it. Model accuracy is not the goal. A clean, repeatable process is.
+The project covers the full path: a cleaned dataset stored in the cloud, a pipeline driven by one settings file, every training run tracked, the model containerized and deployed as a public API, and a front end that calls it.
 
 ```mermaid
 flowchart TB
@@ -37,7 +37,7 @@ flowchart TB
 
 ## Dataset
 
-- **Source: [nflverse](https://github.com/nflverse).** The file is the nflverse games file, [`games.csv`](https://github.com/nflverse/nfldata/blob/master/data/games.csv), from the [`nfldata`](https://github.com/nflverse/nfldata) repository maintained by Lee Sharpe. It has one row per NFL game since 1999, with the final score of every finished game. This project is not affiliated with nflverse.
+- **Source: [nflverse](https://github.com/nflverse).** The file is the nflverse games file, [`games.csv`](https://github.com/nflverse/nfldata/blob/master/data/games.csv), sourced from the nflverse [`nfldata`](https://github.com/nflverse/nfldata) repository. It has one row per NFL game since 1999, with the final score of every finished game. This project is not affiliated with nflverse.
 - **Games used:** regular-season games from 2020 through week 10 of 2026, without ties: **1,759 games**. Week 10 is the last week of 2026 in which every game had a final score when the data was taken.
 - **Cleaned table:** 7 columns, saved as `data/processed/nfl_matchups_2020_2026.csv`, uploaded to a private S3 bucket, and downloaded back, so every later step starts from the cloud copy.
 - **Committed copies:** the raw file, the cleaned table, and the copy downloaded from S3 are all in `data/`, so the project trains with no download and no AWS account.
@@ -87,9 +87,9 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-Run both commands. If a `.venv` folder is already there, delete it and run them again. Python 3.13 is the interpreter the Docker image and Lambda use.
+If a `.venv` folder is already there, delete it and run both commands again. Python 3.13 is the interpreter the Docker image and Lambda use.
 
-Start Docker Desktop. `docker version` should print a Client section and a Server section. On Windows, use the Ubuntu terminal, not PowerShell. Turn on WSL integration for that distro (Settings, Resources, WSL Integration) and open a new terminal there.
+Start Docker Desktop. `docker version` should print a Client section and a Server section. On Windows, use the Ubuntu terminal and turn on WSL integration for that distro (Settings, Resources, WSL Integration).
 
 ### Train the Model
 
@@ -109,7 +109,7 @@ Expected: **95 passed** after training, or 93 passed and 2 skipped before (two t
 
 ### Test the API Locally
 
-The API has to answer on this computer. `make start` loads `models/model.joblib` and listens at `http://127.0.0.1:8000`.
+`make start` loads `models/model.joblib` and listens at `http://127.0.0.1:8000`.
 
 ```bash
 make start
@@ -127,7 +127,7 @@ curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -
 
 ### Test the Same API in Docker
 
-The image has to train and serve on its own, and the prediction has to match the local API. Stop `make start` with Ctrl+C. The container uses the same address, `http://127.0.0.1:8000`.
+The container trains and serves on its own and gives the same prediction as the local API. Stop `make start` with Ctrl+C first, because the container uses the same address, `http://127.0.0.1:8000`.
 
 ```bash
 make docker-train
@@ -147,13 +147,13 @@ Install the web app's packages once, from inside `frontend/`:
 npm ci
 ```
 
-Start the local API again with `make start` (the container was using port 8000). From the project folder:
+Stop the container, then start the local API again with `make start`. From the project folder:
 
 ```bash
 make start-web
 ```
 
-Open `http://localhost:5173`. The web app's tests run with `make web-test` (62 passed).
+Open `http://localhost:5173`. The web app's tests run with `make web-test` (65 tests: 63 passed and 2 skipped without the files in `build/`).
 
 ### Deploy to the Cloud
 
@@ -197,7 +197,7 @@ Every make command is explained on [Makefile](./docs/implementation/extras/devel
   Dockerfile, .dockerignore   one image definition with train and serve targets
   Makefile                    the nine commands used most
   scripts/checks/             every-game checks of the live API against the local model
-  .github/workflows/          the two test workflows, and the docs and web app workflows
+  .github/workflows/          the four workflows: two test, two deploy
   docs/                       the documentation site
   requirements.txt            pinned Python packages
 ```

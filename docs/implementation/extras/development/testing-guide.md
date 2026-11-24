@@ -5,14 +5,14 @@ hide:
 
 # Testing Guide
 
-This page lists every automated check in the project and how to run it. There are two test suites, **95 Python tests** and **62 web app tests**, and a few larger checks that send every game to the live API. The page is for anyone who changes the code and wants to know what a passing run means, where it runs, and how to add a test. The make commands that run the suites are described in [Makefile](./makefile.md).
+This page lists every automated check in the project and how to run it. There are two test suites, **95 Python tests** and **65 web app tests**, and a few larger checks that send every game to the live API. It also explains where each suite runs and how to add a test. The make commands that run the suites are described in [Makefile](./makefile.md).
 
 ## Which Checks Exist?
 
 ```mermaid
 flowchart LR
     A["Python suite<br/>95 tests, 14 files in tests/"]
-    B["Web suite<br/>62 tests, 12 files in frontend/src/"]
+    B["Web suite<br/>65 tests, 12 files in frontend/src/"]
     C["Every-game checks<br/>against the live API<br/>from Phases 4 and 5"]
     A --> L["Laptop: make pytest"]
     A --> D["Docker images"]
@@ -58,7 +58,7 @@ Some tests in `tests/test_profiles.py` and `tests/test_season.py` are also marke
 
 ## What Does the Web Suite Cover?
 
-The suite is run with `make web-test`, which runs `npm test` (`vitest run`) inside `frontend/`. It holds **62 tests in 12 files**. The counts below come from counting the `it(` calls in each file.
+The suite is run with `make web-test`, which runs `npm test` (`vitest run`) inside `frontend/`. It holds **65 tests in 12 files**. The counts below come from counting the `it(` calls in each file.
 
 | File | Tests | What it covers and what it uses in place of the real thing |
 | :--- | :--- | :--- |
@@ -66,7 +66,7 @@ The suite is run with `make web-test`, which runs `npm test` (`vitest run`) insi
 | `frontend/src/App.test.tsx` | 16 | The whole page, driven the way a visitor would use it. `fetch` faked, the real committed JSON data, and jsdom (a browser stand-in that runs in Node). |
 | `frontend/src/config.test.ts` | 4 | The reading of the API address setting. Plain arguments, no stand-in needed. |
 | `frontend/src/feedback.test.ts` | 3 | The feedback form's check and the call to `/feedback`. `fetch` replaced through `vi.stubGlobal`. |
-| `frontend/src/matchup.test.ts` | 11 | The matchup math: the two inputs, sign flips, refused values, and the chance display. The real `team-profiles.json`. |
+| `frontend/src/matchup.test.ts` | 14 | The matchup math: the two inputs, sign flips, refused values, the chance display, and the sign and team shown for each input. The real `team-profiles.json`. |
 | `frontend/src/matchups.parity.test.ts` | 1 | The browser's inputs for every ordered pair of teams against Python's. Skips without its expected file. |
 | `frontend/src/Picker.test.tsx` | 3 | The team picker with the mouse, the keyboard, and screen-reader roles. Made-up options and jsdom. |
 | `frontend/src/profiles.test.ts` | 2 | The shape of `team-profiles.json`: 32 sorted teams and the two blocks. The real committed file. |
@@ -75,7 +75,7 @@ The suite is run with `make web-test`, which runs `npm test` (`vitest run`) insi
 | `frontend/src/tabs.test.ts` | 1 | Which tab opens for each address hash. The hash text passed in as an argument. |
 | `frontend/src/teamStats.test.ts` | 3 | The Team Stats table rows, sorting, and number format. The real season and profile files. |
 
-The 12 counts sum to 8 + 16 + 4 + 3 + 11 + 1 + 3 + 2 + 9 + 1 + 1 + 3 = **62**.
+The 12 counts sum to 8 + 16 + 4 + 3 + 14 + 1 + 3 + 2 + 9 + 1 + 1 + 3 = **65**.
 
 ### Which Two Tests Skip Without Their Expected Files?
 
@@ -84,7 +84,7 @@ The two parity tests compare numbers computed in the browser's code with numbers
 - **`matchups.parity.test.ts`** reads `build/expected-matchups.json`.
 - **`season.parity.test.ts`** reads `build/expected-season.json`.
 
-Each skips when its file is missing. A skipped test shows as skipped in the run, never as passed. The result is **62 passed** when both files exist and **60 passed and 2 skipped** when they do not.
+Each skips when its file is missing. A skipped test shows as skipped in the run, never as passed. The result is **65 passed** when both files exist and **63 passed and 2 skipped** when they do not.
 
 When they run, the tests also write `build/js-bodies.json` (every ordered pair's request text) and `build/season-bodies.json` (every 2026 game's request text). The live-API scripts read these files to send exactly what the browser would send.
 
@@ -101,12 +101,12 @@ The steps to run them are in [How Do I Check Every Matchup?](../../phase-5/devel
 
 | Where | Command | Python result | Web result |
 | :--- | :--- | :--- | :--- |
-| Laptop | `make pytest`, `make web-test` | 95 passed with a trained model | 62 passed with the two expected files in `build/` |
+| Laptop | `make pytest`, `make web-test` | 95 passed with a trained model | 65 passed with the two expected files in `build/` |
 | Docker train image | `docker run --rm 510-m3-nfl-train python -m pytest` | 93 passed, 2 skipped | not run |
 | Docker serve image | `docker run --rm 510-m3-nfl-serve python -m pytest` | 95 passed | not run |
 | GitHub, Test Python workflow | `make pytest PYTHON=python` | 93 passed, 2 skipped | not run |
-| GitHub, Test Web App workflow | `npm test` | not run | 60 passed, 2 skipped |
-| GitHub, Deploy Web App workflow | `npm test` | not run | 60 passed, 2 skipped |
+| GitHub, Test Web App workflow | `npm test` | not run | 63 passed, 2 skipped |
+| GitHub, Deploy Web App workflow | `npm test` | not run | 63 passed, 2 skipped |
 
 - **The train image** has no saved model until a container trains, so the two model tests skip. The **serve image** trains one while it is built, so all 95 run. See [Run the Tests in the Container](../../phase-6/development-guide.md#run-the-tests-in-the-container) and [Run the Tests in the Serve Image](../../phase-6/development-guide.md#run-the-tests-in-the-serve-image).
 - **The Test Python workflow** runs on each pull request, and on each change that reaches `main`. The runner has no model, so 2 tests skip.
@@ -117,7 +117,7 @@ How the workflows are set up is in [GitHub Workflows](./github-workflows.md).
 
 ## Which Larger Checks Were Run Against the Live API?
 
-These checks send many requests to the deployed API and compare each answer with the local model. They use the committed scripts in `scripts/checks/`, which write their results to the git-ignored `build/` folder. They were last run on the final model, and are repeated after a change to the model, the API, or the data. This page does not repeat their results. The scripts are `parity_check.py` (every game, Phase 4), `matchups_live.py` (every ordered pair of teams, Phase 5), and `season_live.py` (every 2026 game, Phase 5). The last two read the expected files made by `matchups_expected.py` and `season_expected.py`.
+These checks send many requests to the deployed API and compare each answer with the local model. They use the committed scripts in `scripts/checks/`, which write their results to the git-ignored `build/` folder. Repeat them after a change to the model, the API, or the data. The results are in the phase pages linked below. The scripts are `parity_check.py` (every game, Phase 4), `matchups_live.py` (every ordered pair of teams, Phase 5), and `season_live.py` (every 2026 game, Phase 5). The last two read the expected files made by `matchups_expected.py` and `season_expected.py`.
 
 - **Every game in Phase 4.** All 1,759 games in the model table, checked in [Step 10: Check the Deployed Model Against the Local Model](../../phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
 - **Every matchup in Phase 5.** All 992 ordered pairs of teams, described in [The Every-Matchup Check Against the Live API](../../phase-5/implementation-part-1.md#the-every-matchup-check-against-the-live-api), with the steps in [How Do I Check Every Matchup?](../../phase-5/development-guide.md#how-do-i-check-every-matchup).

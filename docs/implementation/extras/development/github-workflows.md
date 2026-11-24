@@ -5,7 +5,7 @@ hide:
 
 # GitHub Workflows
 
-Four GitHub Actions workflows run on this repository. `test-python.yml` runs every Python test on each pull request, and `test-web.yml` runs the web app's tests and build on each pull request that changes the web app. When a change reaches `main`, `deploy-docs.yml` builds and publishes this docs site, and `deploy-web-app.yml` tests, builds, and publishes the web app. None belongs to one phase, because they check and publish the output of every phase. This page explains what each workflow does, when it runs, and what it is allowed to do. The commands used on a laptop are on [Makefile](./makefile.md).
+Four GitHub Actions workflows run on this repository. `test-python.yml` runs every Python test on each pull request, and `test-web.yml` runs the web app's tests and build on each pull request that changes the web app. When a change reaches `main`, `deploy-docs.yml` builds and publishes this docs site, and `deploy-web-app.yml` tests, builds, and publishes the web app. This page explains what each workflow does, when it runs, and what it is allowed to do. The commands used on a laptop are on [Makefile](./makefile.md).
 
 ## How Are the Python Tests Run?
 
@@ -36,7 +36,7 @@ flowchart LR
 ```
 
 - **When it runs:** on a pull request that changes `frontend/` or the workflow file itself, and manually from the repository's Actions tab. A pull request that changes only Python or docs does not start it.
-- **Expected: 60 passed, 2 skipped.** The two every-game parity tests need expected files that the scripts in `scripts/checks/` write with a trained model, and the runner has neither.
+- **Expected: 63 passed, 2 skipped.** The two every-game parity tests need expected files that the scripts in `scripts/checks/` write with a trained model, and the runner has neither.
 - **The build is a check too.** `npm run build` runs the TypeScript compiler first, so a type error fails the pull request.
 - **No secrets and no AWS.** Its only permission is to read the repository, and it deploys nothing. Deploy Web App runs the same tests again when the change reaches `main`.
 - **It does not block a merge by itself,** the same as Test Python.
@@ -75,10 +75,10 @@ flowchart TB
     G --> H["Write a summary<br/>for the run"]
 ```
 
-- **A failed test or check stops the run before anything is uploaded.** On GitHub, the two every-game checks' expected files do not exist, so those tests are skipped, and the run expects **60 passed and 2 skipped**.
+- **A failed test or check stops the run before anything is uploaded.** The runner has no `build/` expected files, so the two parity tests skip and the run expects **63 passed and 2 skipped**.
 - **The build may name only known addresses:** the API, and the fixed `www.w3.org`, `react.dev`, `github.com`, and `jconnors23.github.io` strings. Any other address stops the run.
 - **No AWS key is stored in GitHub.** The run asks GitHub for a signed token that names the repository and the branch. AWS checks it against the GitHub sign-in provider (OpenID Connect) and trades it for the deploy role's credentials, which last at most an hour.
-- **Only `main` of this repository can use the role.** The role trusts the token only when its subject is `repo:jconnors23@59714706/510-m3-nfl-prediction-analytics@1458181148:ref:refs/heads/main`. GitHub writes the owner's id and the repository's id after each name, so the condition names this exact repository and its `main` branch. A run on another branch, a pull request, or a fork fails at the sign-in step.
+- **Only `main` of this repository can use the role.** The role trusts the token only when its subject is `repo:jconnors23@59714706/510-m3-nfl-prediction-analytics@1458181148:ref:refs/heads/main`. GitHub adds the owner's id and the repository's id after each name. A run on another branch, a pull request, or a fork fails at the sign-in step.
 - **The role can do two things:** upload files into the web app bucket (`s3:PutObject`), and create and read invalidations on this one distribution. It cannot delete, list, or change settings, and it has no access to the data bucket, the Lambda functions, the API, or any other distribution.
 - **The role's address is the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`.** It is a secret only because it holds the account number.
 - **One run at a time.** A second run waits for the first, so two uploads never overlap.

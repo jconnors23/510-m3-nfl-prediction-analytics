@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Implementation Part 1: Web App and Hosting
 
-This page holds the exact contracts for the Phase 5 web app and explains how it is hosted. A contract here is the precise shape of what one part hands to another: the JSON the browser sends to the API, the JSON that comes back, the file that holds each team's standings, and the types and functions inside the app. It also answers one question directly: which part of the system does the arithmetic on each number. For the short version, see the [Brief](./brief.md). To run or change the app, see the [Development Guide](./development-guide.md). The AWS commands are on the [Deployment Guide](./deployment-guide.md).
+This page holds the exact contracts for the Phase 5 web app and explains how it is hosted. A contract here is the precise shape of what one part hands to another: the JSON the browser sends to the API, the JSON that comes back, the file of team standings, and the types and functions inside the app. For the short version, see the [Brief](./brief.md). To run or change the app, see the [Development Guide](./development-guide.md). The AWS commands are in the [Deployment Guide](./deployment-guide.md). The five-tab site built on top of this page is in [Implementation Part 2](./implementation-part-2.md).
 
 **Status: Built and hosted.** Every contract below is what the code in `frontend/` and `src/profiles.py` does now, and every example was sent to the live API or run in Node (the JavaScript engine a browser uses).
 
@@ -163,6 +163,7 @@ Status 200, `Content-Type: application/json`, and one object with four fields. T
     2. `homeTenths` = `Math.round(units ÷ 10)`. A half rounds up.
     3. `awayTenths` = 1000 − `homeTenths`.
     4. Each is shown as `(tenths ÷ 10).toFixed(1)` followed by `%`.
+- **Under the percentages, "Why the Model Picked This"** shows the two numbers sent, each with its sign and the team it favors, for example `+0.389` and `+5.9`, each "New England Patriots ahead". **"Keep in Mind"** lists the standings date, that the model uses only these two numbers, the home-field edge, and the validation score.
 - **The two always add up to exactly 100.0%,** and the winner's percentage is never below 50.0%. For all 10,001 values the API can return (0.0000 to 1.0000), the whole-unit step was exact and the total was exact.
 
 | `home_win_probability` | Home shown | Away shown | Case |
@@ -369,9 +370,10 @@ Paths are inside `frontend/`.
 - **`predict` in `src/api.ts`:** `(request: PredictRequest, options: { baseUrl: string; timeoutMs: number; signal?: AbortSignal }) => Promise<PredictOutcome>`. Never throws. Every failure in the table above becomes one outcome kind. `timeoutMs` is 15000.
 - **`readApiBaseUrl` in `src/config.ts`:** `(raw: string | undefined, isProduction: boolean) => string`. Removes one trailing `/`. In production, an empty value, or a value that does not start with `https://`, throws a configuration error, and the page shows that message in place of the form. Outside production, an empty value is allowed and means "call this page's own address".
 - **`describeInputs` in `src/matchup.ts`:** `(request: PredictRequest) => { winPct: string; margin: string }`. The two numbers sent, with 3 and 1 decimal places, for display only.
+- **`describeGap` in `src/matchup.ts`:** `(formatted: string, homeName: string, awayName: string) => { signed: string; ahead: string }`. Adds a `+` to a positive number and names the team it favors ("New England Patriots ahead"), or "Even" when the number shows as zero. It reads the formatted text, so the words always match the digits shown.
 - **`chanceTenths` in `src/matchup.ts`:** `(homeProbability: number) => { home: number; away: number }`. The two integers behind the percentages and the bar.
 - **`describeRecord` in `src/matchup.ts`:** `(team: TeamProfile) => string`. A team's record and margin per game, for display only.
-- **`App` in `src/App.tsx`:** the page. It reads the profiles file through an import, keeps the two chosen teams, the latest outcome, and the theme, and cancels a waiting call when a team changes or Predict is clicked again. It works out the request, the chances, and the bar once per render.
+- **`App` in `src/App.tsx`:** the page. It reads the profiles file through an import, keeps the two chosen teams, the latest outcome, and the theme, and cancels a waiting call when a team changes or Analyze is clicked again. It works out the request, the chances, and the bar once per render.
 
 ### Themes and Fonts
 
@@ -420,7 +422,7 @@ Every name follows the pattern of the data bucket, `510-m3-nfl-dataset`: lowerca
 - **Only GET and HEAD are allowed.** A `POST` to the page's address gets status 403.
 - **Compression is on.** The 233,372-byte script is sent as 73,717 bytes of gzip when the browser asks for it. The font files are already compressed.
 - **No custom error pages.** The app is one page with no routes. A path that does not exist gets status 403, because the bucket policy grants no list permission, so S3 does not say whether a file exists.
-- **No protection rules, request limit, firewall, or access logs,** as in Phase 4.
+- **No request limit, firewall, or access logs,** as in Phase 4.
 
 ### How Are Files Cached?
 
@@ -450,14 +452,14 @@ Each literal below was computed in Python and confirmed in Node.
 
 ### App Tests Written in Part 1 (Vitest)
 
-These are the six files and 35 tests Part 1 wrote. Part 2 added more tests to `App.test.tsx` (now 16) and six more test files, so the app now has 62 tests in 12 files. The full list is in [What Was Checked?](./implementation-part-2.md#what-was-checked) on Part 2.
+These are the six files and 35 tests Part 1 wrote. Part 2 added more tests to `App.test.tsx` (now 16) and six more test files, so the app now has 65 tests in 12 files. The full list is in [What Was Checked?](./implementation-part-2.md#what-was-checked) on Part 2.
 
-- **`matchup.test.ts` (11):** the two display helpers: `chanceTenths` gives 638 and 362 for 0.6376 and 500 and 500 for both 0.4999 and 0.5, and agrees with `formatChances` for every row of the display table; `describeRecord` gives the NE, SF, and TEN strings above, and `0.0` with no sign for margins of 0 and -0.04. Also: the request for home SF, away MIA (`0.7777777777777777` and `17.88888888888889`, and the exact JSON text); the signs flip when the teams swap; the request for home NE, away TEN (`0.3888888888888889` and `5.9`, and the exact JSON text); the same team twice, a non-finite value, and an out-of-range value each throw; `formatChances` for every row of the display table; the winner comes from `prediction` even when both sides show 50.0%; and the inputs are described with 3 and 1 decimals.
+- **`matchup.test.ts` (11):** the two display helpers: `chanceTenths` gives 638 and 362 for 0.6376 and 500 and 500 for both 0.4999 and 0.5, and agrees with `formatChances` for every row of the display table; `describeRecord` gives the NE, SF, and TEN strings above, and `0.0` with no sign for margins of 0 and -0.04. Also: the request for home SF, away MIA (`0.7777777777777777` and `17.88888888888889`, and the exact JSON text); the signs flip when the teams swap; the request for home NE, away TEN (`0.3888888888888889` and `5.9`, and the exact JSON text); the same team twice, a non-finite value, and an out-of-range value each throw; the winner comes from `prediction` even when both sides show 50.0%; and the inputs are described with 3 and 1 decimals.
 - **`api.test.ts` (8):** the exact request (address, method, one header, body, no `credentials` or `mode`); `ok` for a valid answer; `http-error` with the first message for a 422; `http-error` for the gateway's 404; `unreachable` when `fetch` rejects or the caller cancels; `timeout` when the timer cancels; `unexpected-body` for five broken answers; and `isPredictResponse` accepts three well-formed answers.
 - **`config.test.ts` (4):** one trailing slash removed, an empty value allowed outside production, and an empty or `http://` value refused in production.
-- **`profiles.test.ts` (2):** the imported file has 32 sorted teams with finite numbers and a name each, and the `as_of` and `model` blocks. This catches a manual edit of the file.
+- **`profiles.test.ts` (2):** the imported file has 32 sorted teams with finite numbers and a name each, and the `as_of` and `model` blocks. This catches an edit made directly to the file.
 - **`App.test.tsx` (9 in Part 1),** run in a simulated browser (jsdom): the same team twice sends no request; home NE, away TEN shows the Patriots, 63.8% in the home row, 36.2% in the away row, both inputs, and the validation scores, and the call carries the exact body; home MIA, away SF names the 49ers; an unreachable API shows the message and no result; changing a team clears the result; a different `model_version` changes the scores sentence; each chosen team's record shows; and the disclaimer, the footer line, and the standings date show before anything is chosen. A last test checks the theme button: it starts with `aria-pressed="false"`, one click sets the dark theme, and a second sets the light theme.
-- **`matchups.parity.test.ts` (1):** for all 992 ordered pairs, the browser's subtraction equals the Python numbers in `build/expected-matchups.json`, with `toBe`. It is skipped when that file does not exist. With Part 2's tests, a fresh checkout reports 60 passed and 2 skipped (the second skipped test is Part 2's `season.parity.test.ts`).
+- **`matchups.parity.test.ts` (1):** for all 992 ordered pairs, the browser's subtraction equals the Python numbers in `build/expected-matchups.json`, with `toBe`. It is skipped when that file does not exist. With Part 2's tests, a fresh checkout reports 63 passed and 2 skipped (the second skipped test is Part 2's `season.parity.test.ts`).
 
 ### The Every-Matchup Check Against the Live API
 
@@ -470,16 +472,15 @@ Two scripts in `scripts/checks/` compare the live API with the local model for e
 ## What Was Checked?
 
 - **The profiles file:** 5,860 bytes, the SHA-256 above, and the team values shown on this page.
-- **The tests, when Part 1 was built:** 61 Python tests passed for the whole project, and 35 app tests passed. The project now has 95 Python tests and 62 app tests. `npm audit` found 0 vulnerabilities.
+- **The tests, when Part 1 was built:** 61 Python tests and 35 app tests passed (the project now has 95 and 65). `npm audit` found 0 vulnerabilities.
 - **Every matchup:** 992 requests to the live API, 0 retries, 992 answers with status 200, 992 picks and 992 probabilities equal to the local model, and a largest difference of 0. The local model picks the home team in 601 and the away team in 391, with home win chances from 0.26717521743574985 to 0.7859705938178196.
 - **Through the dev server's proxy:** the NE and TEN body returned the expected answer from the local API.
 - **The build:** `index.html` (1,105 bytes), `assets/index-KSsdwuOf.js` (233,372 bytes), `assets/index-yAxaDZ6u.css` (10,307 bytes), and 12 font files (313,620 bytes together), with no source map. Building twice gives the same bytes. The only web addresses in the Part 1 build are the live API, `www.w3.org` (SVG name text), and `react.dev` (text in React's error messages). Neither of the last two is a request. Part 2's footer links add `github.com` and `jconnors23.github.io`, which are links and not requests, and the deploy workflow allows all five hosts and no others. The file names and sizes in this list are from the Part 1 build. Every build gets new script and stylesheet names.
 - **The hosting:** all 16 files CloudFront serves (`/`, `/index.html`, the script, the stylesheet, and the 12 fonts) have the same SHA-256 as the local build. The fonts are served as `font/woff2`. Both direct S3 addresses return 403. HTTP returns 301 to HTTPS, and a `POST` returns 403.
 - **The deploy role:** read back from AWS, it trusts only `main` of this repository, has exactly the one inline policy above, and has no attached policies. The secret `AWS_WEB_APP_DEPLOY_ROLE_ARN` is set in the repository.
-- **The workflow's two checks** (no outside address, and the served bytes) were first run manually against the live site and passed. The workflow has since run, as the last item in this list says.
+- **The workflow's two checks** (no outside address, and the served bytes) were first run from a terminal against the live site and passed. The workflow's own first runs are the last item in this list.
 - **Screenshots of the page** at 360 and 390 pixels wide and at 1280, in both themes: nothing overlaps, nothing scrolls sideways, every band lines up on the same column, and the footer reaches the bottom of the window.
-- **A real prediction in a real browser.** Headless Chrome opened the live page, chose New England Patriots as home and Tennessee Titans as away, and clicked Predict, once on a 1280-pixel screen in the light theme and once on a 390-pixel phone screen in the dark theme. Both showed "Predicted winner: New England Patriots", 63.8% and 36.2%, a bar split 63.8% to 36.2%, and the two record lines. The browser sent one preflight (`OPTIONS`) and then the `POST` to the API, and cached the preflight for the second run. It contacted only two hosts, CloudFront and the API, loaded both bundled fonts, and logged no console error, no warning, and no failed request. This is the check that proves CORS works from the CloudFront page, which `curl` cannot.
+- **A real prediction in a real browser.** Headless Chrome opened the live page, chose New England Patriots as home and Tennessee Titans as away, and clicked the button (then labelled "Predict"), once on a 1280-pixel screen in the light theme and once on a 390-pixel phone screen in the dark theme. Both showed "Predicted winner: New England Patriots", 63.8% and 36.2%, a bar split 63.8% to 36.2%, and the two record lines. The browser sent one preflight (`OPTIONS`) and then the `POST` to the API, and cached the preflight for the second run. It contacted only two hosts, CloudFront and the API, loaded both bundled fonts, and logged no console error, no warning, and no failed request. This is the check that proves CORS works from the CloudFront page, which `curl` cannot.
 - **CORS:** the preflight from the CloudFront address and from `http://localhost:5173` is allowed, and from `http://example.com` it is not.
 - **The display rule,** for all 10,001 probabilities the API can return.
-
 - **The two workflows' first runs,** on the merge of `phase-five` into `main` (pull request #5): Deploy Web App passed in 53 seconds, and Deploy Docs passed in 30 seconds.

@@ -7,7 +7,7 @@ hide:
 
 This page explains how the last four Phase 2 steps work: fitting the model, scoring it, recording the run in MLflow, and saving the trained model. [Part 1](./implementation-part-1.md) covers the inputs, the split, and the settings. For the short version, see the [Brief](./brief.md).
 
-**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores, and the 29 tests for this phase pass (in `tests/test_features.py`, `test_split.py`, `test_evaluate.py`, and `test_train.py`).
+**Status: built and tested.** The code is in `src/model/train.py` and `src/model/evaluate.py`. Every number below comes from the real run of `python -m src.model.train` on the downloaded table. The command was run twice and gave identical scores. The phase had 29 passing tests when it was built, in `tests/test_features.py`, `test_split.py`, `test_evaluate.py`, and `test_train.py`.
 
 ## How Does the Data Flow?
 
@@ -66,8 +66,8 @@ def fit_pipeline(config: dict, training):
 ```
 
 - **Training rows only.** The scaler's averages and spreads, and the model's weights, come from the 1,339 training games. Validation and test games never touch the fit.
-- **Named columns.** The inputs are passed as a table with the two column names, not as a bare array, so the order of the inputs is fixed and the API can rely on it.
-- **Every value comes from `config.yaml`.** Nothing about the model is written in the code.
+- **Named columns.** The inputs are passed as a table with the two column names, not as a bare array, so the input order is fixed.
+- **Every value comes from `config.yaml`.**
 
 ### What Does the Fit Learn?
 
@@ -133,7 +133,7 @@ def score_group(pipeline, group) -> dict:
 
 ### What Is Accuracy?
 
-Accuracy is the share of games where the model's pick matches the real result. It is the headline number the project reports, and it is shown next to the baseline so a reader can see whether the model adds anything.
+Accuracy is the share of games where the model's pick matches the real result. It is the project's headline number, shown next to the baseline.
 
 | Group | Games | Correct | Accuracy | Always pick home |
 | :--- | :--- | :--- | :--- | :--- |
@@ -144,25 +144,19 @@ Accuracy is the share of games where the model's pick matches the real result. I
 - **The model beats the baseline in every group:** by 7.9 points on training, 9.2 on validation, and 11.4 on test.
 - **The validation score is the one to report.** It is a finished season the model never saw.
 - **The test score is noisy.** With 149 games, accuracy can move by about 4 points either way by chance. The test baseline is low (47.65%) because home teams won fewer than half of those games.
-- **The score is reported whatever it is,** even if it is poor.
-- **What accuracy cannot see:** a pick of "home team, 51% chance" and a pick of "home team, 90% chance" count the same. Log loss looks at what accuracy ignores.
+- **What accuracy cannot see:** a pick of "home team, 51% chance" and a pick of "home team, 90% chance" count the same. Log loss covers that.
 
 ### What Is Log Loss?
 
-**Short answer: a high log loss is bad, and a low one is good.** It works like a golf score. It is a penalty, so lower is better.
-
-**In plain words:** for every game, the model gives a percentage chance that the home team wins. After the game, look at how much chance the model had given to what really happened. If it gave the real result a high chance, the penalty is small. If it gave the real result a low chance, the penalty is large. Log loss is the average penalty over all the games.
-
-- **A high log loss** means the model was often surprised. It kept giving low chances to things that then happened, usually by being sure of itself and wrong.
-- **A low log loss** means the model was rarely surprised, so its percentages matched what happened.
+**Lower is better.** For every game, the model gives a percentage chance that the home team wins. After the game, look at the chance the model gave to what really happened. A high chance gives a small penalty, and a low chance gives a large one. Log loss is the average penalty over all the games. A high value means the model was often confidently wrong.
 
 **How to read the number**
 
 - **0** is the best possible, and it would mean the model gave 100% to every real result. It never happens in practice.
 - **0.6931** is what a model that knows nothing scores. It is the penalty for saying "50-50" about every game.
-- **Above 0.6931** is worse than knowing nothing, because the model is confidently wrong too often.
-- **Between 0 and 0.6931** means the model has learned something. Football games are hard to predict, so a model that is honest about its uncertainty stays fairly close to 0.69.
-- **This model:** 0.6451 on validation and 0.6815 on the test set. Both are below 0.6931, so it has learned something. The test number is only a little below, which fits a small set of 149 games.
+- **Above 0.6931** is worse than knowing nothing.
+- **Between 0 and 0.6931** means the model has learned something. Football games are hard to predict, so good values stay fairly close to 0.69.
+- **This model:** 0.6451 on validation and 0.6815 on the test set. Both are below 0.6931. The test value is only a little below, which fits a small set of 149 games.
 
 **How the penalty works.** It depends on how much chance the model gave to what actually happened. Say the home team won:
 
@@ -177,9 +171,7 @@ Accuracy is the share of games where the model's pick matches the real result. I
 - **Model A** says 60% each time. Its penalties are 0.51, 0.51, and 0.92, so its log loss is **0.646**.
 - **Model B** says 95% each time. Its penalties are 0.05, 0.05, and 3.00, so its log loss is **1.033**.
 
-Model B is worse because the one game it lost cost a huge penalty. Log loss rewards a model for saying "50-50" when it does not know, and for saving high percentages for games where it has a reason.
-
-**Why it matters here.** The web app shows a win probability, not only a pick. Log loss is the check that those percentages mean something, which accuracy cannot tell you.
+Model B is worse because the one game it lost cost a huge penalty. The web app shows a win probability, not only a pick, so log loss is the check that those percentages mean something.
 
 **Does the model's confidence mean anything?** Yes.
 
@@ -199,9 +191,7 @@ Model B is worse because the one game it lost cost a huge penalty. Log loss rewa
 
 ### How Do the Two Scores Fit Together?
 
-- **Accuracy** is the headline: how often the model picks the winner, next to the always-pick-home baseline.
-- **Log loss** supports it: it checks that the probabilities the web app will show are believable.
-- **Both are reported for validation and test, and only accuracy for training.**
+Accuracy is the headline, and log loss checks that the probabilities the web app shows are believable. Both are reported for validation and test. Training gets accuracy only.
 
 ### What Does the Confusion Matrix Show?
 
@@ -225,7 +215,7 @@ The picture shows the table above, with correct picks in purple, wrong picks in 
 !!! abstract "Purpose"
     **Goal:** Save the settings, scores, and files of every training run, so runs can be compared and traced.
 
-    **Why:** Each run's settings, scores, and files (the saved model and the plot) are recorded, so any run can be compared and traced later.
+    **Why:** The record lets any later run be compared with an earlier one and traced back to its settings and data.
 
     **If skipped:** There would be no record of which settings produced which scores.
 
@@ -370,7 +360,6 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
 - **Size:** 1,902 bytes, so it is small enough to copy into the Docker image.
 - **Round trip:** the saved file loads with the six keys above, and a fresh fit gives the same probabilities as the loaded pipeline.
 - **A failed save keeps the old file.** If the write fails, the half-written `.partial` file is removed and the earlier model is left as it was.
-- **The file extension** `.joblib` is a convention. joblib writes to any file name.
 - **Local only:** `models/`, `mlflow.db`, and `mlartifacts/` are in `.gitignore`, so the saved model and the MLflow records are not committed. `results/run-summary.json` is committed, and it is the readable record of the latest run.
 
 ### What Is the Run Summary File?
@@ -378,10 +367,10 @@ def save_model(pipeline, config: dict, start_season: int, train_end_season: int)
 Each training run also writes `results/run-summary.json`, a small readable record of the run. A reader can open it without MLflow and without loading the saved model.
 
 - **What it holds:** the settings, the scikit-learn version, the data file and its fingerprint, the scores for each group, and the values the model learned.
-- **Learned values:** the scaler's averages and spreads, the two weights, and the intercept. They let a reader check a prediction manually: standardize each input with the average and spread, multiply by its weight, add the intercept, and pass the total through the logistic function.
-- **Committed to git.** The file is overwritten on every run, so it always describes the latest run, and MLflow keeps the full history on your machine.
-- **Stable on purpose.** It has no run ID, no timestamp, no git commit, and no machine paths, because each of those changes on every run or commit. Decimals are rounded to 6 places. A rerun with the same settings and data writes the identical bytes, so the file shows a change in git only when something real changed.
-- **Written safely.** It is written to a `.partial` file and swapped into place, like the model file.
+- **Learned values:** the scaler's averages and spreads, the two weights, and the intercept. They let a reader check a prediction: standardize each input with the average and spread, multiply by its weight, add the intercept, and pass the total through the logistic function.
+- **Committed to git.** Each run overwrites it, so it describes the latest run, and MLflow keeps the full history on your machine.
+- **Stable on purpose.** It has no run ID, timestamp, git commit, or machine path, because those change on every run. Decimals are rounded to 6 places. A rerun with the same settings and data writes identical bytes, so git shows a change only when something real changed.
+- **Written safely.** It goes to a `.partial` file and is swapped into place, like the model file.
 
 ```python
     # Rounding to six places keeps this file identical when the run itself did not change.

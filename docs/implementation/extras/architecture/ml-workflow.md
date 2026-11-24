@@ -5,7 +5,7 @@ hide:
 
 # ML Workflow
 
-This page walks through the machine learning path from the raw game file to a prediction served by the API. Each stage lists its command, the code that does the work, what it reads, what it writes, and the page that explains it in full. It is a map. The phase pages own the detail, so this page gives each stage in a line or two and links onward. It is for a reader who wants to see the whole path before reading any one phase.
+This page walks through the machine learning path from the raw game file to a prediction served by the API. Each stage lists its command, the code that does the work, what it reads, what it writes, and a link to the phase page that explains it in full.
 
 ## What Does the Whole Path Look Like?
 
@@ -92,7 +92,7 @@ One command, `python -m src.model.train` (`make train`), runs steps 5 to 12.
 
 ## Step 7: Fit the Scaler and the Logistic Regression
 
-- **Command:** `make train`, which runs `MLFLOW_DISABLE_AGENT_HINT=1 .venv/bin/python -m src.model.train`. It carries out Steps 5 to 12 in one run and takes under a minute. See [make train](../development/makefile.md#make-train).
+- **Command:** `make train`, which runs `MLFLOW_DISABLE_AGENT_HINT=1 .venv/bin/python -m src.model.train`. It runs Steps 5 to 12 and takes under a minute. See [make train](../development/makefile.md#make-train).
 - **Code:** `build_pipeline(config)` and `fit_pipeline(config, training)` in [`src/model/train.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/model/train.py). The pipeline is a `StandardScaler`, which puts both inputs on one scale, followed by a `LogisticRegression` (`C: 1.0`, `solver: lbfgs`, `max_iter: 1000`).
 - **Reads:** the training group only. Validation and test games are never fitted on.
 - **Writes:** nothing yet. The fitted pipeline is in memory.

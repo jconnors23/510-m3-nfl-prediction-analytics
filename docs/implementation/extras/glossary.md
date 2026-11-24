@@ -139,8 +139,8 @@ Built. See the [Phase 6 Brief](../phase-6/brief.md) and the [Phase 6 Implementat
 **Docs:** [Docker](https://docs.docker.com/), [what is a container](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/), [multi-stage builds](https://docs.docker.com/build/building/multi-stage/), [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/), [publishing ports](https://docs.docker.com/engine/network/port-publishing/).
 
 - **Docker:** the tool that builds images and runs containers. On a Mac, Docker Desktop runs a small Linux system in the background, and every container runs inside it. That is why the project's container runs Linux even though this computer runs macOS.
-- **Image:** a read-only package of everything a program needs to run: a cut-down Linux system, Python 3.13, the exact packages in `requirements.txt`, and the project's code, settings, and data. Here there are two images, `510-m3-nfl-train` and `510-m3-nfl-serve`. An image does nothing by itself, the way a saved file does nothing until it is opened.
-- **Container:** a running copy of an image. It has its own files, its own installed Python, its own running programs, and its own network address, kept apart from this computer's, so nothing installed on the laptop changes what it does. It starts from the image's files, and every file it writes is deleted when the container is removed (`docker run --rm` removes it when it stops). In this project:
+- **Image:** a read-only package of everything a program needs to run: a cut-down Linux system, Python 3.13, the exact packages in `requirements.txt`, and the project's code, settings, and data. Here there are two images, `510-m3-nfl-train` and `510-m3-nfl-serve`.
+- **Container:** a running copy of an image, with its own files, Python, programs, and network address, kept apart from this computer's. Every file it writes is deleted when the container is removed (`docker run --rm` removes it when it stops). In this project:
     - **The train container** starts, trains the model, logs one MLflow run inside itself, and stops. It reads the committed data, so it needs no AWS account and no download.
     - **The serve container** runs the prediction API until it is stopped, the same API that `make start` runs on the laptop.
     - **How it differs from a virtual environment:** a virtual environment (`.venv/`) keeps only the Python packages separate, and still uses this computer's Python and system. A container also brings its own Python and system, so it runs the same on any computer with Docker.
@@ -154,7 +154,7 @@ Built. See the [Phase 6 Brief](../phase-6/brief.md) and the [Phase 6 Implementat
 
 ## Phase 7: Review
 
-Built. See the [Phase 7 Brief](../phase-7/brief.md). The review uses no new tools.
+Built. See the [Phase 7 Brief](../phase-7/brief.md). The review adds no code. These are the tools behind the docs site.
 
 **Docs:** [MkDocs](https://www.mkdocs.org/), [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [Mermaid](https://mermaid.js.org/), [GitHub Pages](https://docs.github.com/en/pages), [GitHub Actions](https://docs.github.com/en/actions).
 
@@ -162,7 +162,7 @@ Built. See the [Phase 7 Brief](../phase-7/brief.md). The review uses no new tool
 - **Material for MkDocs:** the theme that gives the site its layout, navigation, and diagram support.
 - **Mermaid:** a text format for diagrams, written inside a code block in a page and drawn by the site.
 - **GitHub Pages:** a GitHub feature that serves a built site from a repository. Pages is set to deploy from GitHub Actions, so the workflow uploads the built `site/` folder and Pages serves it. See [deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/).
-- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. It uses the current actions, `checkout@v7`, `setup-python@v7`, `upload-pages-artifact@v5`, and `deploy-pages@v5`, which run on Node 24. The web app's workflow, `deploy-web-app.yml`, is in [Phase 5](#phase-5-web-app-and-hosting). Two more run on each pull request: `test-python.yml` runs the Python tests, and `test-web.yml` runs the web app's tests and build when `frontend/` changes. What all four do is on [GitHub Workflows](./development/github-workflows.md). See the [documentation](https://docs.github.com/en/actions).
+- **GitHub Actions:** GitHub's built-in way to run a job when something happens in the repository. The workflow `.github/workflows/deploy-docs.yml` runs when docs change on `main`: it installs MkDocs, runs a strict build, and publishes the site. The project has four workflows: `deploy-docs.yml` and `deploy-web-app.yml` publish, and on each pull request `test-python.yml` runs the Python tests and `test-web.yml` runs the web app's tests and build when `frontend/` changes. See [GitHub Workflows](./development/github-workflows.md) and the [documentation](https://docs.github.com/en/actions).
 - **README:** the file at the top of the repository that a visitor reads first. It links to the dataset, the live API, and the live web app.
 
 ## General Machine Learning Ideas

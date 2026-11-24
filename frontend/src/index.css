@@ -605,14 +605,75 @@ textarea {
   color: var(--action);
 }
 
-.model-note {
-  margin-top: 1rem;
-  padding: 0.9rem 1rem;
-  background: var(--bg);
-  border: 1px solid var(--line);
+/* Two comparison rows. The number column is only as wide as its digits, so the two values line up.
+   The team name can shrink and wrap instead of widening the page. */
+.why-rows {
+  margin: 0;
 }
 
-.model-note p,
+.why-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) auto minmax(0, 1fr);
+  column-gap: 1rem;
+  align-items: baseline;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.why-row:last-child {
+  border-bottom: 0;
+}
+
+.why-row dt,
+.why-row dd {
+  margin: 0;
+}
+
+.why-number {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.why-ahead {
+  min-width: 0;
+  color: var(--muted);
+}
+
+/* Under 480px the team name sits on its own line, right-aligned under the number, and wraps there. */
+@media (max-width: 479px) {
+  .why-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .why-ahead {
+    grid-column: 1 / -1;
+    text-align: right;
+  }
+}
+
+.model-note {
+  padding: 0.7rem 1rem;
+  background: var(--bg);
+  border-left: 3px solid var(--amber);
+  font-size: 0.95em;
+  color: var(--muted);
+}
+
+.model-note ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.model-note li + li {
+  margin-top: 0.35rem;
+}
+
+.model-note strong {
+  color: var(--ink);
+}
+
 .card > p {
   color: var(--muted);
 }

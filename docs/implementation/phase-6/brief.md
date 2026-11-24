@@ -11,7 +11,7 @@ hide:
 
 Phase 6 packages the project so it runs from a container. One `Dockerfile` has two targets. The `train` target trains the model from the committed data and logs the run to MLflow. The `serve` target starts the same FastAPI service as Phase 3, with a model trained while the image is built. A person with Docker and a copy of the repository can train and serve without installing Python or any package. The container answers the worked example with the same probability as the local service, **0.3296**.
 
-The image runs on a laptop only. AWS keeps running the API from the Phase 4 zip, and the web app is unchanged.
+The images run on a laptop only. AWS keeps running the API from the Phase 4 zip, and the web app is unchanged.
 
 ## How Do the Pieces Fit Together?
 
@@ -52,7 +52,7 @@ flowchart TB
 - [x] **Step 2. Write `.dockerignore`,** which leaves everything out of the image unless it is named.
 - [x] **Step 3. Write the `Dockerfile`** with a base stage and the `train` and `serve` targets. The image runs as a user that is not root, and it holds no AWS credentials.
 - [x] **Step 4. Build and run the `train` target.** The scores and the run summary's SHA-256 match the committed ones.
-- [x] **Step 5. Run the tests inside the image:** 93 passed and 2 skipped in the train image, and 95 passed in the serve image.
+- [x] **Step 5. Run the tests inside both images.** The counts are under Results.
 - [x] **Step 6. Build and run the `serve` target.** `/health` and the three Phase 3 examples give the same answers as the local API.
 - [x] **Step 7. Check what is inside the image:** no `.git/`, no secrets, no `mlflow.db` from this computer, and a user that is not root.
 - [x] **Step 8. Write it down:** the implementation page, the development guide, and the Docker entries in the [Requirements Rubric](../requirements/requirements-rubric.md#step-5-containerize-with-docker) and [Design Manifest](../design-manifest.md#phase-6-docker).
@@ -61,12 +61,12 @@ flowchart TB
 
 - **Training in the container:** validation **63.10%** (171 of 271) and test **59.06%** (88 of 149), and a run summary byte for byte the committed one.
 - **The service in the container:** the worked example gives **0.3296**, and the other two Phase 3 examples give 0.5364 and 0.6467.
-- **Tests:** 93 passed and 2 skipped in the train image, 95 passed in the serve image, and 95 passed on this computer.
+- **Tests:** 93 passed and 2 skipped in the train image (it has no saved model), 95 passed in the serve image, and 95 passed on this computer.
 - **Images:** about 1.4 GB each on disk. The first build takes about a minute, and a rebuild with no change takes under a second.
 
 ## Decisions Made
 
-- **Docker Desktop for Mac,** the most common choice and the one most guides assume. Colima is a free command-line alternative that runs the same `docker` commands.
+- **Docker Desktop for Mac,** the most common choice. Colima is a free command-line alternative that runs the same `docker` commands.
 - **Train the model during the serve build,** so the serve image works from a fresh copy of the repository. Turned down: mounting `models/` from this computer, which fails when no model has been trained yet and makes the image depend on files outside it.
 - **Install `requirements.txt` in both targets.** The serve target then carries `pandas` and `mlflow`, which it does not use, but one install keeps the two targets on the same pins. Turned down: `requirements-serve.txt` for the serve target, because it leaves out `uvicorn` and would need a second list of pins.
 - **Pin the base image** to `python:3.13.14-slim`, so a rebuild months later uses the same Python. Python 3.13 matches this computer and the Lambda function.

@@ -5,9 +5,9 @@ hide:
 
 # Phase 4 Implementation: AWS Deployment
 
-This page explains how the Phase 4 deployment works, one step at a time, with the real results. It also holds the measurement made before anything was built: the size of the Lambda package (Step 3). For the short version, see the [Brief](./brief.md). The commands, in order, are on [Deployment Guide](./deployment-guide.md). The Deployment Guide also holds the redeploy steps. To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
+This page explains how the Phase 4 deployment works, one step at a time, with the real results. It also holds the measurement made before anything was built: the size of the Lambda package (Step 3). For the short version, see the [Brief](./brief.md). The commands, in order, including the redeploy steps, are in the [Deployment Guide](./deployment-guide.md). To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
 
-**Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. When the phase was built, the full test suite passed with 53 tests (the 47 from earlier phases and 6 new ones) and no warnings. The suite now has 95 tests, because Phase 5 added more. See the [Development Guide](./development-guide.md#how-do-i-run-all-the-tests). The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
+**Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. The full suite passed with 53 tests when the phase was built (47 from earlier phases and 6 new). It has 95 now, because Phase 5 added more. See the [Development Guide](./development-guide.md#how-do-i-run-all-the-tests). The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 
 ## What Is Mangum?
 
@@ -52,7 +52,7 @@ flowchart TB
     end
 ```
 
-- **Why this and not a separate Lambda function:** a manually written function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
+- **Why this and not a separate Lambda function:** a separate function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
 - **What Mangum does not do:** it does not deliver requests to Lambda, set permissions, or make the public address. API Gateway and AWS permissions do those.
 
 ## What Was Deployed?
@@ -96,7 +96,7 @@ Steps 1 to 4 run on this computer and call no AWS service. Steps 5 to 11 use AWS
 - **`build/` (not committed):** The installed packages, the zip, and the test events. `build/` is already ignored by git.
 
 - **No existing application file changed.** `src/api/app.py`, `src/config.py`, `config/config.yaml`, and `requirements.txt` are as they were.
-- **No new setting** in `config/config.yaml`. The Lambda settings live in [Deployment Guide](./deployment-guide.md).
+- **No new setting** in `config/config.yaml`. The Lambda settings are in the [Deployment Guide](./deployment-guide.md).
 
 ## Step 1: Add the Lambda Entry Point
 
@@ -149,7 +149,7 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 5. `test_lambda_handler_does_not_import_pandas`: The file's imports are read as text, and none is `pandas`, `mlflow`, `matplotlib`, or from `src/model/`.
 6. `test_real_handler_worked_example`: With the real model (skipped if `models/model.joblib` is missing), the inputs -0.5 and -18.0 return 0.3296.
 
-- **Result at the end of Phase 4:** 53 tests pass (47 from earlier phases and 6 new). Without `models/model.joblib`, 51 pass and 2 are skipped.
+- **Result at the end of Phase 4:** without `models/model.joblib`, 51 of the 53 tests pass and 2 are skipped.
 - **One warning is silenced.** Mangum's adapter asks `asyncio` for the current event loop in a way Python 3.12 and later deprecate, which printed a `DeprecationWarning` from inside Mangum. `pytest.ini` hides that one warning, as it already does for one MLflow warning. Every other warning is still shown, and the run now has none.
 
 ## Step 3: Measure the Package Size
@@ -163,7 +163,7 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 
 **Status: measured.** The measurement was made on a Mac by downloading the Linux packages for Lambda. Nothing was run on AWS. Sizes in this step use 1 MB = 1,000,000 bytes.
 
-**Answer: it fits, if the API does not install pandas.** Without pandas the unzipped package is **231.3 MB**, which is 30.8 MB under the limit. With pandas it is 278.4 MB, which is 16.3 MB over.
+**Answer: it fits, if the API does not install pandas.** Without pandas the unzipped package is **231.3 MB**, which is 30.9 MB under the limit. With pandas it is 278.4 MB, which is 16.3 MB over.
 
 ### What Limits Apply?
 
@@ -203,7 +203,7 @@ pip install --target build/lambda --implementation cp --python-version 3.13 --pl
 
 | Package set | Unzipped | Zipped | Against the 250 MB limit |
 | :--- | :--- | :--- | :--- |
-| Without `pandas` | **231.3 MB** | 63.2 MB | 30.8 MB under |
+| Without `pandas` | **231.3 MB** | 63.5 MB | 30.9 MB under |
 | With `pandas` | 278.4 MB | 75.1 MB | 16.3 MB over |
 
 The largest folders in the package without `pandas`:
@@ -220,9 +220,9 @@ The largest folders in the package without `pandas`:
 | `narwhals` | 2.1 MB | A small helper package that `scikit-learn` depends on |
 
 - **`pandas` alone adds 46.0 MB,** which is what pushes the package over the limit.
-- **Room left:** the built zip is about 30.9 MB (12% of the limit) under 262,144,000 bytes. That is room for small additions and not for `pandas`.
-- **The zipped file is 63.2 MB,** which is over the console's direct-upload limit of about 50 MB. Upload it through S3 or the AWS command-line tool.
-- **Result for the plan:** the zip route works, so ECR and a container image are not needed for Lambda. The [fall-back](./brief.md#what-if-the-zip-is-too-large) stays unused unless the package grows past the limit.
+- **Room left:** about 30.9 MB (12% of the limit). That is room for small additions and not for `pandas`.
+- **The zipped file is 63.5 MB,** which is over the console's direct-upload limit of about 50 MB, so it goes through S3.
+- **Result for the plan:** the zip route works, so ECR and a container image are not needed. The [fall-back](./brief.md#what-if-the-zip-is-too-large) stays unused.
 
 ### What Does This Mean for the Phase 3 API?
 
@@ -279,7 +279,7 @@ find build/lambda -type f -exec cat {} + | wc -c
     **If skipped:** There would be no function for the gateway to call.
 
 - **The role `510-m3-nfl-predict-api-role`** can be assumed only by Lambda, and has one policy attached, the AWS managed `AWSLambdaBasicExecutionRole`, which only writes logs. Its trust policy has no statement id, because IAM rejected a hyphenated one with `MalformedPolicyDocument`.
-- **The zip is staged in S3.** At 63.2 MB it is over the console's direct-upload limit, so it was copied to `deploy/510-m3-nfl-predict-api.zip` in the data bucket, the function was created from it, and the staged copy was deleted. The bucket holds no `deploy/` object now.
+- **The zip is staged in S3.** At 63.5 MB it is over the console's direct-upload limit, so it was copied to `deploy/510-m3-nfl-predict-api.zip` in the data bucket, the function was created from it, and the staged copy was deleted. The bucket holds no `deploy/` object now.
 - **Function settings:**
     - **Runtime:** `python3.13`.
     - **Architecture:** `arm64`.
@@ -294,7 +294,7 @@ find build/lambda -type f -exec cat {} + | wc -c
 
 ### What Is the Memory Setting?
 
-Lambda gives a function CPU in proportion to its memory. The function runs at 1769 MB. Accuracy is the only priority for this deployment. Latency and cost are not concerns, so the memory may be changed if that helps, but it is not a priority. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
+Lambda gives a function CPU in proportion to its memory. The function runs at 1769 MB. Latency and cost were not goals of this deployment, so the setting was left untuned. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
 
 ## Step 6: Test the Function in AWS
 
@@ -326,7 +326,7 @@ Lambda gives a function CPU in proportion to its memory. The function runs at 17
 - **The `$default` stage** with automatic deployment.
 - **Permission to call the function** is given to this one API and nothing broader: the source is this API's ARN, `arn:aws:execute-api:us-east-1:<account-id>:9awodatqc5/*/*`. The permission's statement id is `510-m3-nfl-predict-http-api`.
 - **The invoke URL** is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
-- **No protection rules, request limit, or firewall for now.** The API is public, with no key.
+- **No request limit or firewall for now.** The API is public, with no key.
 
 ## Step 8: Set CORS on the Gateway
 
@@ -380,7 +380,7 @@ HTTP 200
 !!! abstract "Purpose"
     **Goal:** Prove the model on AWS gives the same answers as the local model, on every game.
 
-    **Why:** Accuracy is the only priority. The packages on Lambda are Linux builds, so the arithmetic could in principle differ from the Mac that trained the model.
+    **Why:** The packages on Lambda are Linux builds, so the arithmetic could in principle differ from the Mac that trained the model.
 
     **If skipped:** The deployed model could be slightly different and nobody would know.
 
@@ -410,11 +410,11 @@ The deployed model and the local model are the same at the 4-decimal precision t
 ## Step 11: Write the Steps Down
 
 !!! abstract "Purpose"
-    **Goal:** Make the deployment repeatable manually.
+    **Goal:** Make the deployment repeatable.
 
     **Why:** Written steps mean the deployment does not depend on anyone's memory, and they show exactly what was created, so it can be removed again.
 
     **If skipped:** Nobody could rebuild or remove the deployment without redoing the work from scratch.
 
 - **[Deployment Guide](./deployment-guide.md)** lists every command of Steps 4 to 10, in order, with placeholders such as `<account-id>` and `<api-id>` for values that differ between accounts. It ends with the commands that remove everything this phase created. Those removal commands are written, and not run.
-- **No `deploy.yml` workflow.** The steps are run manually. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
+- **No `deploy.yml` workflow.** The steps are run from a terminal. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).

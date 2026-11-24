@@ -5,9 +5,9 @@ hide:
 
 # Phase 7 Brief: Review
 
-**Status: Built.** Merged into `main` as pull request #8, with the follow-up tidy-ups and docs reorganization merged as pull request #9. The README is written, the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement of the assignment to the code and docs that meet it, and two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed five problems. All three GitHub workflows of that time passed on the merge. The small items left over were done after the merge, and are listed at the end of this page. What each check found and what was fixed is on the [Phase 7 Implementation](./implementation.md) page.
+**Status: Built.** Merged into `main` as pull request #8, with the follow-up tidy-ups and docs reorganization merged as pull request #9. The README is written, and the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement to the code and docs that meet it. Two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed five problems. The three GitHub workflows that existed then passed on the merge. What the checks found is on the [Phase 7 Implementation](./implementation.md) page.
 
-Phase 7 finishes the project and checks it before it is handed in. It writes the README, the front page of the repository and the one requirement still open. Then it checks the docs and comments against the finished code, rebuilds the project from a clean copy using only the README, and walks the assignment's acceptance checklist with evidence for each item. It combines what were planned as two phases, the documentation (Phase 7) and the review (Phase 8), because both read the finished project and neither adds code.
+Phase 7 finishes the project and checks it before it is handed in. It writes the README, checks the docs and comments against the finished code, rebuilds the project from a clean copy using only the README, and walks the acceptance checklist with evidence for each item. Writing the README and reviewing the project are one phase because both read the finished project and neither adds code.
 
 **Needs first:** Phases 1 to 6, all built, and every phase branch merged into `main`.
 
@@ -30,9 +30,9 @@ flowchart TB
 
 ### Step 1: Write the README
 
-The README is `README.md` in the project folder. It must hold everything in [10. README](../requirements/project-requirements.md#10-readme), and it links to these docs for detail instead of repeating them.
+The README is `README.md` in the project folder. It must hold everything in [10. README](../requirements/project-requirements.md#10-readme), and it links to these docs for detail.
 
-- [x] **Project overview and goals:** what the project predicts, who it is for, and that it is a coursework project not affiliated with the National Football League.
+- [x] **Project overview:** what the project predicts, who it is for, and that it is a coursework project not affiliated with the National Football League.
 - [x] **The dataset:** the nflverse games file, with its link, and the games used (regular season, 2020 through 2026 week 10).
 - [x] **The model and its result:** logistic regression on two inputs, validation **63.10%** (171 of 271) against the always-home baseline of 53.87%, and test **59.06%** (88 of 149). Each number is recomputed from `results/run-summary.json` before it is written.
 - [x] **The cloud services:** S3 for the data and the web app, Lambda behind API Gateway for the API, CloudFront for the web app, DynamoDB for the feedback form, and GitHub Pages for the docs.
@@ -42,7 +42,7 @@ The README is `README.md` in the project folder. It must hold everything in [10.
 - [x] **How to deploy to the cloud:** a short summary with links to the Phase 4 and Phase 5 Deployment Guides.
 - [x] **Links:** the live API (`https://9awodatqc5.execute-api.us-east-1.amazonaws.com`), the live web app (`https://d1nubiunzfwm0q.cloudfront.net`), the docs site, and the dataset.
 - [x] **The run environment:** Python 3.13, the pinned `requirements.txt`, Node.js 22.12 or later for the web app, Docker Desktop for the images, and AWS CLI version 2 for deployment.
-- [x] **Limitations and ethics:** what the model leaves out (injuries, weather, anything after the standings date), that predictions are for reference only, and that no personal data is collected. The assignment asks for this reflection.
+- [x] **Limitations:** what the model leaves out (injuries, weather, anything after the standings date), that predictions are for reference only, and that no personal data is collected.
 - [x] **A file tree and a short diagram** of how the pieces fit together.
 - [x] **Add the README to the docs:** the docs home page is a condensed copy of it and links to it, and the [Requirements Rubric](../requirements/requirements-rubric.md) marks the README requirements met.
 
@@ -51,10 +51,9 @@ The README is `README.md` in the project folder. It must hold everything in [10.
 - [x] **Every page describes what exists now.** Each column, command, output file, and chart caption matches the current code. Anything the code no longer does is removed.
 - [x] **Every number is recomputed** from the data or the code: test totals, scores, game counts, file sizes, and hashes. Where a number appears on more than one page, every copy matches.
 - [x] **One page owns each explanation.** Other pages link to it instead of repeating it.
-- [x] **The Requirements Rubric covers every requirement,** each quoted from the brief, with its file, function, setting, or command, and the page that explains it.
+- [x] **The Requirements Rubric covers every requirement,** each quoted from [Project Requirements](../requirements/project-requirements.md), with its file, function, setting, or command, and the page that explains it.
 - [x] **The comments and docstrings** read plainly, explain why rather than repeat the code, and match what the code does. A comment-only edit is checked to leave the code unchanged.
 - [x] **The docs site builds** with `mkdocs build --strict`, and the published site on GitHub Pages shows the latest pages.
-- [x] **The Design Manifest page** has no empty "Open Decisions" section.
 
 ### Step 3: Rebuild From a Clean Copy
 
@@ -92,7 +91,7 @@ The evidence for each item (the file, the command, and its result) is on the [Re
 - [x] **7. Deployment:** the API on Lambda behind API Gateway, publicly reachable, with CORS allowing the web app.
 - [x] **8. Front-end:** the Vite app on S3 and CloudFront calls the live API and shows predictions.
 - [x] **9. Repository:** every required file present, and work merged through pull requests #1 to #9.
-- [x] **10. README:** overview, dataset, model, cloud services, setup and usage, and both live links.
+- [x] **10. README:** overview, dataset, model, cloud services, setup and usage, and both endpoint links.
 - [x] **11. Ethics and limitations:** the README's Limitations section.
 
 ### Step 6: Pre-Commit Checks and the Final Pull Request

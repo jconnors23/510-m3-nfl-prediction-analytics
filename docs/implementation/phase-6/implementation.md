@@ -46,7 +46,7 @@ flowchart TB
     - Copies the included files, owned by `app`, and switches to that user.
 - **The `train` target** adds nothing to the base. Its command is `python -m src.model.train`. Because the base holds all of `src/`, the same image also runs the data steps and the tests. The commands are in [Run the Data Steps in the Container](./development-guide.md#run-the-data-steps-in-the-container).
 - **The `serve` target** runs `python -m src.model.train` once while the image is built, so the image holds `models/model.joblib`. Its command is `python -m uvicorn src.api.app:app --host 0.0.0.0 --port 8000`. Inside a container, `0.0.0.0` is needed so Docker can forward a port to the service. The run command publishes that port only on `127.0.0.1`.
-- **Exec form** (`CMD ["python", ...]`) is used for both commands, so Python receives Ctrl+C and the stop signal directly. `docker stop` ended the service in 0.5 seconds. Ctrl+C (the same signal, sent to `docker run`) ended it in under a second with exit code 0, uvicorn printed its normal shutdown lines, and `--rm` removed the container.
+- **Exec form** (`CMD ["python", ...]`) is used for both commands, so Python receives Ctrl+C and the stop signal directly. `docker stop` ended the service in 0.5 seconds. Ctrl+C ended it in under a second with exit code 0, and `--rm` removed the container.
 - **`serve` is the last stage,** so a plain `docker build` with no `--target` gives the service.
 
 ### What Happens to MLflow's Git Details?
@@ -61,7 +61,7 @@ Two commands were added to the `Makefile`: `make docker-train` and `make docker-
 
 - **Training in the container:**
     - The eight scoring lines match `make train` on this computer: training 61.24% (820 of 1,339), validation **63.10%** (171 of 271), test **59.06%** (88 of 149), validation log loss 0.6451, and test log loss 0.6815, with the same always-home baselines.
-    - `build/docker/results/run-summary.json` is byte for byte `results/run-summary.json` (SHA-256 `bd14becd53dc68dc59da97addb67102e3f2e5a9051b8805ba40537d4d4d56112`). The summary rounds every number to 6 places, so it is the check to rely on. The model file is not compared byte for byte, because the container runs Linux and this computer runs macOS. The service's answers are checked instead.
+    - `build/docker/results/run-summary.json` is byte for byte `results/run-summary.json` (SHA-256 `bd14becd53dc68dc59da97addb67102e3f2e5a9051b8805ba40537d4d4d56112`). The summary rounds every number to 6 places, which is why it can match across platforms. The model file is not compared byte for byte, because the container runs Linux and this computer runs macOS. The service's answers are checked instead.
     - The export to the container's own `mlflow-reference/` finishes without `.git/`.
 - **Tests in the container:**
     - The `train` image, with no saved model: **93 passed, 2 skipped**. The skipped tests are the last test in `tests/test_api.py` and the last in `tests/test_lambda_handler.py`, which need `models/model.joblib`.
@@ -77,7 +77,7 @@ Two commands were added to the `Makefile`: `make docker-train` and `make docker-
     - `510-m3-nfl-train` is 1.42 GB on disk and `510-m3-nfl-serve` is 1.43 GB. Both are 317 MB of compressed content, and the base image is 203 MB.
     - The first `make docker-train` took 57.9 seconds, 32.7 of them installing packages. A second build with no change took 0.6 seconds, because every step came from the cache.
     - The serve build took 6.4 seconds after the train build, 5.7 of them training.
-- **On this computer:** `make pytest` gives 95 passed, `make web-test` 62 passed, and `results/run-summary.json` and `models/model.joblib` kept their bytes.
+- **On this computer:** `make pytest` gives 95 passed, `make web-test` 62 passed (the count when Phase 6 was built), and `results/run-summary.json` and `models/model.joblib` kept their bytes.
 
 ## What Is Left Out
 

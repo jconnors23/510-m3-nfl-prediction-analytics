@@ -83,7 +83,7 @@ The repository README must include:
 
 ## 11. Ethics and Limitations
 
-- Reflect on the ethical implications and limitations of the ML application, in the README: what the model leaves out, how its mistakes lean, how its predictions should and should not be used, and what data the app collects.
+- Reflect on the ethical implications and limitations of the ML application, in the README: what the model leaves out, which kinds of mistakes it makes, how its predictions should and should not be used, and what data the app collects.
 
 ## Acceptance Checklist
 
@@ -96,5 +96,5 @@ The repository README must include:
 7. **Deployment.** Done when: API runs on AWS Lambda behind API Gateway; `/predict` is publicly reachable, answers test requests, and allows the front-end's origin through CORS.
 8. **Front-end.** Done when: Vite app served from S3 through CloudFront calls the live API and shows predictions.
 9. **Repository.** Done when: All required files present; branch-and-PR workflow with at least one PR.
-10. **README.** Done when: Overview, dataset, model, cloud services, setup/usage, and both live links.
+10. **README.** Done when: Overview, dataset, model, cloud services, setup and usage, and links to the live API and live front-end.
 11. **Ethics and limitations.** Done when: The README states the model's limitations and the app's ethical boundaries.

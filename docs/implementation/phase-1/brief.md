@@ -5,7 +5,7 @@ hide:
 
 # Phase 1 Brief: Data Pipeline
 
-**Status: Built and tested.** Steps 1 to 4 are done, and the 8 Phase 1 tests pass. The numbers below are the ones the code produces.
+**Status: Built and tested.** Steps 1 to 4 are done, and the 8 Phase 1 tests pass.
 
 Phase 1 gets the data into the cloud and back. It downloads a public file of NFL game results, cleans it, keeps the cleaned copy in Amazon S3, and downloads that copy so every later step starts from the S3 version. It builds no features and trains nothing. Those start in [Phase 2](../phase-2/brief.md).
 

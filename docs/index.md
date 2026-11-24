@@ -29,7 +29,7 @@ If the video does not load, [watch it on YouTube](https://youtu.be/Om_aYeCCiZE).
 
 ## Project Overview
 
-The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline. The goal is a clean, repeatable process, from cloud storage to a public web app, more than a high score. Why the project exists and how it was built phase by phase are on [Background](./background.md).
+The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline. [Background](./background.md) explains why the project exists and how it was built.
 
 ```mermaid
 flowchart TB
@@ -48,7 +48,7 @@ flowchart TB
 
 ## Dataset
 
-- **Source:** the [nflverse games file](https://github.com/nflverse/nfldata/blob/master/data/games.csv), one row per NFL game since 1999.
+- **Source:** the [nflverse games file](https://github.com/nflverse/nfldata/blob/master/data/games.csv), sourced from the nflverse `nfldata` repository, with one row per NFL game since 1999.
 - **Games used:** regular-season games from 2020 through week 10 of 2026, without ties: **1,759 games**.
 - **Stored in S3,** downloaded back, and committed in `data/`, so the project trains with no download and no AWS account. See the [Phase 1 Brief](./implementation/phase-1/brief.md).
 

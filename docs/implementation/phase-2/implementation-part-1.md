@@ -49,7 +49,7 @@ All of these are in `src/model/features.py`. Everything is built in memory on ea
 - **Win percentage:** wins divided by games played so far.
 - **Point margin per game:** points scored minus points allowed so far, divided by games played so far.
 - **A team with no games yet** counts as win percentage 0.5 and point margin 0.0. This happens for every team in week 1.
-- **Per game, not season totals.** Teams have played different numbers of games by mid-season because of bye weeks. Before week 8 of 2025, 23 teams had played 7 games, 8 teams had played 6, and 1 team had played 5. A season total would favor the teams that had played more games.
+- **Per game, not season totals.** Bye weeks leave teams on different game counts. Before week 8 of 2025, 23 teams had played 7 games, 8 had played 6, and 1 had played 5. A season total would favor teams with more games.
 - **Tied games are not in the table.** Phase 1 removed them, so two teams in a removed game show one fewer game.
 
 ### What Do the Standings Look Like?
@@ -275,7 +275,7 @@ week 1 differentials are all 0
 - **Always picking the home team** is the baseline in the last column. The model has to beat it to add anything.
 - **Week 1 games:** 79 are in training, 16 in validation, and 16 in test.
 - **Games by season:** 255 (2020), 271 (2021), 269 (2022), 272 (2023), 272 (2024), 271 (2025), and 149 (2026). A full season has 272 games. 2020 had 256 (its last week was week 17), and 2022 had 271 because one game was cancelled. Each season then loses its tied games: one each in 2020, 2021, and 2025, two in 2022, and one in 2026.
-- **Why by season, not at random:** each season stands on its own, because the numbers start over each year. Splitting whole seasons also keeps every game in a group from using results that came after the games in the next group.
+- **Why by season, not at random:** the numbers start over each year, so each season stands on its own. Splitting whole seasons also means no group is trained on results that came after the games it is scored on.
 
 ### How Are the Seasons Chosen?
 
@@ -354,8 +354,7 @@ model:
   # A label for this trained model. It is saved inside the model file and in the MLflow run.
   version: v1.0
   # A starting number for any random choice, so a rerun gives the same result. The solver
-  # below does not use randomness, so two fits match either way. The seed is kept so a random
-  # step added later stays repeatable.
+  # below is not random, so the seed only matters for a random step added later.
   random_seed: 42
   # Where the trained model is saved.
   output_path: models/model.joblib
@@ -390,7 +389,7 @@ tracking:
 - **`split.train_end_season`:** the last training season (2024). Training starts at `window.start_season` (2020).
 - **`split.validation_season`:** the validation season (2025). The test season is `window.end_season` (2026), and `window.test_through_week` (10) is already applied by cleaning.
 - **`model.version`:** a label for the trained model (`v1.0`). It is saved with the model and shown by the API later.
-- **`model.random_seed`:** the starting number for any random choice (42). The `lbfgs` solver does not use randomness, so two fits give the same result either way. The seed is kept so any later random step stays repeatable.
+- **`model.random_seed`:** the starting number for any random choice (42). The `lbfgs` solver is not random, so the seed only matters for a random step added later.
 - **`model.output_path`:** where the trained model is saved (`models/model.joblib`).
 - **`model.logistic_regression.C`:** regularization strength (1.0). A smaller value pulls the weights toward zero more strongly. This is scikit-learn's default.
 - **`model.logistic_regression.solver`:** the method that finds the weights (`lbfgs`).

@@ -72,3 +72,16 @@ export function describeInputs(request: PredictRequest): { winPct: string; margi
     margin: request.point_diff_per_game_differential.toFixed(1),
   };
 }
+
+// The sign and the team come from this formatted text, so the words cannot disagree with the digits shown.
+export function describeGap(formatted: string, homeName: string, awayName: string): { signed: string; ahead: string } {
+  // A formatted zero, including a minus on zero, is even and shows no sign.
+  if (Number(formatted) === 0) {
+    const unsigned = formatted.startsWith("-") ? formatted.slice(1) : formatted;
+    return { signed: unsigned, ahead: "Even" };
+  }
+  if (formatted.startsWith("-")) {
+    return { signed: formatted, ahead: `${awayName} ahead` };
+  }
+  return { signed: `+${formatted}`, ahead: `${homeName} ahead` };
+}

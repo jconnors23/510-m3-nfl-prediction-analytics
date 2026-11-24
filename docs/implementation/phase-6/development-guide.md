@@ -18,7 +18,7 @@ docker version
 - **A copy of the repository.** No virtual environment, no trained model, and no AWS account are needed. Training reads the committed data.
 - **Port 8000 free,** for the serve image. `make start` and a plain `mkdocs serve` both use it.
 
-The terms used here (image, container, bind mount, published port) are explained in the [Glossary](../extras/glossary.md#phase-6-docker).
+Terms such as image, container, bind mount, and published port are in the [Glossary](../extras/glossary.md#phase-6-docker).
 
 ## How Do I Train in a Container?
 
@@ -28,7 +28,7 @@ make docker-train
 
 It runs three steps:
 
-1. Makes the folder `build/docker/results/` on your computer, if it is missing.
+1. Makes the folder `build/docker/results/` on your computer, if it is missing, and lets any user write to it. The container runs as user 10001, and on Linux a mounted folder keeps this computer's permissions.
 2. Builds the `train` image as `510-m3-nfl-train`. The first build downloads the base image and installs every package, which takes about a minute. Later builds reuse the cache and take about a second, unless `requirements.txt` changed.
 3. Runs one container from it. The container trains, prints the same eight scoring lines as `make train`, logs one MLflow run inside itself, and stops. The container is then removed.
 
@@ -62,10 +62,14 @@ Download the nflverse games file. It prints the address, the time, `rows: 7548`,
 docker run --rm 510-m3-nfl-train python -m src.data.fetch_raw
 ```
 
-Clean the games into the model's table, with your `build/docker/processed/` folder mounted so the result is kept. Make the folder first:
+Clean the games into the model's table, with your `build/docker/processed/` folder mounted so the result is kept. Make the folder first, and let the container's user write to it, as `make docker-train` does for its folder:
 
 ```bash
 mkdir -p build/docker/processed
+```
+
+```bash
+chmod a+rwx build/docker/processed
 ```
 
 ```bash

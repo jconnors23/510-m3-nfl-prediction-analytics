@@ -4,7 +4,7 @@
 import { expect, it } from "vitest";
 
 import rawProfiles from "./data/team-profiles.json";
-import { buildPredictRequest, chanceTenths, describeInputs, describeRecord, formatChances, winnerOf } from "./matchup.ts";
+import { buildPredictRequest, chanceTenths, describeGap, describeInputs, describeRecord, formatChances, winnerOf } from "./matchup.ts";
 import type { TeamProfile, TeamProfiles } from "./types.ts";
 
 const profiles = rawProfiles as TeamProfiles;
@@ -149,5 +149,33 @@ it("describes the inputs with 3 and 1 decimals", () => {
   expect(describeInputs(buildPredictRequest(byCode("SF"), byCode("MIA")))).toEqual({
     winPct: "0.778",
     margin: "17.9",
+  });
+});
+
+// A positive formatted gap favors the home team and gains a leading plus.
+it("marks a positive gap as the home team ahead", () => {
+  expect(describeGap("0.389", "New England Patriots", "Tennessee Titans")).toEqual({
+    signed: "+0.389",
+    ahead: "New England Patriots ahead",
+  });
+});
+
+// A negative formatted gap keeps its minus and favors the away team.
+it("marks a negative gap as the away team ahead", () => {
+  expect(describeGap("-17.9", "Miami Dolphins", "San Francisco 49ers")).toEqual({
+    signed: "-17.9",
+    ahead: "San Francisco 49ers ahead",
+  });
+});
+
+// A formatted zero has no sign, and neither team is ahead.
+it("marks a formatted zero as even", () => {
+  expect(describeGap("0.000", "New England Patriots", "Tennessee Titans")).toEqual({
+    signed: "0.000",
+    ahead: "Even",
+  });
+  expect(describeGap("0.0", "New England Patriots", "Tennessee Titans")).toEqual({
+    signed: "0.0",
+    ahead: "Even",
   });
 });

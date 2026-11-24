@@ -5,7 +5,7 @@ hide:
 
 # Phase 3 Brief: Local Prediction API
 
-**Status: Built and tested.** All 7 steps are done, and the 17 new API tests in `tests/test_api.py` pass.
+**Status: Built and tested.** All 7 steps are done. The phase added 17 API tests in `tests/test_api.py`, and all pass.
 
 **Needs first:** Phase 2, which is built. Its output is the saved model `models/model.joblib`. If that file is missing, run `python -m src.model.train` first.
 
@@ -54,14 +54,14 @@ flowchart TB
 - **Valid ranges:** win percentage difference from -1 to 1, which is the full possible range. Point margin difference from -100 to 100, which is a loose guard, because the real data runs about -49 to 39.
 - **Unknown fields are rejected,** so a misspelled name fails loudly and is not ignored.
 - **The scaler is inside the model file,** so the API sends raw inputs. The API never standardizes anything itself.
-- **FastAPI, not Flask.** Both can serve this model. FastAPI does the input checks (missing field, extra field, wrong type, out-of-range number) from one request definition, and it gives a test page at `/docs` with no extra code. In Flask, those checks would be written manually. FastAPI also pairs with the Mangum adapter already pinned for Lambda in Phase 4, while Flask would need a different adapter. Flask is a little shorter for a route with no checks, which is the one place it is simpler.
+- **FastAPI, not Flask.** FastAPI does the input checks (missing field, extra field, wrong type, out-of-range number) from one request definition, and it gives a test page at `/docs` with no extra code. Flask would need those checks written separately and a different Lambda adapter than Mangum.
 - **No cloud code yet.** The adapter that lets AWS Lambda run the same app (Mangum) is added in Phase 4. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
 - **Built so Lambda can reuse it.** Phase 4 runs this same app in Lambda, so Phase 3 keeps four things true:
-    - The app is one object named `app`, importable from the module `src/api/app.py`, with no code that reads the command line when it is imported.
-    - The model loads in the app's start-up step through the `load_model` function, not inside a route. Phase 4 reuses `load_model` on Lambda and calls it once, on the first call.
-    - Every file path goes through `resolve_path` in `src/config.py`, which finds the project folder from the code's own location. The Lambda zip keeps the same folder layout (`src/`, `config/`, `models/`), so the same paths work there.
+    - The app is one object named `app` in `src/api/app.py`, with no code that reads the command line on import.
+    - The model loads in the start-up step through `load_model`, not inside a route. Phase 4 calls `load_model` once, on the first call.
+    - Every file path goes through `resolve_path` in `src/config.py`, and the Lambda zip keeps the same folder layout (`src/`, `config/`, `models/`).
     - Tests call the app in memory (FastAPI's test client), so they need no server and no network.
-- **NumPy, not pandas, in the API.** The Lambda zip fits under its size limit only without `pandas` (231.3 MB without it, 278.4 MB with it). So the API files must not import `pandas`, directly or through `src/model/features.py`, which imports it. The API reads the input names from the saved model file, passes the two numbers to the model as a plain numpy array in that order, and silences the one expected scikit-learn warning about column names. A test reads the API files and checks that none of them imports `pandas`. See the [Phase 4 Implementation, Step 3](../phase-4/implementation.md#step-3-measure-the-package-size).
+- **NumPy, not pandas, in the API.** The Lambda zip fits under its size limit only without `pandas`, so no API file may import it. The reason and the test that enforces it are in [Why Does the API Use NumPy Instead of pandas?](./implementation.md#why-does-the-api-use-numpy-instead-of-pandas).
 - **Packages:** [`fastapi`](https://fastapi.tiangolo.com/), [`uvicorn`](https://uvicorn.dev/), and [`pydantic`](https://docs.pydantic.dev/latest/) are already pinned in `requirements.txt`. `uvicorn` is the program that runs the service on your machine, and `pydantic` checks that each request has the right fields. See the [Glossary](../extras/glossary.md#phase-3-local-prediction-api) for both.
 
 ## What Was Created

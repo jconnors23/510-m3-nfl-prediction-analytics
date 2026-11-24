@@ -56,8 +56,8 @@ This list covers the Part 1 prediction page, which is now the Custom Matchup tab
 - **Two drop-down lists,** "Home team" and "Away team", each with the 32 teams by full name. Under each, once a team is chosen, its record and margin, such as "5-5 record, -2.1 points per game". If the same team is in both, the page says "Choose two different teams." and sends nothing.
 - **One button,** "Analyze" (it was "Predict" in Part 1).
 - **The result:** the predicted winner by full name, taken from the API's `prediction` field, a bar split between the two teams' chances, and each team's chance as a percentage with one decimal. When both show 50.0%, the page adds "too close to call".
-- **How the model saw this game:** the two numbers sent, written out in words.
-- **What the model does not know:** the standings date, that the model uses only these two numbers (no injuries, weather, or anything else), that home teams get a small edge, and the model's validation score from the profiles file.
+- **Why the Model Picked This:** the two numbers sent, each with its sign and the team it favors.
+- **Keep in Mind:** the standings date, that the model uses only these two numbers (no injuries, weather, or anything else), that home teams get a small edge, and the model's validation score from the profiles file.
 - **A readable message for each failure,** such as "Could not reach the API." or "The API had a problem (status 500)."
 - **A footer** with links to the nflverse data, the source code, and the docs. The disclaimer and the model version appear only once, at the top.
 - **A light and a dark theme.** The page starts in the visitor's system setting, and the button switches between the two. Both are built from white, black, purple, orange, gold, silver, and amber.
@@ -95,13 +95,13 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 - [x] **Step 17. Add the feedback route:** a DynamoDB table, a small function, and `POST /feedback` on the same API. The prediction function is not changed. See [Feedback Path](../extras/features/feedback-path.md).
 - [x] **Step 18. Add a Makefile** with the local commands. It now has nine, each explained on [Makefile](../extras/development/makefile.md).
 - [x] **Step 19. Check every game,** all 272, in the browser's arithmetic and through the live API, then redeploy.
+- [x] **Step 20. Fix what review found:** the phone width, the cramped forms, the see-through lists, two week numbers typed in by the developer, and the wording. See [What Was Fixed After Review?](./implementation-part-2.md#what-was-fixed-after-review).
 - [x] **Step 21. Keep a log of every training run** in `mlflow-reference/`: `make train` moves the last run into `previous-runs/`, writes the new one to `latest-run/`, and adds a row to `run-history.md`. See [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run).
-- [x] **Step 20. Fix what review found:** the phone width, the cramped forms, the see-through lists, two week numbers typed in manually, and the wording. See [What Was Fixed After Review?](./implementation-part-2.md#what-was-fixed-after-review).
 
 ## Results
 
-- **Python tests:** **95 passed** for the whole project once a model is trained, or 93 passed and 2 skipped before. Part 1 added 8 for the profiles file, and Part 2 added 8 for the season file, 9 for the feedback function, and 10 for the MLflow export and its run history. The other 7 came later: 2 for the confusion-matrix picture, and 5 for the fetch and download steps.
-- **App tests:** **62 passed**, across 12 test files. On a fresh checkout, 60 pass and 2 are skipped, because they need `build/expected-matchups.json` and `build/expected-season.json`.
+- **Python tests:** **95 passed** for the whole project with a trained model (93 passed and 2 skipped without one). Phase 5 added 35 of them: 8 for the profiles file, 8 for the season file, 9 for the feedback function, and 10 for the MLflow export and its run history.
+- **App tests:** **65 passed**, across 12 test files. On a fresh checkout, 63 pass and 2 are skipped, because they need `build/expected-matchups.json` and `build/expected-season.json`.
 - **Part 2, every game:** all 272 games of 2026 sent to the live API, every pick and probability equal to the local model. The check scripts are in `scripts/checks/`.
 - **Part 2, feedback:** a test submission saved, read back, and deleted. The prediction function is unchanged.
 - **Every matchup:** all **992** ordered pairs sent to the live API came back with status 200, and every pick and every probability (rounded to 4 places) equals the local model. The local model picks the home team in 601 and the away team in 391, with home win chances from 26.72% to 78.60%.
@@ -112,7 +112,7 @@ A browser cannot read the games table, so `python -m src.profiles` writes a smal
 
 - **React with TypeScript,** not plain TypeScript, because React makes the page's state easier to read and test.
 - **One standings snapshot after 2026 week 10,** not a week picker, in Part 1. Part 2 added a week list that picks which earlier standings a game uses.
-- **The model's scores are copied into the profiles file** from `results/run-summary.json`, so the page never shows a number typed in manually.
+- **The model's scores are copied into the profiles file** from `results/run-summary.json`, so the page never shows a number typed in separately.
 - **The folder is `frontend/`.** It was built as `web/` and renamed.
 - **The bucket name `510-m3-nfl-web-app` was free** and is used as proposed.
 - **TypeScript 7.0.2** works with the Vite template, so the template's older version was not needed.

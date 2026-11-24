@@ -28,10 +28,10 @@ How the scores are worked out is on [ML Workflow](../architecture/ml-workflow.md
 
 ## How Was the Release Checked?
 
-- **Tests:** 95 Python tests and 62 web app tests pass, as listed on the [Testing Guide](../development/testing-guide.md).
+- **Tests:** 95 Python tests (93 passed and 2 skipped before a model is trained) and 65 web app tests (63 passed and 2 skipped without the files in `build/`). See the [Testing Guide](../development/testing-guide.md).
 - **The live API matches the local model** on every game (1,759), every ordered pair of teams (992), and every 2026 game (272), with 0 mismatches.
-- **Four GitHub workflows** test the Python code and the web app on pull requests, and publish the docs site and the web app. See [GitHub Workflows](../development/github-workflows.md).
-- **Every requirement of the assignment is met,** as shown on the [Requirements Rubric](../../requirements/requirements-rubric.md). The final review is on the [Phase 7 Brief](../../phase-7/brief.md).
+- **Four GitHub workflows:** two test the Python code and the web app on pull requests, and two publish the docs site and the web app. See [GitHub Workflows](../development/github-workflows.md).
+- **Every requirement is met,** as shown on the [Requirements Rubric](../../requirements/requirements-rubric.md). The final review is on the [Phase 7 Brief](../../phase-7/brief.md).
 
 ## What Does Version 1.0 Leave Out?
 

@@ -10,6 +10,7 @@ import { checkFeedback, sendFeedback } from "./feedback.ts";
 import {
   buildPredictRequest,
   chanceTenths,
+  describeGap,
   describeInputs,
   describeRecord,
   formatChances,
@@ -116,9 +117,9 @@ function startingDark(): boolean {
 // Tells the visitor which games the numbers cover. Standings before week 1 means no game has been played.
 function sourceSentence(standingsBefore: number): string {
   if (standingsBefore <= 1) {
-    return "These numbers come from before any 2026 game, and the first team is treated as the home team.";
+    return "Based on standings before the 2026 season started.";
   }
-  return `These numbers come from games through ${profiles.as_of.season} week ${standingsBefore - 1}, and the first team is treated as the home team.`;
+  return `Based on games through ${profiles.as_of.season} week ${standingsBefore - 1}.`;
 }
 
 // The sun icon shows while dark is on, the moon while it is off. It is marked aria-hidden, so screen readers skip it, because the button text already names the control.
@@ -157,11 +158,14 @@ function ResultCard({
   const winner = winnerOf(response, home, away);
   // Rebuilt with the same subtraction the request used, so the numbers shown are the numbers sent.
   const inputs = describeInputs(buildPredictRequest(home, away));
+  // The sign and the team follow that formatted text, so they match the digits on screen.
+  const winGap = describeGap(inputs.winPct, home.name, away.name);
+  const pointGap = describeGap(inputs.margin, home.name, away.name);
   // The validation scores belong to the model version in the profiles file. If the API reports a
   // different version, say so and do not present the old scores as that model's.
   const scoresSentence =
     response.model_version === profiles.model.version
-      ? `On ${profiles.model.validation_games} validation games the model had never seen, it picked the winner in ${(profiles.model.validation_accuracy * 100).toFixed(1)}% of games, against ${(profiles.model.validation_baseline * 100).toFixed(1)}% for always picking the home team.`
+      ? `Picked the winner in ${(profiles.model.validation_accuracy * 100).toFixed(1)}% of ${profiles.model.validation_games} past games it was not trained on. Always picking the home team: ${(profiles.model.validation_baseline * 100).toFixed(1)}%.`
       : `These scores belong to model ${profiles.model.version}. The API answered with model ${response.model_version}.`;
   // The bar repeats the percentages below it, so screen readers skip it (aria-hidden). Its widths
   // come from the same tenths as the text, so the bar and the numbers always agree.
@@ -185,18 +189,29 @@ function ResultCard({
           <span className="chance-value">{chances.away}</span>
         </div>
       </div>
-      <h3>How the Model Saw This Game</h3>
-      <p>Home team win percentage minus away team win percentage: {inputs.winPct}</p>
-      <p>Home team point margin per game minus away team's: {inputs.margin}</p>
+      <h3>Why the Model Picked This</h3>
+      <dl className="why-rows">
+        <div className="why-row">
+          <dt>Win percentage gap</dt>
+          <dd className="why-number">{winGap.signed}</dd>
+          <dd className="why-ahead">{winGap.ahead}</dd>
+        </div>
+        <div className="why-row">
+          <dt>Points per game gap</dt>
+          <dd className="why-number">{pointGap.signed}</dd>
+          <dd className="why-ahead">{pointGap.ahead}</dd>
+        </div>
+      </dl>
+      <h3>Keep in Mind</h3>
       <div className="model-note">
-        <h3>What the Model Does Not Know</h3>
-        <p>{sourceSentence(standingsBefore)}</p>
-        <p>
-          <strong>The model uses only these two numbers.</strong>
-          {" It does not know about injuries, weather, or anything else beyond these two numbers."}
-        </p>
-        <p>Home teams win more often, so the home team gets a small edge even when the two teams are equal.</p>
-        <p>{scoresSentence}</p>
+        <ul>
+          <li>{sourceSentence(standingsBefore)}</li>
+          <li>
+            <strong>Uses only these two numbers.</strong> Injuries, weather, and rest are not included.
+          </li>
+          <li>Home teams win slightly more often, so evenly matched teams lean toward the home team.</li>
+          <li>{scoresSentence}</li>
+        </ul>
       </div>
     </section>
   );
@@ -269,7 +284,7 @@ function Overview() {
         <li>The bar splits the two teams' chances.</li>
         <li>Each team has a percentage.</li>
         <li>Too close to call means the two percentages are the same.</li>
-        <li>The two numbers under the bar are what the model saw.</li>
+        <li>Why the Model Picked This shows the two numbers the model used, and which team each one favors.</li>
       </ul>
       <h3>What Each Tab Is For</h3>
       <ul>

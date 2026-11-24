@@ -86,7 +86,7 @@ It always downloads again and never reuses an earlier local copy. It prints `row
 
 - **The four steps:** `src/data/fetch_raw.py`, `clean.py`, `upload_to_s3.py`, `download_from_s3.py`.
 - **Reading the settings:** `src/config.py`, which reads `config/config.yaml`.
-- **Every path, address, bucket, and season:** The `data` and `window` blocks of `config/config.yaml`.
+- **Every path, address, bucket, and season:** the `data` and `window` blocks of `config/config.yaml`.
 - **Tests:** `tests/test_fetch_raw.py` (3 tests), `tests/test_clean.py` (2), `tests/test_upload.py` (1), and `tests/test_download_from_s3.py` (2).
 
 Nothing is hard-coded in the scripts. To change a path, the bucket, or the seasons, edit `config/config.yaml` and leave the code alone.
@@ -97,7 +97,7 @@ Nothing is hard-coded in the scripts. To change a path, the bucket, or the seaso
 python -m pytest tests/test_fetch_raw.py tests/test_clean.py tests/test_upload.py tests/test_download_from_s3.py
 ```
 
-Expected: **8 passed**. The tests use made-up data, a stand-in for the download, and a stand-in S3 client, so they need no internet and no AWS account. The whole project's tests run with `make pytest`: 95 passed once a model is trained, or 93 passed and 2 skipped before.
+Expected: **8 passed**. The tests use made-up data, a stand-in for the download, and a stand-in S3 client, so they need no internet and no AWS account. The whole project's 95 tests (14 files) run with `make pytest`: 93 pass and 2 skip until `models/model.joblib` exists.
 
 ### How Do I Change Which Games Are Used?
 

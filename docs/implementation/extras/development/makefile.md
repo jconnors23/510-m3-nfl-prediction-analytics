@@ -5,7 +5,7 @@ hide:
 
 # Makefile
 
-The `Makefile` in the project folder gives a short name to each of the nine commands used most while working on the project: training, the two test suites, the local API, the web app, the MLflow screen, the docs preview, and the two Docker images. This page explains each one: what it is for, the exact command it runs, what it needs first, what it writes, and what you should see. Run every command from the project folder.
+The `Makefile` in the project folder gives a short name to each of nine commands: training, the two test suites, the local API, the web app, the MLflow screen, the docs preview, and the two Docker images. For each one, this page gives its purpose, the exact command it runs, what it needs first, what it writes, and what you should see. Run every command from the project folder.
 
 ## Which Command Do I Use?
 
@@ -33,7 +33,7 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-- **The web app's packages.** `make web-test` and `make start-web` need `frontend/node_modules/`. Install them once with Node.js 22.12 or later (the `engines` range in `frontend/package.json` allows 22.12 and up, 24, and 26 and up), from the exact versions in `package-lock.json`. Run this inside `frontend/`:
+- **The web app's packages.** `make web-test` and `make start-web` need `frontend/node_modules/`. Install them once with Node.js 22.12 or later, using the exact versions in `package-lock.json`. Run this inside `frontend/`:
 
 ```bash
 npm ci
@@ -88,7 +88,7 @@ make pytest PYTHON=python3.13
 - **Runs:** `npm test` inside `frontend/`, which runs `vitest run` once and exits.
 - **Needs:** `frontend/node_modules/` (see [What Must Be Set Up First?](#what-must-be-set-up-first)).
 - **Writes:** nothing in the project, except the two every-game checks below.
-- **What you see:** **62 passed** in 12 test files. On a fresh copy, **60 passed and 2 skipped**: `matchups.parity.test.ts` and `season.parity.test.ts` compare the browser's numbers with expected files in the git-ignored `build/` folder, and skip when those files are missing. When they run, they write `build/js-bodies.json` and `build/season-bodies.json`.
+- **What you see:** **65 passed** in 12 test files. On a fresh copy, **63 passed and 2 skipped**: `matchups.parity.test.ts` and `season.parity.test.ts` compare the browser's numbers with expected files in the git-ignored `build/` folder, and skip when those files are missing. When they run, they write `build/js-bodies.json` and `build/season-bodies.json`.
 
 ## make start
 
@@ -136,10 +136,11 @@ make pytest PYTHON=python3.13
 
 **What it is for:** checking that the project trains the same way inside a container, with its own Python and packages, as on this computer.
 
-- **Runs three steps:**
+- **Runs four steps:**
     1. `mkdir -p build/docker/results`
-    2. `docker build --target train -t 510-m3-nfl-train .`
-    3. `docker run --rm -v "$(CURDIR)/build/docker/results:/app/results" 510-m3-nfl-train`
+    2. `chmod a+rwx build/docker/results`, because the container runs as user 10001, and on Linux the mounted folder keeps this computer's permissions.
+    3. `docker build --target train -t 510-m3-nfl-train .`
+    4. `docker run --rm -v "$(CURDIR)/build/docker/results:/app/results" 510-m3-nfl-train`
 - **Needs:** Docker Desktop, running. No AWS account, no virtual environment, and no trained model.
 - **Writes:** only `build/docker/results/run-summary.json` on this computer, through the mounted folder. Everything else the container writes (its model, MLflow database, and run log) is deleted with the container. Your `mlflow.db`, `models/`, and `mlflow-reference/` are not touched.
 - **What you see:** the first build takes about a minute, most of it installing packages. Later builds take under a second unless `requirements.txt` changed. Then the same scores as `make train`, three warnings that `git` is not in the image (expected), and `saved: mlflow-reference/latest-run` inside the container.

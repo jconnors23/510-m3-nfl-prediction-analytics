@@ -5,7 +5,7 @@ hide:
 
 # Feedback Path
 
-The web app's Feedback tab lets a visitor send a short message about the site or its predictions. Each message is saved in a DynamoDB table by a small AWS Lambda function of its own, on the route `POST /feedback` of the same API address the predictions use. The prediction function is not touched. The form was built with the five-tab site in [Phase 5 Part 2](../../phase-5/implementation-part-2.md), and it is not one of the assignment's requirements, so it is kept here.
+The web app's Feedback tab lets a visitor send a short message about the site or its predictions. Each message is saved in a DynamoDB table by a small AWS Lambda function of its own, on the route `POST /feedback` of the same API address the predictions use. The prediction function is not touched. The form was built with the five-tab site in [Phase 5 Part 2](../../phase-5/implementation-part-2.md). It is an extra feature, not an assignment requirement.
 
 **Status: Built and live** at [https://d1nubiunzfwm0q.cloudfront.net/#feedback](https://d1nubiunzfwm0q.cloudfront.net/#feedback). The AWS commands that created it are in [Add the Feedback Route](../../phase-5/deployment-guide.md#add-the-feedback-route).
 
@@ -71,7 +71,7 @@ All in `us-east-1`, tagged `project=510-m3`, with names that follow the project'
 - **The function `510-m3-nfl-feedback-api`:** Python 3.13 on arm64. Its zip holds one file, `src/api/feedback_handler.py`, and uses the `boto3` that the Lambda runtime provides, so it adds no packages. The table name comes from the setting `FEEDBACK_TABLE`.
 - **The role `510-m3-nfl-feedback-api-role`:** it can write logs and call `dynamodb:PutItem` on this one table, and nothing else.
 - **The route `POST /feedback`** on the existing HTTP API `510-m3-nfl-predict-http-api`, with its own integration and its own permission to call the new function.
-- **A request limit on that route only:** 1 request a second, with bursts of up to 5. The form writes to a table, so it has a limit. The prediction routes only read, and stay without one.
+- **A request limit on that route only:** 1 request a second, with bursts of up to 5, because this route writes to a table. The prediction routes only read and have no limit.
 - **Log retention:** 14 days, as for the prediction function.
 
 ## Where Is the Code?
@@ -88,8 +88,7 @@ All in `us-east-1`, tagged `project=510-m3`, with names that follow the project'
 - A filled invisible field saved nothing.
 - A 5-character message got 422 with "The message must be 10 to 1,000 characters." In the browser, the same message shows the length message and sends nothing.
 - A preflight from the CloudFront address got 204.
-- The stage's only route limit is `POST /feedback` (1 a second, bursts of 5).
-- The function's role can only write logs and call `dynamodb:PutItem` on this one table.
+- The stage's only route limit is `POST /feedback`, and the function's role can only write logs and call `dynamodb:PutItem` on this one table.
 - The prediction function's code fingerprint is `IU5bJH9pTL+rF/uEXMUAp+Eo/mik2abfaSasBXPOgbk=` before and after.
 
 To read the saved messages, see [Read the Feedback](../../phase-5/deployment-guide.md#read-the-feedback).

@@ -40,7 +40,7 @@ This is the one place the environment is stated. Other pages refer to it.
 
 ## What Is the Prediction Task?
 
-The first design choice is the prediction task: classification or regression. It is made in Phase 1 because it decides which rows are usable and which columns are kept.
+The first design choice is classification or regression. It is made in Phase 1 because it decides which rows are usable.
 
 - **Supervised learning:** the model learns from past games where the answer is known, then predicts games where it is not.
 - **Classification** predicts one of a fixed set of labels. **Regression** predicts a number on a scale, such as a score margin.
@@ -128,7 +128,7 @@ The week cut is `window.test_through_week` (10) in `config/config.yaml`, applied
 
 The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/processed/nfl_matchups_2020_2026.csv`. Both come from `config.yaml`. Only the cleaned table is uploaded.
 
-- **The bucket was created manually,** in the AWS console, with all four public-access blocks on. No script creates it, because only an upload script and a download script are needed. S3 encrypts new objects with AES-256 by default.
+- **The bucket was created manually,** in the AWS console, with all four public-access blocks on. No script creates it. S3 encrypts new objects with AES-256 by default.
 - `src/data/upload_to_s3.py` uploads the file, then asks S3 for the object's size and compares it with the local file (63,908 bytes). A difference stops the step.
 - A failed AWS call (missing credentials, a wrong bucket name, or no permission) ends the step with boto3's own error message and no traceback.
 
@@ -141,7 +141,7 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 
     **If skipped:** A run could use an old or edited local file without anyone knowing.
 
-`src/data/download_from_s3.py` downloads into a temporary `.partial` file and renames it when the download finishes, so a failed download never replaces a good local copy. It always downloads again, never reuses an earlier local copy, and prints the row count (1,759). Credentials come from the standard AWS credential chain and are never stored in the repository. Step 2 already checked the table, so this step does not check it again. Steps 1 to 3 run once, when the data changes. Anyone who only trains starts at Step 4.
+`src/data/download_from_s3.py` downloads into a temporary `.partial` file and renames it when the download finishes, so a failed download never replaces a good local copy. It always downloads again, never reuses an earlier local copy, and prints the row count (1,759). Credentials come from the standard AWS credential chain and are never stored in the repository. Step 2 already checked the table, so this step does not check it again.
 
 ## What Does Phase 1 Create?
 
@@ -163,4 +163,4 @@ The bucket is `510-m3-nfl-dataset` in `us-east-1`, and the object key is `data/p
 - **Ties are removed (6 games).** Turned down: labeling a tie as an away win, and counting a tie as half a win.
 - **Playoffs and unplayed games are removed,** and the week cap is a setting, not a code edit.
 - **Dependencies are pinned to exact versions.**
-- **No notebooks.** They repeated what the scripts and these pages say.
+- **No notebooks.** They would repeat what the scripts and these pages say.

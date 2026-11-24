@@ -43,7 +43,7 @@ python -m src.model.train
 python -m uvicorn src.api.app:app --port 8000
 ```
 
-[`uvicorn`](https://uvicorn.dev/) is the program that runs the service. See [What Is uvicorn?](#what-is-uvicorn) below. Starting it with `python -m` makes sure the one in the project's environment is used, even if the shell cannot find a bare `uvicorn` command.
+[`uvicorn`](https://uvicorn.dev/) is the program that runs the service. See [What Is uvicorn?](#what-is-uvicorn) below. Starting it with `python -m` uses the copy in the project's environment.
 
 When the service is ready, the terminal prints these lines and then waits:
 
@@ -88,7 +88,7 @@ The model uses two numbers, both measured **before** the game from the games alr
 - **Week 1:** no team has played yet, so both numbers are 0.
 - **Whole numbers are fine,** for example `0` and `5`. Numbers written as text, such as `"0.5"`, are rejected.
 - **The range for the second field is a loose guard.** The real data runs from about -49 to 39.
-- The inputs are explained further in [Phase 2 Part 1](../phase-2/implementation-part-1.md).
+- How the inputs are built is in [Phase 2 Part 1](../phase-2/implementation-part-1.md).
 
 ### Example 1: A Game Where the Away Team Is Stronger
 
@@ -263,10 +263,10 @@ The same page lists `GET /health`, and shows the field descriptions and the allo
 
 ## What Is uvicorn?
 
-A FastAPI app is only a Python object. It does not listen for requests by itself, so something has to run it. [`uvicorn`](https://uvicorn.dev/) is that program (a web server). It opens a port on your computer, receives each HTTP request, passes it to the app, and sends the app's answer back to the caller. The two talk through [ASGI](https://asgi.readthedocs.io/en/latest/), the standard interface between Python web servers and web apps. See the [Glossary](../extras/glossary.md#phase-3-local-prediction-api) for the short definition, and the [uvicorn documentation](https://uvicorn.dev/) for its options.
+A FastAPI app is only a Python object, and it does not listen for requests by itself. [`uvicorn`](https://uvicorn.dev/) is the web server that opens a port on your computer, passes each HTTP request to the app, and sends the answer back. The two talk through [ASGI](https://asgi.readthedocs.io/en/latest/), the standard interface between Python web servers and web apps. See the [Glossary](../extras/glossary.md#phase-3-local-prediction-api) for the short definition.
 
-- **Only for the laptop.** `uvicorn` runs the service in Phase 3. On AWS Lambda there is no port to listen on, so it is not used there and is left out of the Lambda zip. Mangum takes its place. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
-- **It is not part of the API's logic.** The routes, the input checks, and the model call are all in the FastAPI app. Swapping `uvicorn` for another server would not change an answer.
+- **Only for the laptop.** On AWS Lambda there is no port to listen on, so `uvicorn` is left out of the Lambda zip and Mangum takes its place. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
+- **It is not part of the API's logic.** The routes, the input checks, and the model call are all in the FastAPI app.
 
 - **`python -m uvicorn`:** Run the `uvicorn` installed in the active environment.
 - **`src.api.app:app`:** Import the module `src/api/app.py` and run the object named `app` inside it. The part before the colon is the file, and the part after is the variable.

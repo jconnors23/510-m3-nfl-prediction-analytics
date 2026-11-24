@@ -5,9 +5,9 @@ hide:
 
 # Requirements Rubric
 
-This page takes its requirements directly from [Project Requirements](./project-requirements.md) and says where the project meets each one. Each heading quotes the assignment's own wording, and the headings follow its sections and order: the two Deliverables, Steps 1 to 9, and the Learning Goal that asks for a reflection on ethics and limitations. Each entry gives a status, the code that meets the requirement, the docs page that explains it, and the check that proves it, so a reviewer can walk the requirements line by line and no requirement goes missing.
+This page lists each requirement from [Project Requirements](./project-requirements.md) and says where the project meets it. Each heading quotes the assignment's own wording, in the assignment's order: the two Deliverables, Steps 1 to 9, and the Learning Goal on ethics and limitations. Each entry gives a status, the code that meets the requirement, the docs page that explains it, and the check that proves it.
 
-Code links go to the repository on GitHub: `https://github.com/jconnors23/510-m3-nfl-prediction-analytics`. The other Learning Goals describe what the project teaches, and each is covered by the requirements below. The ethics goal asks for something specific in the project, so it is listed as a requirement of its own.
+Code links go to the repository on GitHub: `https://github.com/jconnors23/510-m3-nfl-prediction-analytics`. The assignment's other Learning Goals describe what the project teaches and are covered by the requirements below. The ethics goal asks for a specific piece of work in the project, so it is listed as a requirement of its own.
 
 ## Summary
 
@@ -106,7 +106,7 @@ The assignment holds **48 requirements**, counting the ethics reflection from it
     - **Front-end** (Streamlit, Gradio, NextJS, or a custom web framework): a custom web app built with Vite, React, and TypeScript.
     - **Front-end host** (Hugging Face Spaces, Streamlit Cloud, Vercel, or a custom deployment platform): a custom deployment platform, a private S3 bucket served over HTTPS by CloudFront.
 
-- **Current test counts:** **95 Python tests** pass with a trained model (**93 passed and 2 skipped** without one), and **62 web tests** pass (60 passed and 2 skipped without the files in `build/`). The 14 Python test files in `tests/` cover every module in `src/`. See [Makefile](../extras/development/makefile.md#make-pytest) for how each count comes about.
+- **Current test counts:** **95 Python tests** pass with a trained model (**93 passed and 2 skipped** without one), and **65 web tests** pass (63 passed and 2 skipped without the files in `build/`). The 14 Python test files in `tests/` cover every module in `src/`. See [Makefile](../extras/development/makefile.md#make-pytest) for how each count comes about.
 
 ## Deliverable 1: GitHub Repository
 
@@ -211,7 +211,7 @@ git log --merges --format='%h %s' main
 make pytest
 ```
 
-Result: 95 passed (93 passed and 2 skipped without a model). The web tests pass too, with 62 passed:
+Result: 95 passed (93 passed and 2 skipped without a model). The web tests give 65 passed (63 passed and 2 skipped without the files in `build/`):
 
 ```bash
 make web-test
@@ -238,13 +238,13 @@ make web-test
 - **Status:** Met
 - **Where in the code:** [`frontend/src/App.tsx`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/App.tsx) (two team lists, the button, the result, and the failure messages), [`frontend/src/Picker.tsx`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/Picker.tsx), and [`frontend/src/matchup.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/matchup.ts) (the two inputs and the chances).
 - **Docs:** [How Is the Answer Shown?](../phase-5/implementation-part-1.md#how-is-the-answer-shown) and [What Does Each Tab Do?](../phase-5/implementation-part-2.md#what-does-each-tab-do)
-- **Evidence:** each team's record shows under its list, a bar splits the two chances, there is a light and a dark theme, and the text and graphics pass the WCAG contrast minimums in both. The 62 app tests pass.
+- **Evidence:** each team's record shows under its list, a bar splits the two chances, there is a light and a dark theme, and the text and graphics pass the WCAG contrast minimums in both. The 65 app tests pass.
 
 ### "Be built with Streamlit, Gradio, NextJS, or a custom web framework"
 
 - **Status:** Met
 - **Where in the code:** a custom web app. It is a React and TypeScript app built with Vite, in [`frontend/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/frontend). The settings are in [`frontend/package.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/package.json) and [`frontend/vite.config.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/vite.config.ts). It is not Streamlit or Gradio.
-- **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md) and [Phase 5 Brief, Decisions Made](../phase-5/brief.md#decisions-made)
+- **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md) and [Phase 5 Brief](../phase-5/brief.md)
 - **Evidence:** `npm run build` runs the type check and `vite build` into `frontend/dist/`, run from inside `frontend/`:
 
 ```bash
@@ -329,7 +329,7 @@ The assignment adds a note under this step, which is not a requirement: "NOTE: W
 - **Status:** Met
 - **Where in the code:** [`src/data/download_from_s3.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/data/download_from_s3.py), then `load_games` in [`src/model/features.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/model/features.py).
 - **Docs:** [Step 4: Download the Cleaned Table From S3](../phase-1/implementation.md#step-4-download-the-cleaned-table-from-s3-and-save-it)
-- **Evidence:** `load_games` reads only `data/from-s3/nfl_matchups_2020_2026.csv`. The pipeline order is: the data steps are separate commands (fetch, clean, upload, download). `python -m src.model.train` then runs the rest in order: load the downloaded table, build the inputs, split, fit, score, save, and log.
+- **Evidence:** `load_games` reads only `data/from-s3/nfl_matchups_2020_2026.csv`. The data steps (fetch, clean, upload, download) are separate commands. `python -m src.model.train` then runs the rest in order: load the downloaded table, build the inputs, split, fit, score, save, and log.
 
 ### "Preprocessing and feature engineering"
 
@@ -494,7 +494,7 @@ Checked on every game: all 1,759 games sent through the public address gave the 
 - **Status:** Met
 - **Where in the code:** a simple web app built with Vite, using the dev server for local work and `vite build` for the published files. It is the React and TypeScript app in [`frontend/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/frontend). `npm run dev` starts the dev server on port 5173, and `npm run build` runs the type check and `vite build` into `frontend/dist/`. It is not Streamlit or Gradio.
 - **Docs:** [Phase 5 Development Guide](../phase-5/development-guide.md) and [How Do I Run It Locally?](../phase-5/development-guide.md#how-do-i-run-it-locally)
-- **Evidence:** `make start-web` opens the dev server at `http://localhost:5173`, and `make web-test` runs 62 tests that pass.
+- **Evidence:** `make start-web` opens the dev server at `http://localhost:5173`, and `make web-test` runs 65 tests that pass.
 
 ```bash
 make web-test
@@ -505,7 +505,7 @@ make web-test
 - **Status:** Met
 - **Where in the code:** [`frontend/src/App.tsx`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/App.tsx) (two team lists, the Analyze button, the result, and the failure messages), [`frontend/src/matchup.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/matchup.ts) (the two inputs and the chances), and [`frontend/src/api.ts`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/api.ts) (the `fetch` call to `POST /predict`). The standings come from [`frontend/src/data/team-profiles.json`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/frontend/src/data/team-profiles.json), written by `python -m src.profiles` ([`src/profiles.py`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/blob/main/src/profiles.py)).
 - **Docs:** [Phase 5 Implementation, Part 1](../phase-5/implementation-part-1.md) and [Phase 5 Implementation, Part 2](../phase-5/implementation-part-2.md)
-- **Evidence:** 62 app tests pass. All 992 ordered pairs of teams, and all 272 games of the 2026 season, were sent to the live API, with every pick and probability equal to the local model. The page is readable and interactive: each team's record under its list, a bar split between the two chances, a light and a dark theme, and text and graphics that pass the WCAG contrast minimums in both.
+- **Evidence:** 65 app tests pass. All 992 ordered pairs of teams, and all 272 games of the 2026 season, were sent to the live API, with every pick and probability equal to the local model. The page is readable and interactive: each team's record under its list, a bar split between the two chances, a light and a dark theme, and text and graphics that pass the WCAG contrast minimums in both.
 
 ### "Host your app on Hugging Face Spaces, Streamlit Cloud, Vercel [all free!], or a custom deployment platform."
 
@@ -558,7 +558,7 @@ The README is `README.md` in the repository root. Its sections are "Project Over
 - **Status:** Met
 - **Where in the code:** the README section [Setup and Usage](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#setup-and-usage), which gives the run environment and the `make` commands.
 - **Docs:** [Makefile](../extras/development/makefile.md), [What Must Be Set Up First?](../extras/development/makefile.md#what-must-be-set-up-first), [How Do I Do a Training Run?](../phase-2/development-guide.md#how-do-i-do-a-training-run), and [Phase 3 Development Guide, How Do I Run It Locally?](../phase-3/development-guide.md#how-do-i-run-it-locally)
-- **Evidence:** Phase 7 rebuilt the project from a clean copy using only the README ([Step 3: Rebuild From a Clean Copy](../phase-7/brief.md#step-3-rebuild-from-a-clean-copy)), with every result listed in [What Did the Follow-Up Check?](../phase-7/implementation.md#what-did-the-follow-up-check). The nine make commands are all documented on [Makefile](../extras/development/makefile.md).
+- **Evidence:** Phase 7 rebuilt the project from a clean copy using only the README ([Step 3: Rebuild From a Clean Copy](../phase-7/brief.md#step-3-rebuild-from-a-clean-copy)), with the results summarized in [What Did the Checks Find and Fix?](../phase-7/implementation.md#what-did-the-checks-find-and-fix). The nine make commands are all documented on [Makefile](../extras/development/makefile.md).
 
 ### "Link to deployed API and front-end app"
 
@@ -569,11 +569,11 @@ The README is `README.md` in the repository root. Its sections are "Project Over
 
 ## Learning Goal: Ethical Implications and Limitations
 
-The assignment's Learning Goals ask every project to "Reflect on ethical implications and limitations of your ML application". It is listed as [11. Ethics and Limitations](./project-requirements.md#11-ethics-and-limitations) on Project Requirements, and it is met.
+The assignment's Learning Goals ask every project to "Reflect on ethical implications and limitations of your ML application". It is listed as [11. Ethics and Limitations](./project-requirements.md#11-ethics-and-limitations) on Project Requirements.
 
 ### "Reflect on ethical implications and limitations of your ML application"
 
 - **Status:** Met
 - **Where in the code:** the README section [Limitations](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#limitations).
 - **Docs:** [Design Manifest](../design-manifest.md) records the choices behind the model, and [What Does the Confusion Matrix Show?](../phase-2/implementation-part-2.md#what-does-the-confusion-matrix-show) shows where the model is wrong.
-- **Evidence:** the section states that the model sees only two numbers and is wrong on about 41% of the 2026 test games, that it leans toward the home team (172 home picks in 2025 against 146 home wins), that predictions are for reference only, that no personal data is collected, and that the project is not affiliated with the National Football League.
+- **Evidence:** the section states that the model sees only two numbers and is wrong on about 41% of the 2026 test games, that it picks the home team more often than the home team wins (172 home picks in 2025 against 146 home wins), that predictions are for reference only, that no personal data is collected, and that the project is not affiliated with the National Football League.

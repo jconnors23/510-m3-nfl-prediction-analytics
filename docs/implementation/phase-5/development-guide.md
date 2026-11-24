@@ -9,7 +9,7 @@ This guide shows how to run the web app on your own computer, test it, build it,
 
 ## What Is Needed First?
 
-- **Node.js 22.12 or later, or 24, with npm.** Vitest needs `^22.12.0`, `^24.0.0`, or `>=26.0.0`, and `frontend/package.json` says the same. This computer has Node 24.17.0 and npm 11.13.0. Check with `node --version`.
+- **Node.js 22.12 or later, or 24, with npm.** This matches the Vitest requirement and `frontend/package.json`. This computer has Node 24.17.0 and npm 11.13.0. Check with `node --version`.
 - **The installed packages,** from `frontend/`. `npm ci` installs exactly the versions in `frontend/package-lock.json`, the way `requirements.txt` pins the Python packages:
 
 ```bash
@@ -25,10 +25,9 @@ Run every `npm` command from `frontend/`, and every `python` command from the pr
 
 This guide uses three of them: `make start` (the local API), `make start-web` (the web app's dev server), and `make web-test` (the app's tests). Every command, what it needs, and the port it uses are on [Makefile](../extras/development/makefile.md).
 
-For a local run, use two terminals: `make start` in one, then `make start-web` in the other. The steps below explain each one and what to check.
-
-- **Port 8000 must be free for `make start`.** If `mkdocs serve` is running with its default port, it holds 8000. Use `make docs` instead, which serves the docs on 8001.
-- **The Feedback tab does not work locally.** The local service has no `/feedback` route, so sending the form from the dev server gets status 404. The route exists only on AWS. See [Feedback Path](../extras/features/feedback-path.md).
+For a local run, use two terminals: `make start` in one, then `make start-web` in the other. 
+- **Port 8000 must be free for `make start`.** A `mkdocs serve` on its default port holds 8000. Use `make docs` instead, which serves the docs on 8001.
+- **The Feedback tab does not work locally.** The `/feedback` route exists only on AWS, so the form gets status 404 from the local service. See [Feedback Path](../extras/features/feedback-path.md).
 
 ## How Do I Run It Locally?
 
@@ -57,7 +56,7 @@ From `frontend/`:
 npm run dev
 ```
 
-Open `http://localhost:5173`. The page calls its own address, and the dev server forwards `/predict`, `/health`, and `/feedback` to `http://127.0.0.1:8000`, so no CORS is involved. The local API has no `/feedback` route, so the Feedback tab gets status 404 here. If the API is on another port, tell the dev server where it is:
+Open `http://localhost:5173`. The page calls its own address, and the dev server forwards `/predict`, `/health`, and `/feedback` to `http://127.0.0.1:8000`, so no CORS is involved. If the API is on another port, tell the dev server where it is:
 
 ```bash
 API_PROXY_TARGET=http://127.0.0.1:8001 npm run dev
@@ -91,7 +90,7 @@ From `frontend/`:
 npm test
 ```
 
-Expected: **62 passed** when `build/expected-matchups.json` and `build/expected-season.json` exist, and **60 passed with 2 skipped** when they do not, as on a fresh checkout or on GitHub. The tests use a stand-in for the network, so they make no real request. What each test checks is on the [Implementation](./implementation-part-1.md#which-tests-pin-these-contracts) page.
+Expected: **65 passed** when `build/expected-matchups.json` and `build/expected-season.json` exist, and **63 passed with 2 skipped** when they do not, as on a fresh checkout or on GitHub. The tests use a stand-in for the network, so they make no real request. What each test checks is on the [Implementation](./implementation-part-1.md#which-tests-pin-these-contracts) page.
 
 ### Python Tests for the Profiles File
 
@@ -181,7 +180,7 @@ The same kind of check exists for every 2026 game of the Games by Week tab: `scr
 - **Every color pair stays readable in both themes:** at least 4.5 to 1 for text, and 3 to 1 for the bar and the focus ring. Check a new color in both themes.
 - **Text a test looks for stays in one piece.** Testing Library matches the text directly inside an element, so a `<strong>` or `<span>` in the middle of a tested sentence breaks the test.
 - **Nothing secret goes in a `VITE_` variable,** because Vite writes those values into the built files.
-- **The profiles file is never edited manually.** `tests/test_profiles.py` and `profiles.test.ts` catch an edit.
+- **The profiles file is never edited directly.** `tests/test_profiles.py` and `profiles.test.ts` catch an edit.
 
 ### How Do I Rebuild the Profiles File?
 
@@ -198,7 +197,7 @@ It prints `teams: 32`, `as of: 2026 week 10`, and `saved: frontend/src/data/team
 1. Edit `frontend/src/App.tsx` or `frontend/src/index.css`, with the dev server running. Check the change in both themes, with the "Dark theme" button, and at a phone width, with the browser's device view.
 2. If you change any text a test looks for, update `frontend/src/App.test.tsx` to match.
 3. Run `npm test` and `npm run build`.
-4. Open a pull request. The Test Web App workflow runs `npm ci`, `npm test`, and `npm run build` on it, with no AWS access (see [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request)). Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy manually instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
+4. Open a pull request. The Test Web App workflow runs `npm ci`, `npm test`, and `npm run build` on it, with no AWS access (see [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request)). Merge the change into `main`. The deploy workflow builds, tests, uploads, and checks it. To deploy from your computer instead, use the [Deployment Guide](./deployment-guide.md#redeploy-after-a-change).
 
 ### How Do I Point the App at a Different API?
 

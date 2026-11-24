@@ -5,7 +5,7 @@ hide:
 
 # Frontend and Backend Connection
 
-This page follows one click from the browser to the prediction API and back. It covers what the browser loads, how a prediction travels, how the page knows which API address to call, how local development differs from the live site, and what the page shows when a call fails. It is for anyone who needs to see how the web app and the API fit together. The exact request and answer formats are owned by [Phase 5 Implementation Part 1](../../phase-5/implementation-part-1.md), and the AWS resources are listed on [Cloud Architecture](./cloud-architecture.md).
+This page follows one click from the browser to the prediction API and back. It covers what the browser loads, how a prediction travels, how the page chooses the API address, how local development differs from the live site, and what the page shows when a call fails. The exact request and answer formats are in [Phase 5 Implementation Part 1](../../phase-5/implementation-part-1.md), and the AWS resources are on [Cloud Architecture](./cloud-architecture.md).
 
 ## What Does the Browser Load?
 
@@ -18,7 +18,7 @@ The page is a static site: the browser fetches files from CloudFront and runs th
 
 ## How Does a Prediction Travel?
 
-The browser works out the two inputs itself, from the committed standings: the home team's value minus the away team's value, for the win percentage and for the points margin per game. It sends only those two numbers. Who does each piece of arithmetic is in [Who Works Out Each Number?](../../phase-5/implementation-part-1.md#who-works-out-each-number).
+The browser works out the two inputs itself, from the committed standings, and sends only those two numbers. See [Who Works Out Each Number?](../../phase-5/implementation-part-1.md#who-works-out-each-number).
 
 ```mermaid
 %%{init: {"sequence": {"width": 120, "actorMargin": 30}}}%%

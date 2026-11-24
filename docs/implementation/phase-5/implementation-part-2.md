@@ -7,7 +7,7 @@ hide:
 
 Part 2 turns the one-page app into a small site called **NFL Prediction Analytics**, with five tabs: an overview, every 2026 game by week, a custom matchup, a team stats table, and a feedback form. The predictions keep using the same API, with no change to the prediction code. Only the feedback form needs something new on AWS: one small function, one route, and one table. [Part 1](./implementation-part-1.md) holds the contracts this page builds on: who works out each number, the request and response, the profiles file, and the hosting.
 
-**Status: Built and live** at [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net), including a round of fixes found in review. See [What Was Fixed After Review?](#what-was-fixed-after-review). The checks that were run are in [What Was Checked?](#what-was-checked).
+**Status: Built and live** at [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net), including a round of fixes found in review. See [What Was Fixed After Review?](#what-was-fixed-after-review). The checks are in [What Was Checked?](#what-was-checked).
 
 ## What Does the Site Look Like?
 
@@ -39,14 +39,14 @@ The tab a visitor lands on. It explains, in plain text:
 
 - **What the site does:** predicts the winner of a 2026 NFL regular-season game from two numbers about the teams.
 - **How the model works:** the home team's win percentage minus the away team's, and the home team's point margin per game minus the away team's, both from earlier games of the same season. A logistic regression trained on 2020 to 2024 turns them into a home win chance.
-- **How to read a result:** the predicted winner, the bar split between the two teams, the two percentages, "too close to call", and the two numbers the model saw.
+- **How to read a result:** the predicted winner, the bar split between the two teams, the two percentages, "too close to call", and "Why the Model Picked This", the two numbers the model used and which team each favors.
 - **What each tab is for,** with a link to each.
-- **What the model does not know:** injuries, weather, anything else beyond its two numbers, and anything after the standings date.
+- **Keep in Mind:** injuries, weather, anything else beyond its two numbers, and anything after the standings date.
 - **Where to read more:** links to the documentation site and the code repository.
 
 ### Games by Week
 
-This tab combines "the upcoming 2026 games" and "any week" into one place. A visitor picks a week, then one of that week's real games, then clicks Analyze.
+This tab covers both the upcoming 2026 games and the finished ones. A visitor picks a week, then one of that week's real games, then clicks Analyze.
 
 ```mermaid
 flowchart LR
@@ -180,7 +180,7 @@ Paths are inside `frontend/`.
 
 The tests cover the season file and the feedback function in Python, using a stand-in for DynamoDB so no AWS account is needed. On the app side they cover the tabs, the labels, the inputs for a game, the result lines, the team table's sorting and formatting, the feedback check, the list component, and each tab's page.
 
-- **The tests:** 95 Python tests and 62 app tests pass. The 62 app tests are in 12 files: `App.test.tsx` (16), `matchup.test.ts` (11), `schedule.test.ts` (9), `api.test.ts` (8), `config.test.ts` (4), `feedback.test.ts` (3), `teamStats.test.ts` (3), `Picker.test.tsx` (3), `profiles.test.ts` (2), `tabs.test.ts` (1), and the two every-game parity tests, `matchups.parity.test.ts` (1) and `season.parity.test.ts` (1). On GitHub, or on a fresh checkout, the app gives 60 passed and 2 skipped, because the two parity tests need `build/expected-matchups.json` and `build/expected-season.json`, which sit in the ignored `build/` folder. The Test Web App workflow runs these tests on pull requests, as explained in [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request). A fresh checkout with no saved model gives 93 Python tests passed and 2 skipped.
+- **The tests:** 95 Python tests and 65 app tests pass. The 65 app tests are in 12 files: `App.test.tsx` (16), `matchup.test.ts` (14), `schedule.test.ts` (9), `api.test.ts` (8), `config.test.ts` (4), `feedback.test.ts` (3), `teamStats.test.ts` (3), `Picker.test.tsx` (3), `profiles.test.ts` (2), `tabs.test.ts` (1), and the two every-game parity tests, `matchups.parity.test.ts` (1) and `season.parity.test.ts` (1). On GitHub, or on a fresh checkout, the app gives 63 passed and 2 skipped, because the two parity tests need `build/expected-matchups.json` and `build/expected-season.json`, which sit in the ignored `build/` folder. The Test Web App workflow runs them on pull requests (see [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request)). Without a saved model, the Python suite gives 93 passed and 2 skipped.
 - **The season file:** 272 games (150 finished or tied, 122 upcoming), 18 weeks, 11 sets of standings, and 32 team rows. It is 157,894 bytes, SHA-256 `9c2acb0bb239cbeb86cf9425c113deeecfe86dee68381a55a8b8291a710b6525`, and rebuilding it gives the same bytes.
 - **Finished games:** for all 149 with a winner, the browser's inputs equal `build_model_table`'s exactly.
 - **Every game through the live API:** all 272 sent, 272 answers with status 200, every pick and every probability equal to the local model, 0 retries, and 0 mismatches. The check scripts are committed in `scripts/checks/` (`season_expected.py` and `season_live.py`), and write into the git-ignored `build/` folder. Run each as `.venv/bin/python scripts/checks/<name>.py` from the project folder, after `make train`.
@@ -201,8 +201,8 @@ The tests cover the season file and the feedback function in Python, using a sta
 - **The page was wider than a phone screen.** At 390 pixels wide, every tab's page was 802 pixels wide. The tab bar was centered with automatic margins inside a flex column, which made it as wide as its row of tabs. It now has a set width, and its tabs scroll inside it. Checked on all five tabs, locally and live: the page is 390 pixels wide.
 - **The forms were cramped.** Labels sat inline, the message box was a tiny default box beside its label, and nothing spaced one field from the next. Every label and its control now sit in one field style: the label on its own line, space between fields, and a full-width message box about 6 lines tall.
 - **An open list showed the button through it.** A native drop-down opens a list the operating system draws, and on macOS that list is translucent, so the orange Analyze button showed through. All seven lists now use `src/Picker.tsx`, a list the page draws itself, built to the standard select-only combobox pattern: the arrow keys, Home and End, Enter, Escape, and jumping to a typed letter. Checked: the open list is fully opaque, and it covers the button.
-- **Two week numbers were typed in manually in the code.** Custom Matchup's starting week and the last-week fallback now come from the season file.
-- **The banner wording was changed.** It now reads "**Unofficial coursework project.** Not affiliated with or endorsed by the National Football League. Predictions are for reference only." A test checks the text of every tab for words the site must not use.
+- **Two week numbers were hard-coded in the app.** Custom Matchup's starting week and the last-week fallback now come from the season file.
+- **The banner wording was changed** to the text shown under [What Does the Site Look Like?](#what-does-the-site-look-like). A test checks the text of every tab for words the site must not use.
 
 ## What Part 2 Does Not Do
 

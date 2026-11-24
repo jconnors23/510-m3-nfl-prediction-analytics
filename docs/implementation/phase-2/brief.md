@@ -5,7 +5,7 @@ hide:
 
 # Phase 2 Brief: Features, Training, and Tracking
 
-**Status: Built and tested.** All 7 steps are done, and the 29 tests for this phase pass.
+**Status: Built and tested.** All 7 steps are done. The phase had 29 passing tests when it was built.
 
 **Needs first:** Phase 1, which is built. Its output is the downloaded table `data/from-s3/nfl_matchups_2020_2026.csv`.
 
@@ -29,7 +29,7 @@ Phase 2 turns the cleaned games into two inputs per game, trains the model, and 
 - **One saved object:** the scaler and the model travel together in one pipeline, so the API cannot apply the model without the scaler. The scaler learns its averages from training rows only.
 - **Tracking:** a local database file `mlflow.db`, with run files in `mlartifacts/`. Each run records 15 parameters (including the scikit-learn version and a fingerprint of the data file), 8 scores, 3 files, and an MLflow-format copy of the model.
 - **Readable record:** each run also writes `results/run-summary.json`, which is committed to git and stays identical when the settings and data do not change.
-- **Logistic regression only.** There is no model comparison. Random forest and XGBoost are left out, which keeps the model simple to explain and the serving image small.
+- **Logistic regression only.** There is no model comparison. Random forest and XGBoost are left out to keep the model simple to explain and the serving image small.
 
 ## What Was Created
 

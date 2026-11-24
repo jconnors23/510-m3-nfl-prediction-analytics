@@ -19,7 +19,7 @@ python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-Run both. The second command installs the packages. If a `.venv` folder is already there, delete it and run both again.
+The first command creates the environment and the second installs the packages. If a `.venv` folder already exists, delete it and run both again.
 
 Start Docker Desktop. On Windows, use the Ubuntu terminal, not PowerShell, and turn on WSL integration for that distro (Docker Desktop: Settings, Resources, WSL Integration). Open a new terminal there. This check should print a Client section and a Server section:
 
@@ -45,7 +45,7 @@ This writes `models/model.joblib`. The local API loads that file.
 
 ## Test the API Locally
 
-The API requirement is a `/predict` route you can call on this computer. Leave this terminal running.
+Start the API on this computer and call its `/predict` route. Leave this terminal running.
 
 ```bash
 make start
@@ -61,7 +61,7 @@ The home win probability is **0.3296**. FastAPI's test page is `http://127.0.0.1
 
 ## Test the Same API in Docker
 
-The Docker requirement is separate. The image installs its own packages and has entry points for training and serving, so it runs with no virtual environment. Its prediction has to match the local API.
+The Docker image installs its own packages and has entry points for training and serving, so it runs with no virtual environment. Its prediction must match the local API's.
 
 In the terminal where `make start` is running, press Ctrl+C. The container uses `http://127.0.0.1:8000` too.
 

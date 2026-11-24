@@ -96,8 +96,14 @@ it("shows the winner and both chances for home NE, away TEN", async () => {
   expect(within(screen.getByTestId("chance-home")).getByText("63.8%")).toBeTruthy();
   expect(within(screen.getByTestId("chance-away")).getByText("Tennessee Titans (away)")).toBeTruthy();
   expect(within(screen.getByTestId("chance-away")).getByText("36.2%")).toBeTruthy();
-  expect(screen.getByText(/Home team win percentage minus away team win percentage: 0\.389/)).toBeTruthy();
-  expect(screen.getByText(/Home team point margin per game minus away team's: 5\.9/)).toBeTruthy();
+  const winGap = screen.getByText("Win percentage gap").closest("div");
+  const pointGap = screen.getByText("Points per game gap").closest("div");
+  expect(winGap).toBeTruthy();
+  expect(pointGap).toBeTruthy();
+  expect(within(winGap as HTMLElement).getByText("+0.389")).toBeTruthy();
+  expect(within(winGap as HTMLElement).getByText("New England Patriots ahead")).toBeTruthy();
+  expect(within(pointGap as HTMLElement).getByText("+5.9")).toBeTruthy();
+  expect(within(pointGap as HTMLElement).getByText("New England Patriots ahead")).toBeTruthy();
   expect(screen.getByText(/63\.1%/)).toBeTruthy();
   expect(screen.getByText(/53\.9%/)).toBeTruthy();
   const fetchMock = vi.mocked(fetch);

@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Deployment Guide
 
-This guide holds every AWS command for the Phase 5 web app: the commands that put it online, in order, the commands that let GitHub Actions redeploy it, the commands to redeploy manually, and the commands that remove it. How the hosting works, and why, is on the [Implementation](./implementation-part-1.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
+This guide holds every AWS command for the Phase 5 web app, in order: put it online, let GitHub Actions redeploy it, redeploy it from a terminal, and remove it. How the hosting works, and why, is on the [Implementation](./implementation-part-1.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
 
 ## How Do the Sections Fit Together?
 
@@ -19,7 +19,7 @@ flowchart TB
     F --> G["Add the CloudFront Address<br/>to the API's CORS List"]
     G --> J["Let GitHub Actions Deploy<br/>sign-in provider, role, secret"]
     J --> K["Add the Feedback Route<br/>table, role, function, route, limit<br/>(Part 2)"]
-    K -.-> H["Redeploy After a Change<br/>(the workflow, or manually)"]
+    K -.-> H["Redeploy After a Change<br/>(the workflow, or a terminal)"]
     K -.-> L["Read the Feedback"]
     K -.-> I["Remove Everything<br/>(written, not run)"]
 ```
@@ -49,7 +49,7 @@ What must be true first:
 
 ## Check the Account
 
-1. Run both test suites with `make pytest` and `make web-test`. The Python tests give **95 passed**. The app tests give **62 passed**, or **60 passed and 2 skipped** without the expected files in `build/`.
+1. Run both test suites (`make pytest` and `make web-test` do the same). The Python tests give **95 passed**. Run the app tests from `frontend/`. They give **65 passed**, or **63 passed and 2 skipped** without the expected files in `build/`.
 
 ```bash
 python -m pytest -q
@@ -403,7 +403,7 @@ curl -sS -D - -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/pre
 
 ## Let GitHub Actions Deploy
 
-These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/development/github-workflows.md#how-does-a-change-reach-the-live-web-app). Write the two policy files with the real account number, under `build/`, which git ignores.
+These steps let the workflow `.github/workflows/deploy-web-app.yml` deploy with a short-lived AWS sign-in, and no stored access key. How it works is on [How Does a Change Reach the Live Web App?](../extras/development/github-workflows.md#how-does-a-change-reach-the-live-web-app). The two policy files go under `build/`, which git ignores, with the real account number.
 
 29. Confirm there is no GitHub sign-in provider and no role with this name yet. The second command should fail with `NoSuchEntity`.
 
@@ -661,7 +661,7 @@ aws lambda update-function-code --function-name 510-m3-nfl-feedback-api --zip-fi
 
 ## Redeploy After a Change
 
-**The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below do the same thing manually, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are. A pull request that changes `frontend/` also runs the Test Web App workflow, which only tests and builds and never deploys. See [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request).
+**The workflow does this by itself** when a change under `frontend/` reaches `main`. The steps below do the same thing from a terminal, for a deploy without GitHub. The bucket, the distribution, and CORS stay as they are. A pull request that changes `frontend/` also runs the Test Web App workflow, which only tests and builds and never deploys. See [How Are the Web App's Tests Run on a Pull Request?](../extras/development/github-workflows.md#how-are-the-web-apps-tests-run-on-a-pull-request).
 
 1. From `frontend/`, install, test, and build. The new script and stylesheet get new hashed names.
 

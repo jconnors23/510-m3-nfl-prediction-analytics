@@ -7,7 +7,7 @@ hide:
 
 This page explains how the Phase 3 service works, one step at a time, and why. The service takes two numbers about a game and returns the model's pick and the home team's chance of winning, as JSON. To run it, send it requests, or change it, see the [Development Guide](./development-guide.md). For the short version, see the [Brief](./brief.md).
 
-**Status: built and tested.** The code is in `src/api/app.py` and `src/api/schemas.py`, and the tests are in `tests/test_api.py`. Every request and response in the guide was produced by the running service. This phase added 17 tests. The whole project now has 95 tests, counting those added by later phases.
+**Status: built and tested.** The code is in `src/api/app.py` and `src/api/schemas.py`, and the tests are in `tests/test_api.py`. Every request and response in the guide was produced by the running service. This phase added 17 tests. The whole project now has 95 tests in 14 files, counting those added by later phases.
 
 ## How Does the Service Work?
 
@@ -72,7 +72,7 @@ sequenceDiagram
 - **Where the path comes from:** `model.output_path` in `config/config.yaml`, turned into a full path with `resolve_path` from `src/config.py`. That function finds the project folder from the code's own location, so the same path works from any folder, and in the Lambda zip in Phase 4.
 - **What is in the file:** a dictionary with `pipeline`, `feature_names`, `model_version`, `scikit_learn_version`, `train_start_season`, and `train_end_season`. See [Step 7 of Phase 2](../phase-2/implementation-part-2.md#what-is-saved).
 - **Where the model lives:** in the app's start-up step (FastAPI's `lifespan`), stored on `app.state`. The routes read it from there. Importing `src/api/app.py` builds the app but does not read the file.
-- **Why start-up and not import time:** the tests build the app without a real model file, and Lambda (in Phase 4) reuses the same `load_model` function. Mangum would run this start-up step on every request by default, so Phase 4 turns that off and calls `load_model` itself, once, on the first call. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
+- **Why start-up and not import time:** the tests build the app without a real model file, and Lambda (in Phase 4) reuses the same `load_model` function. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum) for how Phase 4 calls it.
 - **Checks, in this order:** the file exists, it loads, it holds the four keys the API needs (`pipeline`, `feature_names`, `model_version`, `scikit_learn_version`), the scikit-learn version matches, and the saved input names match the request fields.
 
 If any check fails, the service refuses to start, and `uvicorn` prints a traceback that ends with one of these messages (the `RuntimeError` line):
@@ -209,7 +209,7 @@ The checks all come from the request definition in Step 2, and FastAPI answers a
 python -m pytest tests/test_api.py
 ```
 
-Expected: **17 passed**, with no warnings. Without `models/model.joblib`, test 17 is skipped instead, and 16 pass. Running `python -m pytest` with no file name runs every test in the project: 95 passed once a model is trained, or 93 passed and 2 skipped before.
+Expected: **17 passed**, with no warnings. Without `models/model.joblib`, test 17 is skipped instead, and 16 pass. Running `python -m pytest` with no file name runs all 95 project tests: 93 pass and 2 skip until `models/model.joblib` exists.
 
 - **Made-up model.** A fixture fits a tiny pipeline on 40 made-up rows (fixed random seed), saves it in the same dictionary format that training writes, and points the service at it. The tests never touch `models/model.joblib`, except test 17.
 - **In-memory calls.** FastAPI's test client calls the app without starting a server. It is used as a context manager (`with TestClient(app)`), because that is what runs the start-up step.

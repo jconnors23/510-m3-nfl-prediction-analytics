@@ -65,7 +65,7 @@ It writes no file.
 make train
 ```
 
-`make train` runs `python -m src.model.train`, with MLflow's unrelated hint line turned off. It takes a few seconds and prints nine lines:
+`make train` runs `python -m src.model.train`. It takes a few seconds and prints nine lines:
 
 ```text
 training: 820 of 1339 correct (61.24%), always-home 53.32%
@@ -101,7 +101,7 @@ Open `mlflow-reference/run-history.md`. It lists every training run, newest firs
 make start-web-ml
 ```
 
-Open `http://127.0.0.1:5001` and choose the experiment `nfl-pregame-winner-v1`. The command runs `mlflow ui` on port 5001, because macOS Control Center often holds MLflow's default port, 5000. It also hides a hint line MLflow prints about tracing code. Press `Ctrl+C` to stop the screen. The screen lists every run in your local `mlflow.db`, which can include runs that were never committed.
+Open `http://127.0.0.1:5001` and choose the experiment `nfl-pregame-winner-v1`. The command runs `mlflow ui` on port 5001, because macOS Control Center often holds MLflow's default port, 5000. Press `Ctrl+C` to stop the screen. The screen lists every run in your local `mlflow.db`, which can include runs that were never committed.
 
 - **The files** are explained in [What Is Each File Type?](#what-is-each-file-type), below.
 
@@ -131,11 +131,11 @@ The diagram in [How Do I Do a Training Run?](#how-do-i-do-a-training-run) shows 
 
 ### Reading the Differences
 
-- **`model.joblib` is the model itself.** It is the only file the API needs. It does not say how well the model scored.
-- **`mlflow.db` is the logbook.** It records what each run used and scored, and it points to the run's files. It holds numbers and text only. If you delete it, the model and files stay, but MLflow can no longer list the runs.
-- **`mlartifacts/` is the shelf of files.** The logbook (`mlflow.db`) says which run a file belongs to, and `mlartifacts/` holds the file. The two are only useful together, so keep or delete them as a pair.
-- **`run-summary.json` is the committed receipt.** It repeats the key facts of the latest run in a form git can compare line by line. The database and the shelf cannot be compared that way, because they are binary or hold run ids and times.
-- **`mlflow-reference/` is the committed logbook.** It is a readable copy of what the logbook and the shelf hold for every run, with no absolute paths and no user name, so the MLflow logging can be read in any copy of the repository.
+- **`model.joblib` is the model itself.** It is the only file the API needs. It does not record how well the model scored.
+- **`mlflow.db` is the logbook.** It records what each run used and scored, and it points to the run's files. If you delete it, the model and files stay, but MLflow can no longer list the runs.
+- **`mlartifacts/` is the shelf of files.** The database says which run a file belongs to, and this folder holds the file. Keep or delete the two as a pair.
+- **`run-summary.json` is the committed receipt.** It repeats the key facts of the latest run in text that git can compare line by line.
+- **`mlflow-reference/` is the committed logbook.** It is a readable copy of what the database and the folder hold for every run, with no absolute paths or user name.
 
 ### What Is Inside `mlartifacts/`?
 
@@ -152,9 +152,8 @@ mlartifacts/
     requirements.txt               the packages it needs
 ```
 
-- **Two copies of the model.** `model.joblib` is plain and carries the extra facts the API checks. The MLflow-format copy lets MLflow's own tools load the model in one call. Both come from the same fitted model. See [Why Is the Model Stored Twice?](./implementation-part-2.md#why-is-the-model-stored-twice).
-- **`joblib` and `skops` are two ways to write a model to disk.** joblib is the general way and works on any Python object. skops is the format MLflow's scikit-learn support uses.
-- **Where the settings go.** `config/config.yaml` is the input. The copy under `mlartifacts/` is a snapshot of what was used for that run.
+- **Two copies of the model.** See [Why Is the Model Stored Twice?](./implementation-part-2.md#why-is-the-model-stored-twice). `joblib` is the general way to save a Python object, and `skops` is the format MLflow's scikit-learn support uses.
+- **Settings copy.** `config/config.yaml` is the input. The copy under `mlartifacts/` is a snapshot of what that run used.
 - **Why they are not committed.** The database is binary and changes on every run, it records an absolute path on one machine, and one command rebuilds both. See [Design Manifest](../design-manifest.md).
 - **What is committed in their place.** [`mlflow-reference/`](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/tree/main/mlflow-reference) holds a readable copy of every run: its settings, scores, plot, and the logged model's text files, with no absolute paths. See [Step 3: Read the Run History](#step-3-read-the-run-history).
 - **Terms.** The [Glossary](../extras/glossary.md) defines artifact, artifact store, logged model, and SQLite.
@@ -168,7 +167,7 @@ mlartifacts/
 - **The data:** The cleaned table is committed in `data/`. Its SHA-256 fingerprint is logged on every run. See [Phase 1 Implementation](../phase-1/implementation.md).
 - **The settings:** Every value is in `config/config.yaml`. The code holds no model settings. See [Part 1](./implementation-part-1.md).
 - **The packages:** `requirements.txt` pins every package to an exact version. Python 3.13 is required. See [Phase 1 Implementation](../phase-1/implementation.md#what-is-the-run-environment).
-- **The randomness:** `model.random_seed` is 42. The solver (`lbfgs`) uses no randomness, so two fits match either way. See [Part 2](./implementation-part-2.md#step-4-fit-the-scaler-and-the-model).
+- **The randomness:** `model.random_seed` is 42, and the solver (`lbfgs`) is not random. See [Part 2](./implementation-part-2.md#step-4-fit-the-scaler-and-the-model).
 - **The record of the result:** `results/run-summary.json` has no run id, timestamp, or machine paths, and its decimals are rounded to 6 places. See [Part 2](./implementation-part-2.md#what-is-the-run-summary-file).
 
 ### Which Path Applies?
@@ -267,10 +266,10 @@ Expected: **29 passed**. The tests use made-up games, and every file they write 
 - **`model.logistic_regression.C`:** How strongly the weights are held near zero. A smaller number holds them tighter.
 - **`model.logistic_regression.solver`:** The method that finds the weights.
 - **`model.logistic_regression.max_iter`:** The most steps the solver may take.
-- **`model.random_seed`:** The starting number for any random choice. The `lbfgs` solver uses none, so this only protects a random step added later.
-- **`model.version`:** The label saved with the model and shown by the API. Change it when you want a new model to be told apart from the old one.
+- **`model.random_seed`:** The starting number for any random choice. The `lbfgs` solver is not random, so this only matters for a random step added later.
+- **`model.version`:** The label saved with the model and shown by the API. Changing it only relabels the model. It does not retrain anything.
 
-Change one setting at a time, so a change in the scores has one cause. A new `model.version` is a new label only. It does not retrain anything by itself.
+Change one setting at a time, so a change in the scores has one cause.
 
 ### How Do I Change the Split?
 
@@ -280,7 +279,7 @@ The split has three settings. Training runs from `window.start_season` to `split
 2. Run `python -m src.model.features` to see the new group sizes.
 3. Run `python -m src.model.train`.
 
-`split_seasons` in `src/config.py` stops the command with a message unless the order holds: the first training season is not after the last, the validation season is after the last training season, and the validation season is before the test season. This keeps every group later than the one before it, so the model is never scored on games played before games it learned from.
+`split_seasons` in `src/config.py` stops the command with a message unless the order holds: the first training season is not after the last, the validation season is after the last training season, and the validation season is before the test season. This way the model is never scored on games played before games it learned from.
 
 ### How Do I Add or Change an Input?
 
