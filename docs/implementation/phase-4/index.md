@@ -3,13 +3,179 @@ hide:
   - toc
 ---
 
-# Phase 4 Implementation: AWS Deployment
+# Phase 4: AWS Deployment
 
-This page explains how the Phase 4 deployment works, one step at a time, with the real results. It also holds the measurement made before anything was built: the size of the Lambda package (Step 3). For the short version, see the [Brief](./brief.md). The commands, in order, including the redeploy steps, are in the [Deployment Guide](./deployment-guide.md). To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
+!!! success "Delivered in Pull Request #4"
+    **[Pull request #4 (`phase-four`)](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/pull/4)** merged the AWS Lambda entry point and the public API on API Gateway into `main`. Its **Files changed** tab shows everything this phase delivered.
 
-**Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. The full suite passed with 53 tests when the phase was built (47 from earlier phases and 6 new). It has 95 now, because Phase 5 added more. See the [Development Guide](./development-guide.md#how-do-i-run-all-the-tests). The public address is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
+**Status: Built and tested.** All 11 steps are done. `pytest` passed 53 tests when the phase was built, and the full suite now has 95 (see [How Do I Run All the Tests?](#how-do-i-run-all-the-tests) below). The API is live at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 
-## What Is Mangum?
+**Needs first:** Phase 3, which is built, and a trained model at `models/model.joblib`. Also an AWS account, AWS CLI version 2, and credentials on the machine, as listed in the [run environment](../phase-1/index.md#what-is-the-run-environment).
+
+Phase 4 puts the Phase 3 API on the internet. The same FastAPI app runs inside an AWS Lambda function, and an API Gateway address in front of it gives the world a public URL for `POST /predict` and `GET /health`. The worked example sent to that URL returns the same answer as the local service (0.3296), and all 1,759 games give the same answers as the local model. The web app that calls it comes in [Phase 5](../phase-5/index.md).
+
+## How Do the Pieces Fit Together?
+
+```mermaid
+flowchart TB
+    A["Caller<br/>(curl, or the web app<br/>in Phase 5)"] -->|"HTTPS request"| B["API Gateway<br/>HTTP API<br/>routes and CORS"]
+    B -->|"Lambda event"| C
+    subgraph L["AWS Lambda function (zip, arm64, Python 3.13)"]
+        C["Mangum"] --> D["FastAPI app<br/>(same code as Phase 3)"]
+        D --> E["Saved model<br/>loaded once, on the first call"]
+    end
+    L -.->|"logs"| F["CloudWatch Logs"]
+```
+
+- **API Gateway** receives the request, applies the CORS rules, and calls the function.
+- **Mangum** translates between the event Lambda hands the function and the request FastAPI expects. See [What Is Mangum?](#what-is-mangum).
+- **The FastAPI app and the model are the Phase 3 code,** so the local tests cover what runs on AWS.
+
+## Steps in Order
+
+- [x] **Step 1. Add the Lambda entry point.** A new file (`src/api/lambda_handler.py`) wraps the app with Mangum. Mangum runs the app's start-up step on every request by default, which would re-read the model each time, so the entry point turns that off and loads the model itself on the first call.
+- [x] **Step 2. Test the entry point with no AWS.** Call `handler` with a made-up API Gateway HTTP API event for `POST /predict`. The worked example returns status 200 and a home win probability of 0.3296.
+- [x] **Step 3. Measure the package size first.** The serving packages for Linux, `arm64`, and Python 3.13 come to 231.3 MB unzipped without `pandas`, under the 250 MB limit, so the zip route works. See [Step 3 in Implementation](#step-3-measure-the-package-size) below.
+- [x] **Step 4. Build the zip.** It holds the installed serving packages, `src/`, `config/config.yaml`, and `models/model.joblib`, in the same folder layout as the project so every path still resolves. It is 231,252,596 bytes unzipped and 63,452,500 bytes zipped.
+- [x] **Step 5. Create the function.** Python 3.13, `arm64`, 1769 MB, a 10-second timeout, one environment variable, and a role that can only write logs.
+- [x] **Step 6. Test the function in AWS** with the same made-up event as Step 2.
+- [x] **Step 7. Create the API Gateway HTTP API** with the routes `POST /predict` and `GET /health`, both pointing at the function.
+- [x] **Step 8. Set CORS on the gateway.** It allows the local web app address. The CloudFront address was added in Phase 5.
+- [x] **Step 9. Check the public address** with `curl` and the worked example. It returns the same 0.3296 as the local API.
+- [x] **Step 10. Check the deployed model against the local model.** All 1,759 games give the same pick and the same probability, and the accuracy equals the run summary.
+- [x] **Step 11. Write the deployment steps down,** so they can be repeated. See [Deployment Guide](./deployment-guide.md).
+
+## Key Details
+
+- **Lambda runs from a zip file,** not a container image, so no Docker and no ECR are needed for this phase. The reasons are in [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
+- **Serving packages only.** The zip uses a shorter list than `requirements.txt`, in `requirements-serve.txt`: `scikit-learn`, `numpy`, `joblib`, `PyYAML`, `fastapi`, `pydantic`, and `mangum`, plus `scipy`, which `scikit-learn` brings in. `scipy==1.18.1` is pinned in both lists. It leaves out `pandas`, `mlflow`, `matplotlib`, `boto3`, `uvicorn`, and the test packages. Lambda already provides `boto3`, and `uvicorn` is replaced by Mangum.
+- **Built for the function's platform.** The packages are installed as Linux `arm64` for Python 3.13, the same chip type and Python version the function uses. The command and what each flag does are in [How Was the Size Measured?](#how-was-the-size-measured) below.
+- **The model is copied into the zip at build time.** It is not committed to git and is not downloaded at start-up. The saved scikit-learn version must equal the one in the zip (1.9.1), or the service refuses to start, as in Phase 3.
+- **The zip is larger than the console's upload limit.** It is 63.5 MB zipped, and the console accepts about 50 MB, so the zip was uploaded through S3 (a temporary `deploy/` key in the data bucket, deleted afterward).
+- **The function role can only write logs.** Each AWS identity gets only the access its job needs.
+- **The API is public, with no key.** A key in a browser app would be visible to every visitor, so it would protect nothing. There is no request limit or firewall for now.
+- **Function settings:** 1769 MB of memory, a 10-second timeout, and one environment variable, `JOBLIB_MULTIPROCESSING=0`, which stops a harmless joblib warning. Logs are kept for 14 days. Speed and cost were not goals, so memory is not tuned further. See [What Is the Memory Setting?](#what-is-the-memory-setting) below.
+- **Deployment is a set of written steps** with no `deploy.yml` workflow. They are in the [Deployment Guide](./deployment-guide.md).
+- **Settings:** none new in `config/config.yaml`. The Lambda settings live in the deployment steps.
+
+## What If the Zip Is Too Large?
+
+`scikit-learn`, `scipy`, and `numpy` are large, so the zip could have gone over Lambda's 250 MB unzipped limit. Step 3 found out before anything else was built: the zip fits (231.3 MB unzipped) as long as `pandas` is left out. The fall-back is unused. If the package ever grows past the limit, build one container image, store it in a private Amazon ECR repository, and run Lambda from that image. The [Phase 6](../phase-6/index.md) Dockerfile would be the starting point.
+
+```mermaid
+flowchart TB
+    A["Install serving packages<br/>for Linux arm64, Python 3.13"] --> B{"Unzipped size<br/>under 250 MB?"}
+    B -->|"yes (231.3 MB measured)"| C["Build the zip<br/>and create the function"]
+    B -->|"no"| D["Fall back: one container image<br/>in a private ECR repository"]
+    C --> E["API Gateway routes<br/>and CORS point at the function"]
+    D --> E
+```
+
+## Choices Made Along the Way
+
+- **Where the zip was staged.** A temporary `deploy/` key in the private data bucket, deleted once the function existed.
+- **The serving package list.** A separate pinned list, `requirements-serve.txt`, including `scipy`.
+- **Memory.** 1769 MB, left untuned.
+- The other Phase 4 choices (zip or container image, no API key, written steps) are in [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
+
+## What Was Created
+
+- **Code:** `src/api/lambda_handler.py` and six tests in `tests/test_lambda_handler.py`.
+- **Packaging:** `requirements-serve.txt` and the written build and deploy commands in the [Deployment Guide](./deployment-guide.md).
+- **Settings:** one new warning filter in `pytest.ini`, and none in `config/config.yaml`.
+- **On AWS:** one Lambda function, one function role (the identity Lambda requires the function to run as, which can only write logs), and one API Gateway HTTP API with two routes. All are in `us-east-1`.
+- **Nothing committed that is generated.** The zip and the build folder stay local, and `build/` is already ignored by git.
+
+## What Is Not in This Phase
+
+- The web app, in [Phase 5: Front-End Web App](../phase-5/index.md).
+- Docker, built in [Phase 6](../phase-6/index.md). The README and the final review come after it, in [Phase 7](../phase-7/index.md).
+
+## Where to Read More
+
+- [Deployment Guide](./deployment-guide.md) lists every AWS command in order, including the redeploy and the commands that remove the deployment.
+- [Phase 3](../phase-3/index.md#implementation) describes the app and the start-up checks that run on Lambda.
+- [Design Manifest](../design-manifest.md#phase-4-aws-deployment) lists the deployment choices and why.
+
+## Development Guide
+
+This section shows how to test the Lambda entry point on your computer with no AWS account, and how to change it. Every AWS command, for the first deployment, a redeploy, a settings change, or removal, is in the [Deployment Guide](./deployment-guide.md).
+
+### What Is Needed First?
+
+- **The project's virtual environment with the pinned packages.** The setup commands are in the [Phase 1 guide](../phase-1/index.md#what-is-needed-first).
+- **The saved model** `models/model.joblib`. If it is missing, run `python -m src.model.train`.
+- **No AWS account.** Everything on this page runs with no AWS account and no internet connection.
+
+### How Do I Run It Locally?
+
+#### Step 1: Run the Six Tests
+
+```bash
+python -m pytest tests/test_lambda_handler.py
+```
+
+Expected: **6 passed**. Five use a made-up model and made-up API Gateway events. The sixth calls the real `handler` function with the real `models/model.joblib`, and it is skipped if that file is missing.
+
+#### Step 2: Call the Real Handler Manually
+
+The handler is the function AWS Lambda calls. It takes an event, which is the dictionary API Gateway builds from a web request. The [Deployment Guide](./deployment-guide.md#stage-the-zip-and-create-the-function) writes three test events into `build/` (step 13), and this command calls the handler with the first of them:
+
+```bash
+python -c "import json; from src.api.lambda_handler import handler; r = handler(json.load(open('build/predict-event.json')), None); print(r['statusCode'], r['body'])"
+```
+
+```text
+200 {"prediction":0,"predicted_label":"away win","home_win_probability":0.3296,"model_version":"v1.0"}
+```
+
+This is the same function and the same Mangum wrapper that run on AWS. Only the web server in front of them is missing. The answer is the worked example from [Phase 2](../phase-2/index.md#what-does-the-worked-example-score).
+
+#### Step 3: Build the Zip
+
+The build commands in the Deployment Guide's [Build the Zip](./deployment-guide.md#build-the-zip) section also need no AWS account. They produce `build/510-m3-nfl-predict-api.zip`, which is **231,252,596 bytes** unzipped and **63,452,500 bytes** zipped for the deployed build. A rebuild from the same files (made in Phase 7 and not deployed) came to 63,452,901 bytes zipped, so expect a new zip to differ by a few hundred bytes.
+
+### How Do I Develop It?
+
+#### Where Is Each Piece?
+
+- **The Lambda entry point:** `src/api/lambda_handler.py`.
+- **The app it wraps (Phase 3):** `src/api/app.py` and `src/api/schemas.py`.
+- **The packages in the zip:** `requirements-serve.txt`.
+- **Tests:** `tests/test_lambda_handler.py` (6 tests).
+- **The warning filter for tests:** `pytest.ini`.
+- **The commands for AWS:** [Deployment Guide](./deployment-guide.md).
+
+#### What Rules Does the Entry Point Keep?
+
+- **It imports only `mangum`, `src.api.app`, and `src.config`.** It must not import `pandas`, `mlflow`, `matplotlib`, or anything from `src/model/`, so the zip stays under the size limit. A test reads the file and checks this.
+- **Mangum's start-up step is off** (`lifespan="off"`), and `build_handler` loads the model itself, once, on the first call. A test calls the handler three times and checks the model was read once.
+- **Importing the file reads no model,** so it works on a machine with no saved model.
+- **The zip keeps the project's folder layout** (`src/`, `config/`, `models/`), so `resolve_path` finds the same files on AWS as it does here.
+
+#### How Do I Run All the Tests?
+
+```bash
+python -m pytest
+```
+
+Expected: **95 passed** with no warnings: 8 from Phase 1, 29 from Phase 2, 17 from Phase 3, 6 from Phase 4, and 35 from Phase 5. Without `models/model.joblib`, 93 pass and 2 are skipped.
+
+#### How Do I Change a Package Version?
+
+1. Change the pin in `requirements.txt` and the same pin in `requirements-serve.txt`, so the zip and the project agree.
+2. Run the tests.
+3. Rebuild the zip, and measure it again with the steps in [How Is the Measurement Repeated?](#how-is-the-measurement-repeated). The unzipped size must stay under **262,144,000 bytes** (250 MB). The last build left about 30.9 MB of room, and `pandas` alone would add 46.0 MB.
+4. If the change is a new scikit-learn version, retrain first. The saved model records the version that built it, and the service refuses to start if the version in the zip differs.
+5. Redeploy with [Redeploy After a Change](./deployment-guide.md#redeploy-after-a-change).
+
+## Implementation
+
+This section explains how the deployment works, one step at a time, with the real results, including the package size measurement made before anything was built (Step 3).
+
+**Status: built and tested.** The Lambda entry point is `src/api/lambda_handler.py`, and its tests are in `tests/test_lambda_handler.py`. Every number below comes from the real deployment. The 53 tests that passed when the phase was built were 47 from earlier phases and 6 new.
+
+### What Is Mangum?
 
 Mangum is a small Python library that lets a FastAPI app run inside AWS Lambda. It translates between two formats, and it does nothing else.
 
@@ -55,7 +221,7 @@ flowchart TB
 - **Why this and not a separate Lambda function:** a separate function would repeat the input checks and the model call in a second place, and the local tests would not cover it. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
 - **What Mangum does not do:** it does not deliver requests to Lambda, set permissions, or make the public address. API Gateway and AWS permissions do those.
 
-## What Was Deployed?
+### What Was Deployed?
 
 One Lambda function and one API Gateway HTTP API, both in `us-east-1`. Every new name follows the pattern of the existing data bucket, `510-m3-nfl-dataset`: all lowercase, words joined by hyphens, starting `510-m3-nfl-`, then what the thing is.
 
@@ -69,7 +235,7 @@ Each AWS resource that supports tags is tagged `project=510-m3`. The public addr
 
 **What the function role is for.** Lambda runs a function as an identity, and it requires one. The role `510-m3-nfl-predict-api-role` is that identity. It has a single permission, writing the function's own logs, and nothing else. It is not an access key and it has no access to the data bucket.
 
-## How Do the Steps Depend on Each Other?
+### How Do the Steps Depend on Each Other?
 
 ```mermaid
 flowchart TB
@@ -87,7 +253,7 @@ flowchart TB
 
 Steps 1 to 4 run on this computer and call no AWS service. Steps 5 to 11 use AWS.
 
-## Which Files Were Added?
+### Which Files Were Added?
 
 - **`src/api/lambda_handler.py`:** The Lambda entry point (Step 1).
 - **`tests/test_lambda_handler.py`:** Six tests for the entry point (Step 2).
@@ -98,7 +264,7 @@ Steps 1 to 4 run on this computer and call no AWS service. Steps 5 to 11 use AWS
 - **No existing application file changed.** `src/api/app.py`, `src/config.py`, `config/config.yaml`, and `requirements.txt` are as they were.
 - **No new setting** in `config/config.yaml`. The Lambda settings are in the [Deployment Guide](./deployment-guide.md).
 
-## Step 1: Add the Lambda Entry Point
+### Step 1: Add the Lambda Entry Point
 
 !!! abstract "Purpose"
     **Goal:** Wrap the Phase 3 app so that AWS Lambda can call it.
@@ -115,7 +281,6 @@ def build_handler(app, config):
     app.state.model = load_model(config)
     return Mangum(app, lifespan="off")
 
-
 def handler(event, context):
     """Build the wrapped handler on the first call, then reuse it for later calls."""
     global _cached_handler
@@ -131,7 +296,7 @@ def handler(event, context):
 - **Why `handler` is a function and not a ready-made object.** The model is read on the first call and not when the file is imported, so the file imports cleanly on a machine with no saved model, such as a test run.
 - **No `pandas`.** The file imports only `mangum`, `src.api.app`, and `src.config`.
 
-## Step 2: Test the Entry Point With No AWS
+### Step 2: Test the Entry Point With No AWS
 
 !!! abstract "Purpose"
     **Goal:** Prove the entry point answers a Lambda event correctly before anything is built or deployed.
@@ -149,10 +314,10 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 5. `test_lambda_handler_does_not_import_pandas`: The file's imports are read as text, and none is `pandas`, `mlflow`, `matplotlib`, or from `src/model/`.
 6. `test_real_handler_worked_example`: With the real model (skipped if `models/model.joblib` is missing), the inputs -0.5 and -18.0 return 0.3296.
 
-- **Result at the end of Phase 4:** without `models/model.joblib`, 51 of the 53 tests pass and 2 are skipped.
+- **Result at the end of Phase 4:** without `models/model.joblib`, 51 of the 53 tests passed and 2 were skipped. The count today is in [How Do I Run All the Tests?](#how-do-i-run-all-the-tests).
 - **One warning is silenced.** Mangum's adapter asks `asyncio` for the current event loop in a way Python 3.12 and later deprecate, which printed a `DeprecationWarning` from inside Mangum. `pytest.ini` hides that one warning, as it already does for one MLflow warning. Every other warning is still shown, and the run now has none.
 
-## Step 3: Measure the Package Size
+### Step 3: Measure the Package Size
 
 !!! abstract "Purpose"
     **Goal:** Measure the unzipped and zipped size of the Lambda package before building the function.
@@ -165,7 +330,7 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 
 **Answer: it fits, if the API does not install pandas.** Without pandas the unzipped package is **231.3 MB**, which is 30.9 MB under the limit. With pandas it is 278.4 MB, which is 16.3 MB over.
 
-### What Limits Apply?
+#### What Limits Apply?
 
 - **Unzipped package, including layers:** 250 MB (262,144,000 bytes). The hard limit for a zip deployment. The measurement below is compared with this.
 - **Zip uploaded directly in the AWS console:** About 50 MB. A zip over this is uploaded through S3 or the AWS command-line tool instead.
@@ -173,7 +338,7 @@ The tests call the entry point with a made-up event in the shape API Gateway sen
 
 Sources: [AWS Lambda layers documentation](https://docs.aws.amazon.com/lambda/latest/dg/adding-layers.html) for the 250 MB limit, and [an AWS re:Post answer](https://repost.aws/questions/QUyXgEPlUQSPuqPJkpnGaDVw/cannot-run-my-lambda-due-to-the-hard-coded-memory-limit) for the byte count. The 50 MB console limit is approximate. The limits can change, so check the current AWS page before relying on the numbers.
 
-### How Was the Size Measured?
+#### How Was the Size Measured?
 
 ```mermaid
 flowchart TB
@@ -199,7 +364,7 @@ pip install --target build/lambda --implementation cp --python-version 3.13 --pl
 - **Left out:** `mlflow`, `matplotlib`, `boto3`, `pytest`, and `uvicorn`. Lambda does not run a web server, so `uvicorn` is not needed there, and Lambda already provides `boto3`.
 - **Measured twice:** once without `pandas` and once with it, because `pandas` is large.
 
-### What Did the Measurement Show?
+#### What Did the Measurement Show?
 
 | Package set | Unzipped | Zipped | Against the 250 MB limit |
 | :--- | :--- | :--- | :--- |
@@ -222,19 +387,19 @@ The largest folders in the package without `pandas`:
 - **`pandas` alone adds 46.0 MB,** which is what pushes the package over the limit.
 - **Room left:** about 30.9 MB (12% of the limit). That is room for small additions and not for `pandas`.
 - **The zipped file is 63.5 MB,** which is over the console's direct-upload limit of about 50 MB, so it goes through S3.
-- **Result for the plan:** the zip route works, so ECR and a container image are not needed. The [fall-back](./brief.md#what-if-the-zip-is-too-large) stays unused.
+- **Result for the plan:** the zip route works, so ECR and a container image are not needed. The [fall-back](#what-if-the-zip-is-too-large) stays unused.
 
-### What Does This Mean for the Phase 3 API?
+#### What Does This Mean for the Phase 3 API?
 
 The API must run without `pandas`. Three facts about the current code shape this:
 
 - **`src/model/features.py` imports `pandas` at the top.** Any API file that imports from it (for example to reuse `INPUT_COLUMNS`) would pull `pandas` into the package. The saved model file already holds the input names (`feature_names`), so the API reads them from there instead.
-- **The model works without `pandas`.** In a fresh environment with only `scikit-learn` 1.9.1, `numpy`, `joblib`, `scipy`, and `PyYAML`, the saved model loaded, and the inputs -0.5 and -18.0 passed in as a plain numpy array gave a home win probability of **0.3296**, the same as the worked example in [Part 2](../phase-2/implementation-part-2.md#what-is-a-worked-example). `pandas` was not imported at any point.
+- **The model works without `pandas`.** In a fresh environment with only `scikit-learn` 1.9.1, `numpy`, `joblib`, `scipy`, and `PyYAML`, the saved model loaded, and the inputs -0.5 and -18.0 passed in as a plain numpy array gave a home win probability of **0.3296**, the same as the worked example in [Phase 2, Part 2](../phase-2/index.md#what-does-the-worked-example-score). `pandas` was not imported at any point.
 - **One warning is expected.** The scaler was fitted on a table with column names, so a plain array makes scikit-learn print "X does not have valid feature names". The probability is the same. The API silences this one warning.
 
-These points are recorded in the [Phase 3 Brief](../phase-3/brief.md).
+These points are recorded in [Phase 3](../phase-3/index.md#why-does-the-api-use-numpy-instead-of-pandas).
 
-### How Is the Measurement Repeated?
+#### How Is the Measurement Repeated?
 
 Run the install command above from the project folder, then remove the cached files:
 
@@ -250,7 +415,7 @@ find build/lambda -type f -exec cat {} + | wc -c
 
 `build/` is already in `.gitignore`. Compare the result with 262,144,000.
 
-## Step 4: Build the Zip
+### Step 4: Build the Zip
 
 !!! abstract "Purpose"
     **Goal:** Produce `build/510-m3-nfl-predict-api.zip` with exactly what the function needs.
@@ -269,7 +434,7 @@ find build/lambda -type f -exec cat {} + | wc -c
     - It holds no `pandas`, `mlflow`, or `src/model`, and `scipy-1.18.1` matches the pin.
 - **The saved model must match the zip.** The model file was saved by scikit-learn 1.9.1, and the zip holds the same version, or the service refuses to start, as in Phase 3.
 
-## Step 5: Create the Role and the Function
+### Step 5: Create the Role and the Function
 
 !!! abstract "Purpose"
     **Goal:** Create the Lambda function with permission to do one thing: write its own logs.
@@ -292,11 +457,11 @@ find build/lambda -type f -exec cat {} + | wc -c
 - **The environment variable.** The function's first log printed "joblib will operate in serial mode", because Lambda has no multiprocessing directory. Setting `JOBLIB_MULTIPROCESSING=0` makes joblib skip that check. The function never uses multiprocessing, and the line is gone from every later log.
 - **Log retention.** The log group `/aws/lambda/510-m3-nfl-predict-api` keeps logs for 14 days, and is tagged `project=510-m3`.
 
-### What Is the Memory Setting?
+#### What Is the Memory Setting?
 
 Lambda gives a function CPU in proportion to its memory. The function runs at 1769 MB. Latency and cost were not goals of this deployment, so the setting was left untuned. See [Design Manifest](../design-manifest.md#phase-4-aws-deployment).
 
-## Step 6: Test the Function in AWS
+### Step 6: Test the Function in AWS
 
 !!! abstract "Purpose"
     **Goal:** Invoke the function directly, with no gateway, and read its logs.
@@ -312,7 +477,7 @@ Lambda gives a function CPU in proportion to its memory. The function runs at 17
     - The bad body returned 422, naming both fields.
     - The logs showed no start-up refusal and no import error.
 
-## Step 7: Create the API Gateway HTTP API
+### Step 7: Create the API Gateway HTTP API
 
 !!! abstract "Purpose"
     **Goal:** Give the function a public HTTPS address with exactly two routes.
@@ -328,7 +493,7 @@ Lambda gives a function CPU in proportion to its memory. The function runs at 17
 - **The invoke URL** is `https://9awodatqc5.execute-api.us-east-1.amazonaws.com`.
 - **No request limit or firewall for now.** The API is public, with no key.
 
-## Step 8: Set CORS on the Gateway
+### Step 8: Set CORS on the Gateway
 
 !!! abstract "Purpose"
     **Goal:** Let the browser web app call `/predict` from its own address.
@@ -337,13 +502,13 @@ Lambda gives a function CPU in proportion to its memory. The function runs at 17
 
     **If skipped:** The web app would work in `curl` and fail in the browser.
 
-- **Allowed origin:** `http://localhost:5173`, the default address of the Vite development server, and nothing else at the end of Phase 4. Phase 5 added the CloudFront address, `https://d1nubiunzfwm0q.cloudfront.net`. See [The Preflight](../phase-5/implementation-part-1.md#the-preflight).
+- **Allowed origin:** `http://localhost:5173`, the default address of the Vite development server, and nothing else at the end of Phase 4. Phase 5 added the CloudFront address, `https://d1nubiunzfwm0q.cloudfront.net`. See [The Preflight](../phase-5/index.md#the-preflight).
 - **Allowed methods:** `POST`, `GET`, and `OPTIONS`. **Allowed headers:** `content-type`. **Max age:** 300 seconds.
 - **Checks:**
     - A preflight request from `http://localhost:5173` returned status 204 with `access-control-allow-origin: http://localhost:5173`.
     - The same preflight from `http://example.com` returned 204 with no `access-control-allow-origin` header, so that origin is not allowed.
 
-## Step 9: Check the Public Address
+### Step 9: Check the Public Address
 
 !!! abstract "Purpose"
     **Goal:** Confirm the deployed API answers real requests from the internet, with the same results as the local one.
@@ -375,7 +540,7 @@ HTTP 200
 - **`POST /predict` with only `win_pct_differential` of 1.5:** 422, naming both fields.
 - **`GET /predict`:** 404, `{"message":"Not Found"}`, because the gateway has no route for it.
 
-## Step 10: Check the Deployed Model Against the Local Model
+### Step 10: Check the Deployed Model Against the Local Model
 
 !!! abstract "Purpose"
     **Goal:** Prove the model on AWS gives the same answers as the local model, on every game.
@@ -407,7 +572,7 @@ HTTP 200
 
 The deployed model and the local model are the same at the 4-decimal precision the API returns, and the accuracy from the deployed answers equals the accuracy in the run summary. This does not test the browser, CORS from a real front end, or behavior under load.
 
-## Step 11: Write the Steps Down
+### Step 11: Write the Steps Down
 
 !!! abstract "Purpose"
     **Goal:** Make the deployment repeatable.

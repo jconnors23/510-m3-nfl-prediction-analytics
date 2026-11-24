@@ -66,9 +66,9 @@ make pytest PYTHON=python3.13
     - `mlflow.db` and `mlartifacts/`, MLflow's own record of the run (git-ignored)
     - `results/run-summary.json`, the committed summary of settings, scores, and weights. Its bytes change only when the settings, the data, or the scores change.
     - `mlflow-reference/`: the last run moves into `previous-runs/`, the new run is written to `latest-run/`, and `run-history.md` and `run-history.json` gain a row. These files change on every run, so commit them with the code.
-- **What you see:** the scores, ending with `saved: mlflow-reference/latest-run`. The expected lines are in [Step 2: Train the Model](../../phase-2/development-guide.md#step-2-train-the-model). Validation accuracy is 63.10% and test accuracy 59.06%.
+- **What you see:** the scores, ending with `saved: mlflow-reference/latest-run`. The expected lines are in [Step 2: Train the Model](../../phase-2/index.md#step-2-train-the-model). Validation accuracy is 63.10% and test accuracy 59.06%.
 - **If the table is missing or a check fails,** it stops with one short message and writes nothing more.
-- **More:** [How Do I Do a Training Run?](../../phase-2/development-guide.md#how-do-i-do-a-training-run).
+- **More:** [How Do I Do a Training Run?](../../phase-2/index.md#how-do-i-do-a-training-run).
 
 ## make pytest
 
@@ -99,7 +99,7 @@ make pytest PYTHON=python3.13
 - **Port 8000 must be free.** `make docker-serve` and a plain `mkdocs serve` also use it.
 - **Addresses:** `POST /predict`, `GET /health`, and FastAPI's test page at `http://127.0.0.1:8000/docs`. `/` has no page and returns 404.
 - **What you see:** `Uvicorn running on http://127.0.0.1:8000`, then one line per request.
-- **Try it:** [How Do I Ask for a Prediction?](../../phase-3/development-guide.md#how-do-i-ask-for-a-prediction). The worked example returns a home win probability of 0.3296.
+- **Try it:** [How Do I Ask for a Prediction?](../../phase-3/index.md#how-do-i-ask-for-a-prediction). The worked example returns a home win probability of 0.3296.
 
 ## make start-web
 
@@ -109,8 +109,8 @@ make pytest PYTHON=python3.13
 - **Needs:** `frontend/node_modules/`. For predictions, it also needs the API from `make start` running in another terminal. Without it, the page loads but every Analyze shows an error message.
 - **Address:** `http://localhost:5173`. The port is fixed (`strictPort` in `vite.config.ts`): the live API's CORS list allows only this local address, so Vite stops instead of moving to another port when 5173 is taken.
 - **How it reaches the API:** the page calls its own address, and Vite forwards `/predict`, `/health`, and `/feedback` to `http://127.0.0.1:8000`. To forward to another address, set `API_PROXY_TARGET` before the command.
-- **The Feedback tab does not work locally.** The local API has no `/feedback` route, so sending the form gets status 404. The route exists only on AWS. See [Feedback Path](../features/feedback-path.md).
-- **More:** [How Do I Run It Locally?](../../phase-5/development-guide.md#how-do-i-run-it-locally).
+- **The Feedback tab does not work locally.** The local API has no `/feedback` route, so sending the form gets status 404. The route exists only on AWS. See the feedback route section of [Frontend and Backend Connection](../architecture/frontend-backend-connection.md#how-does-the-feedback-route-fit-in).
+- **More:** [How Do I Run It Locally?](../../phase-5/index.md#how-do-i-run-it-locally).
 
 ## make start-web-ml
 
@@ -144,7 +144,7 @@ make pytest PYTHON=python3.13
 - **Needs:** Docker Desktop, running. No AWS account, no virtual environment, and no trained model.
 - **Writes:** only `build/docker/results/run-summary.json` on this computer, through the mounted folder. Everything else the container writes (its model, MLflow database, and run log) is deleted with the container. Your `mlflow.db`, `models/`, and `mlflow-reference/` are not touched.
 - **What you see:** the first build takes about a minute, most of it installing packages. Later builds take under a second unless `requirements.txt` changed. Then the same scores as `make train`, three warnings that `git` is not in the image (expected), and `saved: mlflow-reference/latest-run` inside the container.
-- **Check it:** `build/docker/results/run-summary.json` should be byte for byte `results/run-summary.json`. See [Check That It Matches the Project](../../phase-6/development-guide.md#check-that-it-matches-the-project).
+- **Check it:** `build/docker/results/run-summary.json` should be byte for byte `results/run-summary.json`. See [Check That It Matches the Project](../../phase-6/index.md#check-that-it-matches-the-project).
 
 ## make docker-serve
 
@@ -155,15 +155,15 @@ make pytest PYTHON=python3.13
     2. `docker run --rm -p 127.0.0.1:8000:8000 510-m3-nfl-serve`
 - **Needs:** Docker Desktop, running, and port 8000 free, so stop `make start` first.
 - **Address:** `http://127.0.0.1:8000`, the same addresses as `make start`. Docker publishes the port on `127.0.0.1` only.
-- **What you see:** `Uvicorn running on http://0.0.0.0:8000`. That address is inside the container. Requests show as coming from `172.17.0.1`, Docker's address for this computer. See [What the Output Means](../../phase-6/development-guide.md#what-the-output-means).
+- **What you see:** `Uvicorn running on http://0.0.0.0:8000`. That address is inside the container. Requests show as coming from `172.17.0.1`, Docker's address for this computer. See [What the Output Means](../../phase-6/index.md#what-the-output-means).
 - **To stop it:** press Ctrl+C. Uvicorn prints `Shutting down`, and `--rm` removes the container.
 
 ## What Is Not a Make Command?
 
-These are run rarely, so they stay as plain commands in their phase's guide:
+These are run rarely, so they stay as plain commands in their phase's Development Guide section:
 
-- **Rebuilding the web app's data files** from the downloaded table: `python -m src.profiles` and `python -m src.season`. See the [Phase 5 Development Guide](../../phase-5/development-guide.md#how-do-i-rebuild-the-profiles-file).
-- **The web app's production build:** `npm run build` in `frontend/`. See [How Do I Build and Preview the Site?](../../phase-5/development-guide.md#how-do-i-build-and-preview-the-site).
-- **The data pipeline's four steps** (download, clean, upload to S3, download back). See the [Phase 1 Development Guide](../../phase-1/development-guide.md).
+- **Rebuilding the web app's data files** from the downloaded table: `python -m src.profiles` and `python -m src.season`. See [Phase 5, Development Guide](../../phase-5/index.md#how-do-i-rebuild-the-profiles-file).
+- **The web app's production build:** `npm run build` in `frontend/`. See [How Do I Build and Preview the Site?](../../phase-5/index.md#how-do-i-build-and-preview-the-site).
+- **The data pipeline's four steps** (download, clean, upload to S3, download back). See [Phase 1, Development Guide](../../phase-1/index.md#development-guide).
 - **Adding older MLflow runs to the log:** `python -m src.model.export_mlflow --backfill`.
-- **Deploying to AWS.** See the [Phase 4](../../phase-4/deployment-guide.md) and [Phase 5](../../phase-5/deployment-guide.md) Deployment Guides.
+- **Deploying to AWS.** See [Deploy the API](../../phase-4/deployment-guide.md) and [Deploy the Web App](../../phase-5/deployment-guide.md).

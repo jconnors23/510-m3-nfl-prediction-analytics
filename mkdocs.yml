@@ -64,67 +64,42 @@ validation:
   links:
     anchors: warn
 
-# The overview (a condensed copy of the README) comes first, then the background and the design
-# manifest: how the project was built with AI tools, and every decision. Then the Implementation
-# section, one group per phase. Then the Extras, grouped as in their folders (architecture,
-# development, features, and release notes), with the glossary, and last the requirements
-# rubric and the project requirements.
+# The overview (the README's summary, where the data comes from, and how the project was built)
+# comes first, then the design manifest: how the project was built with AI tools, with choices and why. Then the Developer
+# Docs: Version 1 (one page per phase: its overview, development guide, and implementation),
+# the system design, local development, and the two deployment guides. Last, the Extras: the
+# requirements rubric, the project requirements, the glossary, and the release notes.
 nav:
   - Overview: index.md
-  - Background: background.md
   - Design Manifest: implementation/design-manifest.md
-  - V1 Implementation:
-      - "Phase 1: Data Pipeline":
-          - Brief: implementation/phase-1/brief.md
-          - Implementation: implementation/phase-1/implementation.md
-          - Development Guide: implementation/phase-1/development-guide.md
-      - "Phase 2: Features, Training, and Tracking":
-          - Brief: implementation/phase-2/brief.md
-          - Implementation Part 1: implementation/phase-2/implementation-part-1.md
-          - Implementation Part 2: implementation/phase-2/implementation-part-2.md
-          - Development Guide: implementation/phase-2/development-guide.md
-      - "Phase 3: Local Prediction API":
-          - Brief: implementation/phase-3/brief.md
-          - Implementation: implementation/phase-3/implementation.md
-          - Development Guide: implementation/phase-3/development-guide.md
-      - "Phase 4: AWS Deployment":
-          - Brief: implementation/phase-4/brief.md
-          - Implementation: implementation/phase-4/implementation.md
-          - Development Guide: implementation/phase-4/development-guide.md
-          - Deployment Guide: implementation/phase-4/deployment-guide.md
-      - "Phase 5: Web App and Hosting":
-          - Brief: implementation/phase-5/brief.md
-          - Implementation Part 1: implementation/phase-5/implementation-part-1.md
-          - Implementation Part 2: implementation/phase-5/implementation-part-2.md
-          - Development Guide: implementation/phase-5/development-guide.md
-          - Deployment Guide: implementation/phase-5/deployment-guide.md
-      - "Phase 6: Docker":
-          - Brief: implementation/phase-6/brief.md
-          - Implementation: implementation/phase-6/implementation.md
-          - Development Guide: implementation/phase-6/development-guide.md
-      - "Phase 7: Review":
-          - Brief: implementation/phase-7/brief.md
-          - Implementation: implementation/phase-7/implementation.md
-  # Pages that belong to no one phase: how the whole system fits together, how to work on it
-  # locally, the tools, the release notes and what could come next, and the glossary.
-  - Extras:
-      - Architecture:
+  # Pages for someone working on the code: how version 1 was built, one page per phase, how the
+  # system fits together, how to set it up, run it, and test it, and how to deploy it.
+  - Developer Docs:
+      - Version 1:
+          - "Phase 1: Data Pipeline": implementation/phase-1/index.md
+          - "Phase 2: Features, Training, and Tracking": implementation/phase-2/index.md
+          - "Phase 3: Local Prediction API": implementation/phase-3/index.md
+          - "Phase 4: AWS Deployment": implementation/phase-4/index.md
+          - "Phase 5: Front-End Web App": implementation/phase-5/index.md
+          - "Phase 6: Docker": implementation/phase-6/index.md
+          - "Phase 7: Review": implementation/phase-7/index.md
+      - System Design:
           - Cloud Architecture: implementation/extras/architecture/cloud-architecture.md
           - ML Workflow: implementation/extras/architecture/ml-workflow.md
           - Frontend and Backend Connection: implementation/extras/architecture/frontend-backend-connection.md
-      - Development:
+      - Local Development:
           - Running Locally: implementation/extras/development/running-locally.md
           - Makefile: implementation/extras/development/makefile.md
-          - Testing Guide: implementation/extras/development/testing-guide.md
           - Tooling Guide: implementation/extras/development/tooling-guide.md
+          - Testing Guide: implementation/extras/development/testing-guide.md
           - GitHub Workflows: implementation/extras/development/github-workflows.md
-      - Features:
-          - Feedback Path: implementation/extras/features/feedback-path.md
-          - Confusion Matrix: implementation/extras/features/confusion-matrix.md
+      - Deployment:
+          - Deploy the API: implementation/phase-4/deployment-guide.md
+          - Deploy the Web App: implementation/phase-5/deployment-guide.md
+  - Extras:
+      - Requirements Rubric: implementation/requirements/requirements-rubric.md
+      - Project Requirements: implementation/requirements/project-requirements.md
+      - Glossary: implementation/extras/glossary.md
       - Release Notes:
           - Version 1.0: implementation/extras/release-notes/version-1-0.md
           - Future Considerations: implementation/extras/release-notes/future-considerations.md
-      - Glossary: implementation/extras/glossary.md
-  - Requirements:
-      - Requirements Rubric: implementation/requirements/requirements-rubric.md
-      - Project Requirements: implementation/requirements/project-requirements.md

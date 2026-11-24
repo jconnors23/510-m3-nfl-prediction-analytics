@@ -11,7 +11,7 @@ Key terms and tools, grouped by the phase where they first matter, followed by g
 - [Phase 2: Features, Training, and Tracking](#phase-2-features-training-and-tracking)
 - [Phase 3: Local Prediction API](#phase-3-local-prediction-api)
 - [Phase 4: AWS Deployment](#phase-4-aws-deployment)
-- [Phase 5: Web App and Hosting](#phase-5-web-app-and-hosting)
+- [Phase 5: Front-End Web App](#phase-5-front-end-web-app)
 - [Phase 6: Docker](#phase-6-docker)
 - [Phase 7: Review](#phase-7-review)
 - [General Machine Learning Ideas](#general-machine-learning-ideas)
@@ -85,7 +85,7 @@ Key terms and tools, grouped by the phase where they first matter, followed by g
 
 ## Phase 3: Local Prediction API
 
-Built. See the [Phase 3 Brief](../phase-3/brief.md) and the [Phase 3 Implementation](../phase-3/implementation.md).
+Built. See [Phase 3, Overview](../phase-3/index.md) and [Phase 3, Implementation](../phase-3/index.md#implementation).
 
 **Docs:** [FastAPI](https://fastapi.tiangolo.com/), [Pydantic](https://docs.pydantic.dev/latest/), [Uvicorn](https://uvicorn.dev/), [ASGI](https://asgi.readthedocs.io/en/latest/).
 
@@ -93,26 +93,26 @@ Built. See the [Phase 3 Brief](../phase-3/brief.md) and the [Phase 3 Implementat
 - **Pydantic:** the library FastAPI uses to check each request's fields, types, and ranges, and to describe the response. A request that fails the checks gets an error before any model code runs.
 - **Uvicorn and ASGI:** a FastAPI app is only a Python object. It does not listen for requests on its own. Uvicorn is the program that does: it opens a port on the computer, receives each HTTP request, hands it to the app, and sends the app's answer back. They talk through ASGI, the standard interface between Python web servers and Python web apps. Uvicorn is used only on a laptop. On AWS Lambda there is no port to listen on, and Mangum takes its place (Phase 4).
 - **Start-up step (lifespan):** code that runs once when the app starts. The API loads the saved model there, so each request reuses it.
-- **NumPy, not pandas, in the API:** the API passes the two inputs to the model as a NumPy array. It does not import pandas, which would push the Lambda zip over its 250 MB limit (278.4 MB with pandas, 231.3 MB without). Training and cleaning still use pandas. See [Why Does the API Use NumPy Instead of pandas?](../phase-3/implementation.md#why-does-the-api-use-numpy-instead-of-pandas).
+- **NumPy, not pandas, in the API:** the API passes the two inputs to the model as a NumPy array. It does not import pandas, which would push the Lambda zip over its 250 MB limit (278.4 MB with pandas, 231.3 MB without). Training and cleaning still use pandas. See [Why Does the API Use NumPy Instead of pandas?](../phase-3/index.md#why-does-the-api-use-numpy-instead-of-pandas).
 - **Test client:** FastAPI's way to call the app in memory, with no server and no network, so tests run fast.
 
 ## Phase 4: AWS Deployment
 
-Built. See the [Phase 4 Brief](../phase-4/brief.md) and the [Phase 4 Implementation](../phase-4/implementation.md).
+Built. See [Phase 4, Overview](../phase-4/index.md) and [Phase 4, Implementation](../phase-4/index.md#implementation).
 
 **Docs:** [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html), [API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html), [Mangum](https://mangum.fastapiexpert.com/), [Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html).
 
 - **AWS Lambda:** runs code only when a request arrives, with no server to manage.
 - **API Gateway:** gives the function a public web address, and routes each request to it.
-- **Mangum:** a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See [What Is Mangum?](../phase-4/implementation.md#what-is-mangum).
-- **Lambda zip and size limit:** the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without `pandas`. See the [Phase 4 Implementation, Step 3](../phase-4/implementation.md#step-3-measure-the-package-size).
+- **Mangum:** a small library that translates between the request format AWS Lambda hands a function (a dictionary) and the format FastAPI expects, so the same app runs on a laptop and in Lambda. It does not carry the request to Lambda. API Gateway does that. See [What Is Mangum?](../phase-4/index.md#what-is-mangum).
+- **Lambda zip and size limit:** the function's code and packages are uploaded as a zip. The unzipped size must be 250 MB or less. This project's zip is 231.3 MB without `pandas`. See [Phase 4, Step 3: Measure the Package Size](../phase-4/index.md#step-3-measure-the-package-size).
 - **Environment variable:** a named setting passed to the function when it starts. This function has one, `JOBLIB_MULTIPROCESSING=0`, which stops joblib from checking for multiprocessing support that Lambda does not have.
 - **CodeSha256:** the SHA-256 fingerprint AWS stores for the zip a function was created from. When it equals the hash of the local zip, Lambda is running the file built here.
 - **ECR:** stores Docker images. It is used only if the Lambda zip turns out to be too large.
 
-## Phase 5: Web App and Hosting
+## Phase 5: Front-End Web App
 
-Built. See the [Phase 5 Brief](../phase-5/brief.md).
+Built. See [Phase 5, Overview](../phase-5/index.md) and [Phase 5, Implementation Part 1](../phase-5/index.md#implementation-part-1).
 
 **Docs:** [Vite](https://vite.dev/guide/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/docs/), [npm](https://docs.npmjs.com/), [Vitest](https://vitest.dev/), [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html), [CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html).
 
@@ -134,7 +134,7 @@ Built. See the [Phase 5 Brief](../phase-5/brief.md).
 
 ## Phase 6: Docker
 
-Built. See the [Phase 6 Brief](../phase-6/brief.md) and the [Phase 6 Implementation](../phase-6/implementation.md).
+Built. See [Phase 6, Overview](../phase-6/index.md) and [Phase 6, Implementation](../phase-6/index.md#implementation).
 
 **Docs:** [Docker](https://docs.docker.com/), [what is a container](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/), [multi-stage builds](https://docs.docker.com/build/building/multi-stage/), [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/), [publishing ports](https://docs.docker.com/engine/network/port-publishing/).
 
@@ -154,7 +154,7 @@ Built. See the [Phase 6 Brief](../phase-6/brief.md) and the [Phase 6 Implementat
 
 ## Phase 7: Review
 
-Built. See the [Phase 7 Brief](../phase-7/brief.md). The review adds no code. These are the tools behind the docs site.
+Built. See [Phase 7, Overview](../phase-7/index.md). The review adds no code. These are the tools behind the docs site.
 
 **Docs:** [MkDocs](https://www.mkdocs.org/), [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [Mermaid](https://mermaid.js.org/), [GitHub Pages](https://docs.github.com/en/pages), [GitHub Actions](https://docs.github.com/en/actions).
 
@@ -177,7 +177,7 @@ Built. See the [Phase 7 Brief](../phase-7/brief.md). The review adds no code. Th
 
 **Docs:** [pytest](https://docs.pytest.org/en/stable/), [`venv`](https://docs.python.org/3/library/venv.html), [`hashlib`](https://docs.python.org/3/library/hashlib.html), [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation).
 
-- **Reproducibility:** getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See [How Do I Reproduce the Result From a Clean Checkout?](../phase-2/development-guide.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
+- **Reproducibility:** getting the same result again from the same inputs on any machine. Here it comes from pinned versions, a fixed seed, settings in one file, and a data fingerprint. See [How Do I Reproduce the Result From a Clean Checkout?](../phase-2/index.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
 - **Pinned version:** an exact version in `requirements.txt`, such as `scikit-learn==1.9.1`, so every install is identical. A saved model may fail to load under another scikit-learn version.
 - **Virtual environment:** a private folder of Python packages for one project, so projects do not interfere.
 - **`config.yaml`:** the one file holding every adjustable setting. YAML is a text format of indented `name: value` lines.

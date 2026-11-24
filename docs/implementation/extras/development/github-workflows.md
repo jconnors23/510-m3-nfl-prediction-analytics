@@ -78,7 +78,7 @@ flowchart TB
 - **A failed test or check stops the run before anything is uploaded.** The runner has no `build/` expected files, so the two parity tests skip and the run expects **63 passed and 2 skipped**.
 - **The build may name only known addresses:** the API, and the fixed `www.w3.org`, `react.dev`, `github.com`, and `jconnors23.github.io` strings. Any other address stops the run.
 - **No AWS key is stored in GitHub.** The run asks GitHub for a signed token that names the repository and the branch. AWS checks it against the GitHub sign-in provider (OpenID Connect) and trades it for the deploy role's credentials, which last at most an hour.
-- **Only `main` of this repository can use the role.** The role trusts the token only when its subject is `repo:jconnors23@59714706/510-m3-nfl-prediction-analytics@1458181148:ref:refs/heads/main`. GitHub adds the owner's id and the repository's id after each name. A run on another branch, a pull request, or a fork fails at the sign-in step.
+- **Only `main` of this repository can use the role.** A run on another branch, a pull request, or a fork fails at the sign-in step. The exact token subject is on [How Does GitHub Deploy the Web App?](../architecture/cloud-architecture.md#how-does-github-deploy-the-web-app).
 - **The role can do two things:** upload files into the web app bucket (`s3:PutObject`), and create and read invalidations on this one distribution. It cannot delete, list, or change settings, and it has no access to the data bucket, the Lambda functions, the API, or any other distribution.
 - **The role's address is the repository secret `AWS_WEB_APP_DEPLOY_ROLE_ARN`.** It is a secret only because it holds the account number.
 - **One run at a time.** A second run waits for the first, so two uploads never overlap.
@@ -87,6 +87,6 @@ flowchart TB
 
 ## What Is Not Automated?
 
-- **The Python model and API.** Training, the Lambda zip, and the function update are run manually, following the [Phase 4 Deployment Guide](../../phase-4/deployment-guide.md). Nothing in GitHub can reach the Lambda functions.
+- **The Python model and API.** Training, the Lambda zip, and the function update are run manually, following [Deploy the API](../../phase-4/deployment-guide.md). Nothing in GitHub can reach the Lambda functions.
 - **The Docker images.** They are built and run on a laptop only, and are not pushed anywhere.
 - **Training.** No workflow trains the model or adds a run to `mlflow-reference/`. That is `make train`, run by the developer and committed.

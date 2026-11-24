@@ -1,6 +1,6 @@
 # NFL Prediction Analytics
 
-A pre-game NFL winner predictor, built as a small, complete machine learning system: the data is stored in Amazon S3, a reproducible pipeline trains and tracks a model with MLflow, the model is served as an API on AWS Lambda, and a web app on CloudFront calls that API. Pick a home team and an away team, and the app shows the predicted winner and each team's chance of winning.
+A pre-game NFL winner predictor, built as a complete machine learning system: the data is stored in Amazon S3, a reproducible pipeline trains and tracks a model with MLflow, the model is served as an API on AWS Lambda, and a web app on CloudFront calls that API. Pick a home team and an away team, and the app shows the predicted winner and each team's chance of winning.
 
 **Demo video: [watch it on YouTube](https://youtu.be/Om_aYeCCiZE).**
 
@@ -18,7 +18,7 @@ A pre-game NFL winner predictor, built as a small, complete machine learning sys
 
 The project answers one question before kickoff: **will the home team win?** It is a binary classification task. The target is `home_win` (1 if the home team won, 0 if the away team won), and the metric that judges the model is **accuracy**, compared with the always-pick-the-home-team baseline.
 
-The project covers the full path: a cleaned dataset stored in the cloud, a pipeline driven by one settings file, every training run tracked, the model containerized and deployed as a public API, and a front end that calls it.
+The pipeline is driven by one settings file, and every training run is tracked.
 
 ```mermaid
 flowchart TB
@@ -159,8 +159,8 @@ Open `http://localhost:5173`. The web app's tests run with `make web-test` (65 t
 
 The deployment is a set of written AWS CLI steps:
 
-- **The API:** build the Lambda zip (the serving packages, `src/`, the settings, and the trained model), create the function and its role, and put API Gateway in front of it. See the [Phase 4 Deployment Guide](./docs/implementation/phase-4/deployment-guide.md).
-- **The web app:** build it with `npm run build`, upload it to the private bucket, and serve it through CloudFront. After the first setup, the Deploy Web App workflow redeploys it on every change under `frontend/` that reaches `main`. See the [Phase 5 Deployment Guide](./docs/implementation/phase-5/deployment-guide.md).
+- **The API:** build the Lambda zip (the serving packages, `src/`, the settings, and the trained model), create the function and its role, and put API Gateway in front of it. See [Deploy the API](./docs/implementation/phase-4/deployment-guide.md).
+- **The web app:** build it with `npm run build`, upload it to the private bucket, and serve it through CloudFront. After the first setup, the Deploy Web App workflow redeploys it on every change under `frontend/` that reaches `main`. See [Deploy the Web App](./docs/implementation/phase-5/deployment-guide.md).
 
 Every make command is explained on [Makefile](./docs/implementation/extras/development/makefile.md).
 
@@ -204,16 +204,16 @@ Every make command is explained on [Makefile](./docs/implementation/extras/devel
 
 ## Further Reading
 
-- [Background](./docs/background.md): the nflverse data source, why the project exists, and how it was built, phase by phase.
+- [Docs Overview](./docs/index.md): the nflverse data source, the seven build phases, and the earlier projects in this series.
 - [Requirements Rubric](./docs/implementation/requirements/requirements-rubric.md): every requirement of the assignment, linked to the code and the docs that meet it.
-- [Design Manifest](./docs/implementation/design-manifest.md): how the developer built the project with AI tools augmenting the work, and every choice and why.
+- [Design Manifest](./docs/implementation/design-manifest.md): how the developer built the project with AI tools augmenting the work, with choices and why.
 - [Cloud Architecture](./docs/implementation/extras/architecture/cloud-architecture.md): every AWS resource, with its exact name and settings, how they connect, and who can reach what.
 - [ML Workflow](./docs/implementation/extras/architecture/ml-workflow.md): the path from the raw nflverse file to a served prediction, step by step, with the command and code for each step.
 - [Running Locally](./docs/implementation/extras/development/running-locally.md): everything that runs on a laptop (the API, the web app, MLflow, the docs, and Docker), the ports each uses, and how to work on each part.
 
 ### Related Work
 
-Two earlier Duke AIPI 510 projects by the same developer, also built on nflverse data. This project uses none of their code, data, or results. More about each is on [Background](./docs/background.md).
+Two earlier Duke AIPI 510 projects by the same developer, also built on nflverse data. This project uses none of their code, data, or results. More about each is on the [docs Overview](./docs/index.md#what-came-before-this-project).
 
 - [Module 1: NFL Data Storytelling](https://github.com/jconnors23/510-m1-nfl-data-storytelling): ranks the 32 teams by record and by point differential for the 2024 regular season, and compares the two rankings.
 - [Module 2: NFL Statistical Analysis](https://github.com/jconnors23/510-m2-nfl-statistical-analysis): a pilot study of one week's 13 games and the published pre-game win chances.

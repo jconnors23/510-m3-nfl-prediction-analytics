@@ -5,7 +5,7 @@ hide:
 
 # Phase 5 Deployment Guide
 
-This guide holds every AWS command for the Phase 5 web app, in order: put it online, let GitHub Actions redeploy it, redeploy it from a terminal, and remove it. How the hosting works, and why, is on the [Implementation](./implementation-part-1.md#how-is-the-page-hosted) page. To run and test the app with no AWS account, see the [Development Guide](./development-guide.md).
+This guide holds every AWS command for the Phase 5 web app, in order: put it online, let GitHub Actions redeploy it, redeploy it from a terminal, and remove it. How the hosting works, and why, is in the Implementation Part 1 section of [Phase 5](./index.md#how-is-the-page-hosted). To run and test the app with no AWS account, see the Development Guide section of [Phase 5](./index.md#development-guide).
 
 ## How Do the Sections Fit Together?
 
@@ -43,7 +43,7 @@ What must be true first:
 
 - **Phase 4 is deployed,** and the API at `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` answers `/health`.
 - **AWS CLI version 2** (2.35.9 here), with default credentials for the account that owns the API, in `us-east-1`. CloudFront is a global service and ignores `--region`. It is passed anyway, so every line looks alike.
-- **Node.js and npm,** as in the [Development Guide](./development-guide.md#what-is-needed-first).
+- **Node.js and npm,** as in the [Development Guide](./index.md#what-is-needed-first).
 
 **Heads up: this account holds another project's CloudFront resources,** the distribution `E14C2E7GBRK0V1` and the origin access control `sb-prod-site-oac`. They are not part of this project. Every command here names this project's own ids, and none of them touches those two.
 
@@ -397,7 +397,7 @@ curl -sS -D - -o /dev/null -X OPTIONS https://9awodatqc5.execute-api.us-east-1.a
 curl -sS -D - -X POST https://9awodatqc5.execute-api.us-east-1.amazonaws.com/predict -H "Origin: https://<distribution-domain>" -H "Content-Type: application/json" -d '{"win_pct_differential":0.3888888888888889,"point_diff_per_game_differential":5.9}'
 ```
 
-27. Run the every-matchup check from the [Development Guide](./development-guide.md#how-do-i-check-every-matchup). It must end with `mismatches: 0`.
+27. Run the every-matchup check from the [Development Guide](./index.md#how-do-i-check-every-matchup). It must end with `mismatches: 0`.
 
 28. **Check the page in a browser** at `https://<distribution-domain>/`. Home New England Patriots and away Tennessee Titans shows the Patriots at 63.8% and the Titans at 36.2%. The same team twice shows "Choose two different teams." The browser console shows no CORS error.
 
@@ -502,7 +502,7 @@ gh secret set AWS_WEB_APP_DEPLOY_ROLE_ARN --repo jconnors23/510-m3-nfl-predictio
 
 ## Add the Feedback Route
 
-These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is on [Feedback Path](../extras/features/feedback-path.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
+These steps add `POST /feedback` to the existing API, for the Feedback tab. How it works is in the feedback route section of [Frontend and Backend Connection](../extras/architecture/frontend-backend-connection.md#how-does-the-feedback-reach-the-table). `<integration-id>` and `<route-id>` are printed by the commands that create them. In this deployment they are `y286yp2` and `lte10if`.
 
 37. Confirm nothing exists yet. The first three commands should fail with "not found", and the last should list only `POST /predict` and `GET /health`.
 

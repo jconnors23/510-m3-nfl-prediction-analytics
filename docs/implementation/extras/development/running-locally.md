@@ -95,7 +95,7 @@ Open `http://localhost:5173`. The page sends predictions to the local API.
 
 ## How Do I Work on the Model?
 
-Use this when changing a setting, the split, an input, or the data. [Phase 2 Development Guide](../../phase-2/development-guide.md) has the detail.
+Use this when changing a setting, the split, an input, or the data. [Phase 2, Development Guide](../../phase-2/index.md#development-guide) has the detail.
 
 1. Edit `config/config.yaml`, or the code under `src/model/`.
 2. Train the model:
@@ -116,11 +116,11 @@ make start-web-ml
 make pytest
 ```
 
-5. Commit the changed files in `results/` and `mlflow-reference/` with the code. See [What Is Kept in Git After a Retrain?](../../phase-2/development-guide.md#what-is-kept-in-git-after-a-retrain).
+5. Commit the changed files in `results/` and `mlflow-reference/` with the code. See [What Is Kept in Git After a Retrain?](../../phase-2/index.md#what-is-kept-in-git-after-a-retrain).
 
 ## How Do I Work on the API?
 
-Use this when changing a route, a rule, or what a response holds. [Phase 3 Development Guide](../../phase-3/development-guide.md) has the detail.
+Use this when changing a route, a rule, or what a response holds. [Phase 3, Development Guide](../../phase-3/index.md#development-guide) has the detail.
 
 1. Train the model once, if `models/model.joblib` does not exist:
 
@@ -146,7 +146,7 @@ curl http://127.0.0.1:8000/health
 curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"win_pct_differential": -0.5, "point_diff_per_game_differential": -18.0}'
 ```
 
-5. To restart the service on every code change, see [How Do I Restart the Service on Every Change?](../../phase-3/development-guide.md#how-do-i-restart-the-service-on-every-change).
+5. To restart the service on every code change, see [How Do I Restart the Service on Every Change?](../../phase-3/index.md#how-do-i-restart-the-service-on-every-change).
 6. Run the Python tests:
 
 ```bash
@@ -155,7 +155,7 @@ make pytest
 
 ## How Do I Work on the Web App?
 
-Use this when changing the page, the tabs, or the matchup code. [Phase 5 Development Guide](../../phase-5/development-guide.md) has the detail.
+Use this when changing the page, the tabs, or the matchup code. [Phase 5, Development Guide](../../phase-5/index.md#development-guide) has the detail.
 
 1. Start the local API in one terminal:
 
@@ -186,7 +186,7 @@ The Feedback tab does not work against the local API, which has no `/feedback` r
 
 ## How Do I Work on the Docs?
 
-Use this when editing a page under `docs/`. [Phase 6 Development Guide](../../phase-6/development-guide.md) covers the Docker side, and the docs workflow is in [GitHub Workflows](./github-workflows.md#how-are-the-docs-published).
+Use this when editing a page under `docs/`. [Phase 6, Development Guide](../../phase-6/index.md#development-guide) covers the Docker side, and the docs workflow is in [GitHub Workflows](./github-workflows.md#how-are-the-docs-published).
 
 1. Start the preview:
 
@@ -203,4 +203,4 @@ mkdocs build --strict
 
 ## How Do I Check the Container?
 
-Follow [Test the Same API in Docker](#test-the-same-api-in-docker). To run the tests inside the images, see [Where Do the Tests Run?](./testing-guide.md#where-do-the-tests-run). The image layout is in the [Phase 6 Development Guide](../../phase-6/development-guide.md).
+Follow [Test the Same API in Docker](#test-the-same-api-in-docker). To run the tests inside the images, see [Where Do the Tests Run?](./testing-guide.md#where-do-the-tests-run). The image layout is in [Phase 6, Implementation](../../phase-6/index.md#how-is-the-dockerfile-laid-out).

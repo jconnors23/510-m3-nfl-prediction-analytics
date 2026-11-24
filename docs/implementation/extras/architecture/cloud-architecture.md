@@ -5,11 +5,11 @@ hide:
 
 # Cloud Architecture
 
-This page lists every cloud resource the project uses, with its exact name and settings, and shows how they connect. Most are on AWS in the region `us-east-1`. The docs site is on GitHub Pages, which is not AWS. The commands that create each resource are in the deployment guides, which this page links to and does not copy.
+This page lists every cloud resource the project uses, with its exact name and settings, and shows how they connect. Most are on AWS in the region `us-east-1`. The docs site is on GitHub Pages, which is not AWS. The commands that create each resource are in [Deploy the API](../../phase-4/deployment-guide.md) and [Deploy the Web App](../../phase-5/deployment-guide.md), which this page links to and does not copy.
 
 ## How Does Everything Connect?
 
-Three kinds of caller reach the cloud resources: a visitor's browser, the developer's computer, and GitHub. Each diagram below shows one of them. The sections after the diagrams give each resource's exact settings.
+The cloud resources are used from three places: a visitor's browser, which loads the web app and calls the API; the developer's computer, which uploads the data and deploys the API; and GitHub, which deploys the web app and publishes the docs site. Each diagram below shows one of them. The sections after the diagrams give each resource's exact settings.
 
 ### What Does a Visitor's Browser Reach?
 
@@ -67,7 +67,7 @@ The browser talks to two separate front doors: CloudFront for the page, and API 
 - **Holds:** one object, `data/processed/nfl_matchups_2020_2026.csv` (63,908 bytes), the cleaned game table. It also briefly holds the Lambda zip under the key `deploy/510-m3-nfl-predict-api.zip`. The zip is over the console's 50 MB direct-upload limit, so it is staged here and deleted after the function is created or updated.
 - **Settings:** all four public-access blocks on, AES-256 encryption, versioning off.
 - **Read by:** the developer's computer, with the developer's own AWS sign-in, through `python -m src.data.download_from_s3`. No Lambda function reads it, and the prediction function's role has no access to it.
-- **More:** [How Is the Cloud Storage Set Up?](../../phase-1/development-guide.md#how-is-the-cloud-storage-set-up).
+- **More:** [How Is the Cloud Storage Set Up?](../../phase-1/index.md#how-is-the-cloud-storage-set-up).
 
 ## What Runs the Predictions?
 
@@ -84,13 +84,13 @@ The browser talks to two separate front doors: CloudFront for the page, and API 
 | Environment variable | `JOBLIB_MULTIPROCESSING=0`, which stops a harmless joblib warning about multiprocessing, because Lambda does not provide it |
 | Zip contents | `src/`, `config/`, `models/model.joblib`, and the packages in `requirements-serve.txt` |
 
-- **Mangum** is the small library inside the function that turns API Gateway's event into a request the FastAPI app understands, and turns the answer back. See [What Is Mangum?](../../phase-4/implementation.md#what-is-mangum).
+- **Mangum** is the small library inside the function that turns API Gateway's event into a request the FastAPI app understands, and turns the answer back. See [What Is Mangum?](../../phase-4/index.md#what-is-mangum).
 - **The role `510-m3-nfl-predict-api-role`** is trusted by `lambda.amazonaws.com`. Its only permission is the AWS-managed policy `AWSLambdaBasicExecutionRole`, which allows `logs:CreateLogGroup`, `logs:CreateLogStream`, and `logs:PutLogEvents`. It has no inline policy and no access to either S3 bucket.
 - **Commands:** [Build the Zip](../../phase-4/deployment-guide.md#build-the-zip), [Create the Role](../../phase-4/deployment-guide.md#create-the-role), and [Stage the Zip and Create the Function](../../phase-4/deployment-guide.md#stage-the-zip-and-create-the-function).
 
 ## What Saves the Feedback?
 
-The Feedback tab sends its message to a function of its own, so the prediction function and its zip stay unchanged. Details are on [Feedback Path](../features/feedback-path.md).
+The Feedback tab sends its message to a function of its own, so the prediction function and its zip stay unchanged. Details are in the feedback route section of [Frontend and Backend Connection](./frontend-backend-connection.md#how-does-the-feedback-route-fit-in).
 
 - **The Lambda function `510-m3-nfl-feedback-api`:** Python 3.13 on `arm64`, 256 MB, a 5-second timeout, handler `src.api.feedback_handler.handler`. The zip holds one file, `src/api/feedback_handler.py`, and uses the `boto3` that Lambda provides. The environment variable `FEEDBACK_TABLE=510-m3-nfl-feedback` names the table.
 - **The role `510-m3-nfl-feedback-api-role`:** the same trust and the same log-writing policy as the prediction role, plus one inline policy, `510-m3-nfl-feedback-write`. That policy allows only `dynamodb:PutItem`, and only on the table `510-m3-nfl-feedback`.
@@ -108,7 +108,7 @@ The Feedback tab sends its message to a function of its own, so the prediction f
 | `POST /feedback` | `510-m3-nfl-feedback-api` | 1 request a second, bursts of 5 |
 
 - **Only `/feedback` is throttled.** It writes to a table. The prediction routes only read, and have no limit.
-- **CORS** (the browser's check of which page addresses may call the API) allows two origins: `http://localhost:5173`, the local dev server, and `https://d1nubiunzfwm0q.cloudfront.net`, the live web app. It allows the methods `POST`, `GET`, and `OPTIONS`, the header `content-type`, and a preflight cache of 300 seconds. The setting replaces itself as a whole, so a change must list both origins. The exact answers are in [The Preflight](../../phase-5/implementation-part-1.md#the-preflight).
+- **CORS** (the browser's check of which page addresses may call the API) allows two origins: `http://localhost:5173`, the local dev server, and `https://d1nubiunzfwm0q.cloudfront.net`, the live web app. It allows the methods `POST`, `GET`, and `OPTIONS`, the header `content-type`, and a preflight cache of 300 seconds. The setting replaces itself as a whole, so a change must list both origins. The exact answers are in [The Preflight](../../phase-5/index.md#the-preflight).
 - **Commands:** [Create the HTTP API](../../phase-4/deployment-guide.md#create-the-http-api) and [Add the CloudFront Address to the API's CORS List](../../phase-5/deployment-guide.md#add-the-cloudfront-address-to-the-apis-cors-list).
 
 ## Where Do the Logs Go?

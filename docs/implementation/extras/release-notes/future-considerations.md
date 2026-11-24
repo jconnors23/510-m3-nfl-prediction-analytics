@@ -58,7 +58,7 @@ Inputs that would be worked out from earlier games:
 Each new input would also need:
 
 - **A check that it cannot see the result,** like the current check that a week 1 game has both inputs at 0.
-- **The same columns in three places:** the Python feature code, the API's request (`src/api/schemas.py`), and the web app's arithmetic. The [Phase 5 parity checks](../development/testing-guide.md) would need the new inputs added.
+- **The same columns in three places:** the Python feature code, the API's request (`src/api/schemas.py`), and the web app's arithmetic. The Phase 5 parity checks, described in the [Testing Guide](../development/testing-guide.md), would need the new inputs added.
 - **A fair comparison:** today's 63.10% validation accuracy on the same 2025 games, with the test season kept for the final check only.
 
 A different model, such as gradient-boosted trees, becomes worth trying once there are enough inputs for it to find patterns a logistic regression cannot.

@@ -3,9 +3,15 @@ hide:
   - toc
 ---
 
-# Phase 7 Brief: Review
+# Phase 7: Review
 
-**Status: Built.** Merged into `main` as pull request #8, with the follow-up tidy-ups and docs reorganization merged as pull request #9. The README is written, and the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement to the code and docs that meet it. Two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed five problems. The three GitHub workflows that existed then passed on the merge. What the checks found is on the [Phase 7 Implementation](./implementation.md) page.
+!!! success "Delivered in Pull Requests #8 and #9"
+    Each pull request's **Files changed** tab shows what it delivered.
+
+    - **[Pull request #8 (`phase-seven`)](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/pull/8):** the README, the Requirements Rubric, and the fixes from the end-to-end review.
+    - **[Pull request #9 (`phase-seven-p2`)](https://github.com/jconnors23/510-m3-nfl-prediction-analytics/pull/9):** the tidy-ups: the committed check scripts, the web test workflow, and the reorganized docs.
+
+**Status: Built.** Merged into `main` as pull request #8, with the follow-up tidy-ups and docs reorganization merged as pull request #9. The README is written, and the [Requirements Rubric](../requirements/requirements-rubric.md) maps every requirement to the code and docs that meet it. Two end-to-end checks rebuilt the project from a clean copy, checked the live services, and found and fixed the problems listed in [What Did the Checks Find and Fix?](#what-did-the-checks-find-and-fix). The three GitHub workflows that existed then passed on the merge.
 
 Phase 7 finishes the project and checks it before it is handed in. It writes the README, checks the docs and comments against the finished code, rebuilds the project from a clean copy using only the README, and walks the acceptance checklist with evidence for each item. Writing the README and reviewing the project are one phase because both read the finished project and neither adds code.
 
@@ -64,7 +70,7 @@ Done in the end-to-end checks, on a copy of exactly the files git commits (no vi
 - [x] `make train` prints the expected scores, and `results/run-summary.json` stays byte for byte the committed one.
 - [x] `make pytest` gives **95 passed** after training.
 - [x] `make start` and the worked example return **0.3296**.
-- [x] `make web-test` gives **60 passed, 2 skipped** (the two every-game checks need files in the ignored `build/` folder).
+- [x] `make web-test` gives **60 passed, 2 skipped** (the count at the time of the check; the two every-game checks need files in the ignored `build/` folder). The web tests have grown since: the project now has 65 in 12 files, or 63 passed and 2 skipped without those files.
 - [x] `make docker-train` and `make docker-serve` build and give the same numbers.
 - [x] `make start-web-ml` shows the runs, and `make docs` shows the site.
 
@@ -106,12 +112,12 @@ The evidence for each item (the file, the command, and its result) is on the [Re
 
 These are tidy-ups, not requirements. They were done after the merge of pull request #8, and merged in pull request #9.
 
-- [x] **The confusion-matrix picture:** the axis name "What the model picked" now sits above the grid with its column labels, and the legend sits just under the grid. See [Confusion Matrix](../extras/features/confusion-matrix.md).
+- [x] **The confusion-matrix picture:** the axis name "What the model picked" now sits above the grid with its column labels, and the legend sits just under the grid. See [Confusion Matrix](../phase-2/index.md#what-does-the-confusion-matrix-show).
 - [x] **The MLflow artifacts screenshot:** `mlflow-reference/screenshots/run-artifacts.png` now shows the picture's preview, cropped so no path shows.
 - [x] **The latest MLflow run's commit tag:** one `make train` after the merge tagged run `49a0841f` with commit `9562f88` on `main`. The scores did not change, and `results/run-summary.json` is byte for byte the same.
-- [x] **The every-game check scripts are committed** in `scripts/checks/`, so a fresh copy can rerun them. Their outputs stay in the git-ignored `build/` folder.
+- [x] **The every-game check scripts are committed** in `scripts/checks/`, so a fresh copy can rerun them. Their outputs stay in the git-ignored `build/` folder. A rerun matched the live API on every game with 0 mismatches. See the [Testing Guide](../extras/development/testing-guide.md#which-larger-checks-were-run-against-the-live-api).
 - [x] **The web app's tests run on each pull request** that changes `frontend/`, through the new Test Web App workflow.
-- [x] **The data steps run in the train image.** See [Run the Data Steps in the Container](../phase-6/development-guide.md#run-the-data-steps-in-the-container).
+- [x] **The data steps run in the train image.** See [Run the Data Steps in the Container](../phase-6/index.md#run-the-data-steps-in-the-container).
 
 ## What Is Not in This Phase
 
@@ -120,7 +126,49 @@ These are tidy-ups, not requirements. They were done after the merge of pull req
 
 ## Where to Read More
 
-- [Phase 7 Implementation](./implementation.md) records what the checks found and what was fixed.
 - [Project Requirements](../requirements/project-requirements.md) lists every requirement and the acceptance checklist.
 - [Requirements Rubric](../requirements/requirements-rubric.md) shows where each finished requirement lives.
 - [Makefile](../extras/development/makefile.md) explains every command the README uses.
+
+## Implementation
+
+This section records how the review was run, what the two checks found and fixed, and what was left as is.
+
+### How Was the Review Done?
+
+```mermaid
+flowchart TB
+    A["Write the README and<br/>the Requirements Rubric"] --> B["End-to-end check<br/>report only"]
+    B --> C["Fix the findings,<br/>rerun the checks"]
+    C --> D["Merge<br/>pull request #8"]
+    D --> E["Tidy-ups<br/>pull request #9"]
+```
+
+Cursor ran each check from a written spec. The developer reviewed the results, decided what to fix, and ran every git command.
+
+### What Did the Checks Find and Fix?
+
+| Finding | Fix |
+| :--- | :--- |
+| The download did not check the four columns `src/season.py` reads | Added to `NEEDED_COLUMNS` in `src/data/fetch_raw.py` |
+| No workflow ran the Python tests | New `test-python.yml` runs `make pytest` on each pull request |
+| scipy, which training uses, was pinned only for serving | `scipy==1.18.1` pinned in `requirements.txt` too |
+| The download and S3 download steps had no tests | New `tests/test_fetch_raw.py` and `tests/test_download_from_s3.py` |
+| Two pages gave only the before-training test count | Every page gives 93 passed and 2 skipped before training, 95 after |
+| An unused setting and two misnamed tests | `OMITTED_TAGS` removed, two web tests renamed |
+
+The second check rebuilt everything in a fresh copy of the committed files and matched on every step: the tests, the scores and run summary hash, the local API, both Docker images, and the AWS role permissions.
+
+### What Was Tidied After the Merge?
+
+The small items under [Small Items Left From Earlier Phases](#small-items-left-from-earlier-phases) were all done in pull request #9. Further details:
+
+- **The every-game check scripts** moved from the ignored `build/` folder to `scripts/checks/`.
+- **The web app's tests** run through `test-web.yml`.
+- **The docs were reorganized** for the [Version 1.0 Release Notes](../extras/release-notes/version-1-0.md): the Overview first, the Developer Docs and Extras grouped by topic, and every diagram fitted to the page width.
+
+### What Was Left As Is?
+
+- **The data stops at 2026 week 10.** The project is a fixed snapshot.
+- **`POST /predict` has no rate limit.** Only `POST /feedback` is throttled, because it writes to the database.
+- **The deployed Lambda zip was not replaced.** The live API already matches the local model on every game.

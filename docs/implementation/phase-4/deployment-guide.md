@@ -5,7 +5,7 @@ hide:
 
 # Phase 4 Deployment Guide
 
-This guide holds every AWS command for the Phase 4 API, in order: deploy it, redeploy it, change its settings, and remove it. Each step is explained in the [Phase 4 Implementation](./implementation.md). To test the entry point with no AWS account, or change its code, see the [Development Guide](./development-guide.md).
+This guide holds every AWS command for the Phase 4 API, in order: deploy it, redeploy it, change its settings, and remove it. Each step is explained in the Implementation section of [Phase 4](./index.md#implementation). To test the entry point with no AWS account, or change its code, see the Development Guide section of [Phase 4](./index.md#development-guide).
 
 ## How Do the Sections Fit Together?
 
@@ -421,7 +421,7 @@ aws lambda update-function-configuration --function-name 510-m3-nfl-predict-api 
 aws lambda wait function-updated --function-name 510-m3-nfl-predict-api --region us-east-1
 ```
 
-- **Current values:** 1769 MB of memory, a 10-second timeout, and the one environment variable `JOBLIB_MULTIPROCESSING=0`. See [Step 5](./implementation.md#step-5-create-the-role-and-the-function).
+- **Current values:** 1769 MB of memory, a 10-second timeout, and the one environment variable `JOBLIB_MULTIPROCESSING=0`. See [Step 5](./index.md#step-5-create-the-role-and-the-function).
 - **`--environment` replaces every variable.** If you pass it, pass all of them together, for example `--environment "Variables={JOBLIB_MULTIPROCESSING=0}"`. Leave it out when you change only the memory.
 - **Memory sets how much CPU the function gets, not what code it runs.** After any change, repeat the every-game check at the end of [Redeploy After a Change](#redeploy-after-a-change).
 
@@ -433,7 +433,7 @@ CORS is set on the API Gateway, not in the app. The command replaces the whole s
 aws apigatewayv2 update-api --api-id <api-id> --cors-configuration file://build/cors.json --region us-east-1
 ```
 
-The `<api-id>` is the part of the public address before `.execute-api`. The deployed list allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/implementation-part-1.md#the-preflight).
+The `<api-id>` is the part of the public address before `.execute-api`. The deployed list allows two origins, `http://localhost:5173` and the Phase 5 CloudFront address `https://d1nubiunzfwm0q.cloudfront.net`, with the methods `POST`, `GET`, and `OPTIONS` and the header `content-type`. Any new file must list both origins, or the live page stops working. See [The Preflight](../phase-5/index.md#the-preflight).
 
 ## Remove Everything
 

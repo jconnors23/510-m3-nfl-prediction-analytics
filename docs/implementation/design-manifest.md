@@ -100,7 +100,7 @@ The developer keeps control because every piece of work passes through them twic
 - **A margin model needs an extra step to produce a probability.** Regression would give an expected margin such as "home by 3.2 points". To show "58% chance the home team wins", that margin has to be converted using an assumption about how far real margins stray from the prediction. That assumption would have to be estimated and checked, and it is one more place to be wrong. The classifier avoids it.
 - **Margins are noisy, and big margins are a poor guide to who wins.** In the 1,759 games kept, the margin has an average of +1.56 and a standard deviation of 14.19 points, and ranges from -45 to +50. Games decided by 3 points or fewer are 429 (24.4%), and by 7 or fewer are 860 (48.9%). Games decided by 14 or more are 605 (34.4%). A regression fit on margins gives these blowouts a large pull on the fit, although a 35-point win says no more about who won than a 1-point win does.
 - **The result is easy to judge.** A classifier is scored by how often the pick is right, shown next to the rule "always pick the home team" (see the next section). A margin model is scored by an average error in points. Always predicting the average margin is off by 11.04 points on average, and a reader has no easy way to say whether 10 points of error is good.
-- **It matches the data.** A game ends with a winner or, rarely, a tie. The 6 tied games have no yes-or-no answer, so they are removed. This is covered in the [Phase 1 Implementation](./phase-1/implementation.md#what-is-the-prediction-task).
+- **It matches the data.** A game ends with a winner or, rarely, a tie. The 6 tied games have no yes-or-no answer, so they are removed. This is covered in the [Phase 1 Implementation](./phase-1/index.md#what-is-the-prediction-task).
 
 **What the choice gives up**
 
@@ -121,21 +121,21 @@ The developer keeps control because every piece of work passes through them twic
 - **It is always shown next to a baseline,** the score of always picking the home team, which is the share of games the home team won (52.93% of the 1,759 kept games). A model only adds something if it beats that.
 - **Log loss supports it.** It scores the probabilities and not just the picks, so it checks that "70%" means about 7 wins in 10. The web app shows a probability, which accuracy alone cannot vouch for. It is reported for validation and test games only, because the model is fitted by pushing it down on the training games.
 - **Reported whatever it is.** The score is not tuned, and a poor score would still be stated.
-- Details: [Phase 2 Part 2](./phase-2/implementation-part-2.md#step-5-score-the-model).
+- Details: [Phase 2 Part 2](./phase-2/index.md#step-5-score-the-model).
 
 ## Phase 1: Data Pipeline
 
-Phase 1 fetches the games file, cleans it, and stores it in S3. See the [Phase 1 Brief](./phase-1/brief.md) and the [Phase 1 Implementation](./phase-1/implementation.md).
+Phase 1 fetches the games file, cleans it, and stores it in S3. See [Phase 1, Overview](./phase-1/index.md) and [Phase 1, Implementation](./phase-1/index.md#implementation).
 
 - **The nflverse games file,** regular season only, 2020 through week 10 of 2026. That stays within the past decade and uses the most recent data. Week 10 of 2026 is the last week where every game has a score.
 - **Ties are removed (6 games),** rather than counted as an away win or half a win, because the question has exactly two answers.
 - **The cleaned table goes to a private S3 bucket, and every later step downloads it back.** Training always starts from the S3 copy, never from a local file, so every run uses the shared version of the data. The raw file stays on the developer machine.
 - **The bucket is created manually, not by code.** A script that creates AWS resources adds risk for no benefit.
-- Details: [Phase 1 Implementation](./phase-1/implementation.md#which-choices-were-made).
+- Details: [Phase 1, Which Choices Were Made?](./phase-1/index.md#which-choices-were-made).
 
 ## Phase 2: Features, Training, and Tracking
 
-Phase 2 builds the two inputs, trains the model, and records each run. See the [Phase 2 Brief](./phase-2/brief.md), [Part 1](./phase-2/implementation-part-1.md), and [Part 2](./phase-2/implementation-part-2.md).
+Phase 2 builds the two inputs, trains the model, and records each run. See [Phase 2, Overview](./phase-2/index.md), [Implementation Part 1](./phase-2/index.md#implementation-part-1), and [Implementation Part 2](./phase-2/index.md#implementation-part-2).
 
 ### Inputs and the Split
 
@@ -144,13 +144,13 @@ Phase 2 builds the two inputs, trains the model, and records each run. See the [
 - **The scores were similar,** so the reason is clarity, not accuracy. Logistic regression with ranks got 169 of 271 validation games right (62.36%, log loss 0.6345) and 92 of 149 test games (61.74%). With raw inputs it got 171 of 271 (63.10%, log loss 0.6451) and 88 of 149 (59.06%).
 - **Per game, not season totals,** so a team that has played more games, for example after a bye, is not favored.
 - **The split is by season, not at random.** Training is 2020 to 2024 (1,339 games), validation is 2025 (271), and test is 2026 weeks 1 to 10 (149). A random split would put later games in training, and the model would be scored on games played before some of the games it learned from. The 2025 score is the one to report, and the test games never fit anything.
-- Details: [Phase 2 Part 1](./phase-2/implementation-part-1.md).
+- Details: [Phase 2 Part 1](./phase-2/index.md#implementation-part-1).
 
 ### Model Choice
 
 - **Logistic regression only, with no model comparison.** Turned down: a random forest as a second candidate, and XGBoost. One simple model is enough, the two inputs are simple, and an earlier test had the forest and logistic regression within a game or two of each other. Fixing the model type means the 2025 validation season is used only to report the score, so it is never used to choose between models.
 - **A standardizing step is kept and saved with the model as one pipeline,** so the API cannot skip it. The two inputs are on different scales: win percentage differences run from -1 to 1, and point margin differences run about -49 to 39.
-- Details: [Phase 2 Part 2](./phase-2/implementation-part-2.md#step-4-fit-the-scaler-and-the-model).
+- Details: [Phase 2 Part 2](./phase-2/index.md#step-4-fit-the-scaler-and-the-model).
 
 ### Tracking and Reproducibility
 
@@ -161,38 +161,38 @@ Phase 2 builds the two inputs, trains the model, and records each run. See the [
 - **Every run records the scikit-learn version and a fingerprint of the data file,** so a run can be traced to the exact library and data it used.
 - **Settings live in one file, `config/config.yaml`,** and package versions are pinned. Changing a run means editing the file, not the code.
 - **scipy is pinned in `requirements.txt` too,** at the same 1.18.1 as the Lambda list. scikit-learn's solver uses scipy while fitting, so an unpinned scipy could fit slightly different weights on another machine.
-- Details: [Phase 2 Part 2](./phase-2/implementation-part-2.md#step-6-record-the-run-in-mlflow) and [How Do I Reproduce the Result From a Clean Checkout?](./phase-2/development-guide.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
+- Details: [Phase 2 Part 2](./phase-2/index.md#step-6-record-the-run-in-mlflow) and [How Do I Reproduce the Result From a Clean Checkout?](./phase-2/index.md#how-do-i-reproduce-the-result-from-a-clean-checkout).
 
 ## Phase 3: Local Prediction API
 
-Phase 3 builds the FastAPI service and runs it on the developer machine. See the [Phase 3 Brief](./phase-3/brief.md) and the [Phase 3 Implementation](./phase-3/implementation.md).
+Phase 3 builds the FastAPI service and runs it on the developer machine. See [Phase 3, Overview](./phase-3/index.md) and [Phase 3, Implementation](./phase-3/index.md#implementation).
 
 - **FastAPI, not Flask.** The input checks (missing field, extra field, wrong type, out-of-range number) come from one request definition, and the test page at `/docs` needs no extra code. FastAPI also works with the Mangum adapter that Lambda needs. Flask would need a different adapter.
 - **Strict input checks.** Unknown fields, numbers written as text, `NaN`, and out-of-range values are rejected with status 422 and an error that names the problem.
-- **The API uses NumPy, not pandas.** The Lambda zip is 231.3 MB without `pandas` and 278.4 MB with it, against a 250 MB limit. See the [Phase 4 Implementation, Step 3](./phase-4/implementation.md#step-3-measure-the-package-size).
+- **The API uses NumPy, not pandas.** The Lambda zip is 231.3 MB without `pandas` and 278.4 MB with it, against a 250 MB limit. See the [Phase 4 Implementation, Step 3](./phase-4/index.md#step-3-measure-the-package-size).
 - **The model loads once, at start-up,** and the service refuses to start if the file is missing, unreadable, or built by a different scikit-learn version.
 - **The pick rule is the scoring rule.** A probability above 0.5 is a home win, and exactly 0.5 is an away win.
 - **The API is built and tested locally first,** with no Docker and no AWS.
-- Details: [Phase 3 Implementation](./phase-3/implementation.md).
+- Details: [Phase 3, Implementation](./phase-3/index.md#implementation).
 
 ## Phase 4: AWS Deployment
 
-Phase 4 puts the API on AWS. See the [Phase 4 Brief](./phase-4/brief.md) and the [Phase 4 Implementation](./phase-4/implementation.md).
+Phase 4 puts the API on AWS. See [Phase 4, Overview](./phase-4/index.md) and [Phase 4, Implementation](./phase-4/index.md#implementation).
 
 - **AWS only:** S3, Lambda behind an API Gateway HTTP API, and CloudFront, all in `us-east-1`, where the data bucket already is. Turned down: Google Cloud and Azure.
-- **The same FastAPI app runs locally and in Lambda, using Mangum.** Turned down: a separate, manually written Lambda function, which would repeat the input checks and the model call in a second place. See [What Is Mangum?](./phase-4/implementation.md#what-is-mangum).
+- **The same FastAPI app runs locally and in Lambda, using Mangum.** Turned down: a separate, manually written Lambda function, which would repeat the input checks and the model call in a second place. See [What Is Mangum?](./phase-4/index.md#what-is-mangum).
 - **Lambda runs from a zip file.** A container image in a private ECR repository is the fallback, used only if the zip goes over Lambda's size limit. The measured size fits.
-- **The deployed model is checked on every game.** All 1,759 games were sent through the public API and compared with the local model: every pick and every probability matched, and the accuracy from the deployed answers equals the run summary. The zip's hash equals the hash Lambda stores for the function, so Lambda runs the file built here. See [Step 10](./phase-4/implementation.md#step-10-check-the-deployed-model-against-the-local-model).
+- **The deployed model is checked on every game.** All 1,759 games were sent through the public API and compared with the local model: every pick and every probability matched, and the accuracy from the deployed answers equals the run summary. The zip's hash equals the hash Lambda stores for the function, so Lambda runs the file built here. See [Step 10](./phase-4/index.md#step-10-check-the-deployed-model-against-the-local-model).
 - **Accuracy is the only priority for the deployment.** Latency and cost are not concerns for this project. The Lambda function's memory is 1769 MB, and it may be changed if that helps, but it is not a priority.
 - **CORS is set on the gateway only,** with two origins allowed: the CloudFront address `https://d1nubiunzfwm0q.cloudfront.net` and the local Vite address `http://localhost:5173`.
 - **The API is public, with no key, no request limit, and no firewall for now.** A key in a browser app would be visible to every visitor, so it would not protect the API. Protection can be added later if it is needed.
 - **The API's AWS deployment is a set of written steps,** with no workflow file for it. Only the docs site and the web app are published by workflows.
 
-## Phase 5: Web App and Hosting
+## Phase 5: Front-End Web App
 
-Phase 5 builds the web app and hosts it on CloudFront. See the [Phase 5 Brief](./phase-5/brief.md) and the [Phase 5 Implementation](./phase-5/implementation-part-1.md). The questions that were open during the phase are settled in its [Decisions Made](./phase-5/brief.md#decisions-made).
+Phase 5 builds the web app and hosts it on CloudFront. See [Phase 5, Overview](./phase-5/index.md) and [Phase 5, Implementation Part 1](./phase-5/index.md#implementation-part-1). The questions that were open during the phase are settled in [Phase 5, Decisions Made](./phase-5/index.md#decisions-made).
 
-- **The browser does the subtraction, and the API is unchanged.** The page ships each team's standings in a committed file and sends the API the same two numbers as before. The page subtracts two teams' values from that file (home minus away), and everything checked in Phase 4 stays valid. Turned down: an API that takes two team names, which would change the deployed function and its zip, and need the Phase 4 checks to be run again. See [Who Works Out Each Number?](./phase-5/implementation-part-1.md#who-works-out-each-number).
+- **The browser does the subtraction, and the API is unchanged.** The page ships each team's standings in a committed file and sends the API the same two numbers as before. The page subtracts two teams' values from that file (home minus away), and everything checked in Phase 4 stays valid. Turned down: an API that takes two team names, which would change the deployed function and its zip, and need the Phase 4 checks to be run again. See [Who Works Out Each Number?](./phase-5/index.md#who-works-out-each-number).
 - **The web app's fonts are bundled into the build,** from the `@fontsource-variable` npm packages, and served from CloudFront. Turned down: loading them from Google Fonts, which would be the page's only outside request. The docs site does load Oswald from Google Fonts, because it has no such rule.
 - **The web app and the docs site share two themes,** light and dark, built from white, black, purple, orange, gold, silver, and amber, with every text pair at least 4.5 to 1 contrast. Both start in the reader's system setting, and both have a toggle. The web app does not save the choice, because it uses no local storage. The docs site's theme (Material) does save it.
 - **Games by Week and Custom Matchup use the same approach.** They work out every game's two inputs in the browser, from standings in a committed season file. Turned down: a route that takes a game id, which would put the schedule into the Lambda zip and need the Phase 4 checks run again.
@@ -206,25 +206,25 @@ Phase 5 builds the web app and hosts it on CloudFront. See the [Phase 5 Brief](.
 
 ## Phase 6: Docker
 
-Phase 6 adds one Dockerfile with a `train` target and a `serve` target. See the [Phase 6 Brief](./phase-6/brief.md#decisions-made) for the full list of Docker choices and the [Phase 6 Implementation](./phase-6/implementation.md).
+Phase 6 adds one Dockerfile with a `train` target and a `serve` target. See [Phase 6, Decisions Made](./phase-6/index.md#decisions-made) for the full list of Docker choices and [Phase 6, Implementation](./phase-6/index.md#implementation).
 
 - **Docker comes after the API, AWS, and the web app (Phase 6),** with one Dockerfile and two targets, `train` and `serve`. Nothing before it needs an image. The README and the final review (Phase 7) come after it, because they describe and check the finished project. Turned down: building Docker in Phase 3, which would put a packaging step ahead of the web app without unblocking anything.
 - **One Dockerfile, not two.** The `train` and `serve` targets live in one file, so the install steps, the Python version, and the package pins are written once. Turned down: two Dockerfiles, which would repeat the install steps and let the two drift apart.
-- **The serve image trains its own model while it is built,** so it works from a fresh copy of the repository, where `models/` does not exist. Turned down: mounting `models/` from the laptop. The other Docker choices are in the [Phase 6 Brief](./phase-6/brief.md#decisions-made).
+- **The serve image trains its own model while it is built,** so it works from a fresh copy of the repository, where `models/` does not exist. Turned down: mounting `models/` from the laptop.
 
 ## Phase 7: Review
 
-Phase 7 is the README and the final review. See the [Phase 7 Brief](./phase-7/brief.md).
+Phase 7 is the README and the final review. See [Phase 7, Overview](./phase-7/index.md).
 
 - **The README and the review are one phase, Phase 7,** not two. Both read the finished project and neither adds code, and the review's clean rebuild follows the README, so writing and checking it go together.
 
 ## Extras
 
-Extras is work that belongs to no one phase, so each phase's pages describe only that phase's work.
+These choices cover work that sits beside the phases or crosses them: the make commands, the workflows, the feedback form, the run history, and the docs site. In the docs, the Developer Docs hold one page per phase (Version 1), then System Design, Local Development, and Deployment. The Extras hold the requirements rubric, the project requirements, the glossary, and the release notes.
 
 ### Make Commands
 
-- **The Makefile has nine commands:** `train`, `pytest`, `web-test`, `start`, `start-web`, `start-web-ml`, `docs`, `docker-train`, and `docker-serve`. Commands that are run rarely, such as rebuilding the data files, stay as the plain commands in the Development Guides. See [Makefile](./extras/development/makefile.md).
+- **The Makefile has nine commands:** `train`, `pytest`, `web-test`, `start`, `start-web`, `start-web-ml`, `docs`, `docker-train`, and `docker-serve`. Commands that are run rarely, such as rebuilding the data files, stay as the plain commands in each phase's Development Guide section. See [Makefile](./extras/development/makefile.md).
 
 ### GitHub Workflows
 
@@ -237,11 +237,11 @@ There are four workflows. The docs workflow is in [Docs Site](#docs-site), and t
 ### Feedback Form
 
 - **Feedback goes to a DynamoDB table, through its own small function.** One item per message, written by `src/api/feedback_handler.py` on the route `POST /feedback`. That route alone has a request limit (1 a second, bursts of 5), because it writes. Turned down: an S3 bucket, which would store one file per message and give no simple way to count or list them. Also turned down: a feedback route in the prediction function, which would change the zip that every prediction runs.
-- See [Feedback Path](./extras/features/feedback-path.md).
+- See [Frontend and Backend Connection](./extras/architecture/frontend-backend-connection.md#how-does-the-feedback-route-fit-in), and [Phase 5, Implementation Part 2](./phase-5/index.md#implementation-part-2) for the form itself.
 
 ### Confusion Matrix Picture
 
-- See [Confusion Matrix](./extras/features/confusion-matrix.md).
+- See [Phase 2, What Does the Confusion Matrix Show?](./phase-2/index.md#what-does-the-confusion-matrix-show).
 
 ### MLflow Run History
 
@@ -250,5 +250,5 @@ There are four workflows. The docs workflow is in [Docs Site](#docs-site), and t
 ### Docs Site
 
 - **The docs are published with GitHub Pages,** built by MkDocs with the Material theme from `mkdocs.yml`, which is committed. A GitHub Actions workflow (`.github/workflows/deploy-docs.yml`) builds the site in strict mode and publishes it whenever a change to the docs reaches `main`. Turned down: keeping the site local only. Publishing needs no extra service, and the README can link to the live pages.
-- **A phase starts with a brief,** and gets its implementation page and guides once it is built.
+- **Each phase is one page,** with an overview, a "Development Guide" section, and an "Implementation" section.
 - **The original project requirements are kept unchanged** in `docs/implementation/requirements/`, next to the [Requirements Rubric](./requirements/requirements-rubric.md).
