@@ -313,6 +313,29 @@
 }
 
 /* ------------------------------------------------------------------
+   Demo video on the home page: full column width, 16:9, with the same
+   amber edge as the code blocks so it stands out near the top of the page
+   ------------------------------------------------------------------ */
+
+.md-typeset .video-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 1em 0;
+  border: 3px solid var(--nfl-amber);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.md-typeset .video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ------------------------------------------------------------------
    Footer: black, with the disclaimer in bold white so it is never missed
    ------------------------------------------------------------------ */
 

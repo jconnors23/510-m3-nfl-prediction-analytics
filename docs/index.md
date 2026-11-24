@@ -7,6 +7,14 @@ hide:
 
 A pre-game NFL winner predictor, built as a small, complete machine learning system: the data is stored in Amazon S3, a reproducible pipeline trains and tracks a model with MLflow, the model is served as an API on AWS Lambda, and a web app on CloudFront calls that API. Pick a home team and an away team, and the app shows the predicted winner and each team's chance of winning. This page is a condensed copy of the repository's [README](https://github.com/jconnors23/510-m3-nfl-prediction-analytics#readme).
 
+**Demo video:**
+
+<div class="video-embed">
+  <iframe src="https://www.youtube-nocookie.com/embed/Om_aYeCCiZE" title="NFL Prediction Model demo video" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
+
+If the video does not load, [watch it on YouTube](https://youtu.be/Om_aYeCCiZE).
+
 - **Live web app:** [https://d1nubiunzfwm0q.cloudfront.net](https://d1nubiunzfwm0q.cloudfront.net)
 - **Live API:** `https://9awodatqc5.execute-api.us-east-1.amazonaws.com` (`POST /predict`, `GET /health`)
 - **Code:** [github.com/jconnors23/510-m3-nfl-prediction-analytics](https://github.com/jconnors23/510-m3-nfl-prediction-analytics)
